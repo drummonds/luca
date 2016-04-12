@@ -2,7 +2,7 @@ import calendar
 import pandas as pd
 import sqlite3
 
-from h3_yearend import p
+from .utils import p
 
 class PeriodReport:
     """This holds the data for a single report.  This includees the historical and mtd figures as well as the

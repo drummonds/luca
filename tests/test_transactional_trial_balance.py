@@ -2,9 +2,7 @@ import datetime as dt
 import pandas as pd
 import unittest
 
-from h3_yearend import p
-
-from luca import TransactionalTrialBalance
+from luca import TransactionalTrialBalance, p
 
 class TestTTB(unittest.TestCase):
 

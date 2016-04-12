@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pyodbc
 
-from h3_yearend import p
+from .utils import p
 
 class SageDataError(Exception):
     pass

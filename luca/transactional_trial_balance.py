@@ -3,7 +3,7 @@ Holding all conversion of a TTB to a managment account"""
 
 import pandas as pd
 
-from h3_yearend import p
+from .utils import p
 
 class TransactionalTrialBalance():
 

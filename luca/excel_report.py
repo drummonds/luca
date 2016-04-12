@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from xlsxwriter.utility import xl_rowcol_to_cell
 
-from h3_yearend import p
+from .utils import p
 
 class ExcelManagementReport():
 

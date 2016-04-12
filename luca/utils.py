@@ -28,7 +28,7 @@ def p(value):
     except TypeError:   #Oops -- didn't works.  ask forgiveness ;-)
         t, v, tb = exc_info()
         if isinstance(value, pd.Series):
-            result = pd.Series([ p(x) for x in value])
+            result = [p(x) for  x in value]
         else:
             print('Type Error Val = |{}|, {}'.format(value, type(value)))
             raise v.with_traceback(tb)

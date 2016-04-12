@@ -2,12 +2,13 @@
 """
 import pandas as pd
 
-from h3_yearend import p
+from .utils import p
 
-class JournalEntryError(Exception)@
+class JournalEntryError(Exception):
     pass
 
 class JournalItem:
+    """This is simply a nominal code and an amount"""
     pass
 
 class JournalEntry:
@@ -18,10 +19,15 @@ class JournalEntry:
 
     def __init__(self, chart_of_accounts):
         self._coa = chart_of_accounts
-        self.series = pd.Series()
+        self.dict = {}
 
     def __len__(self):
-        return len(self.series)
+        return len(self.dict)
+
+    def to_series(self):
+        """Convert a journal entry to a Pandas DataSeries.  This is a lossy conversion so that things like the chart
+        of accounts"""
+        return pd.Series(self.dict)
 
     def is_valid(self):
         return self.series.sum() == p(0)
@@ -31,23 +37,22 @@ class JournalEntry:
         return self._coa
 
     def add_dict(self, new_dict):
-        def fill(nc):
-            try:
-                y_value = ttb[nc]
-            except:
-                y_value=p(0)
-            try:
-                t_value = year_open.ix[nc]['TB']
-            except:
-                t_value = p(0)
-            return y_value + t_value
-        # Create union of nominal codes
-        new_nc = list(year_open.index.values)
-        ttb_nc = list(ttb.axes[0])
-        nc_list = list(set(ttb_nc) | set(year_nc))
-        # For each nominal code add from both
-        print('Added trial balance')
-        nc_list.sort()
-        df = pd.DataFrame([p(0)]*len(nc_list), index = nc_list, columns=['TB'])
-        df['TB'] = [fill(r) for r in df.index]
+        self.dict = {**self.dict, **new_dict}
 
+    def sum(self):
+        result = p(0)
+        for k, v in iter(self.dict.items()):
+            result += v
+        return result
+
+
+    def append(self, nominal_code, value):
+        if nominal_code in self.transaction:
+            raise JournalEntryError('Attempting to add two entries to the same nominal code {} into {}'. \
+                                   format(nominal_code, self.dict))
+        else:
+            self.dict[nominal_code] = value
+
+
+    def is_valid(self):
+        return (len(self.dict) > 0) and (self.sum() == p(0))
