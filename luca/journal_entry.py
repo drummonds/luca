@@ -1,14 +1,20 @@
-"""Trial Balance is a derivative of dataSeries.  Represents a trial balance wiht numeric COA
+"""Journal Entry represents accounting entries.
 """
 import pandas as pd
 
 from h3_yearend import p
 
+class JournalEntryError(Exception)@
+    pass
+
+class JournalItem:
+    pass
 
 class JournalEntry:
     """JournalEntry is a complete set of journal items.  It should add up to zero.  It can be as simple as representing
     a purchase invoice or it can be as complex as a trial balance from which you can derive a balance sheet and
-    profit and loss statements."""
+    profit and loss statements.
+    they are linked to a chart of accounts."""
 
     def __init__(self, chart_of_accounts):
         self._coa = chart_of_accounts
