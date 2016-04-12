@@ -4,10 +4,14 @@ import pandas as pd
 
 from h3_yearend import p
 
-class TrialBalance:
+
+class JournalEntry:
+    """JournalEntry is a complete set of journal items.  It should add up to zero.  It can be as simple as representing
+    a purchase invoice or it can be as complex as a trial balance from which you can derive a balance sheet and
+    profit and loss statements."""
 
     def __init__(self, chart_of_accounts):
-        self.coa = chart_of_accounts
+        self._coa = chart_of_accounts
         self.series = pd.Series()
 
     def __len__(self):
@@ -18,7 +22,7 @@ class TrialBalance:
 
     @property
     def coa(self):
-        return self.coa
+        return self._coa
 
     def add_dict(self, new_dict):
         def fill(nc):
