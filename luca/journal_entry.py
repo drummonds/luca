@@ -108,16 +108,12 @@ class JournalEntry:
     def is_valid(self):
         return self.series.sum() == p(0)
 
-    def _append(self, nominal_code, value):
+    def append(self, nominal_code, value):
         if nominal_code in self.dict:
             raise JournalEntryError('Attempting to add two entries to the same nominal code {} into {}'. \
                                     format(nominal_code, self.dict))
         else:
             self.dict[nominal_code] = p(value)
-
-    def append(self, nominal_code, *args, **kwargs):
-        self._append(*args, **kwargs)
-        self.chart_of_accounts.update(nominal_code)
 
     def add_dict(self, new_dict):
         #  Aim to do this

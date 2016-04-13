@@ -4,10 +4,15 @@ Holding all conversion of a TTB to a managment account"""
 import pandas as pd
 
 from .utils import p
+from .journal_entry import TrialBalance
 
 class TransactionalTrialBalance():
 
-    def __init__(self):
+    def __init__(self, coa_to):
+        self.coa_to = coa_to
+        # The following constants are part of the conversion table.
+        self.coa_from_name='Sage'
+        self.coa_to_name='SLF-MA'
         self.conversion = conversion = {
             10: (10, 20, 21, 30, 31, 40, 41,),
             1001: (1001, 1004, 1254, 1256, 7906,),
@@ -73,20 +78,25 @@ class TransactionalTrialBalance():
         }
 
     def convert_trial_balance(self, ttb):
+        """Requires transactional trial balance with SAage as input and converts to SLF-MA"""
+        assert ttb.chart_of_accounts.name == self.coa_from_name, 'Convert from {} not {}.'.\
+            format(self.coa_from_name, ttb.chart_of_accounts.name)
+        assert self.coa_to.name == self.coa_to_name, 'Convert to {} not {}.'.\
+            format(self.coa_to_name, self.coa_to.name)
         index = []
         for key, value in self.conversion.items():
             index.append(key)
         index.sort()
-        new = pd.Series([p(0)]*len(index), index = index)
-        for name, value in new.iteritems():
-            result = 0
+        new = TrialBalance(self.coa_to, ttb.period_start, ttb.period_end)
+        # TODO more checking to make sure all old data is used
+        for name in new.chart_of_accounts.names:
+            result = p(0)
             old_tb_list = self.conversion[name]
             for nc in old_tb_list:  # a list of accounts in the old trial balance
                 try:
-                    result += ttb.ix[nc][0]
+                    result += ttb[nc]
                 except KeyError:  # Ignore where there are no entries
                     pass
-            new[name]=result
-        df = pd.DataFrame(new, index = new.index, columns=['TB'])
-        return df
+            new.append(name, result)
+        return new
 
