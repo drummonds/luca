@@ -13,8 +13,8 @@ class PeriodReport(unittest.TestCase):
         self.assertEqual(len(rep.df_list), 4)
         self.assertEqual(len(rep.df_list[0]), 40)
         self.assertEqual(len(rep.df_list[1]), 40)
-        self.assertEqual(len(rep.df_list[2]), 40)
-        self.assertEqual(len(rep.df_list[3]), 40)
+        self.assertEqual(len(rep.df_list[2]), 61)
+        self.assertEqual(len(rep.df_list[3]), 61)
 
     def test_prev_yearstart(self):
         rep = luca.PeriodReport(dt.datetime(2014, 12, 1), "test_historic_trial_balances00.db")

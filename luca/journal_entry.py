@@ -15,7 +15,8 @@ class JournalEntry:
     """JournalEntry is a complete set of journal items.  It should add up to zero.  It can be as simple as representing
     a purchase invoice or it can be as complex as a trial balance from which you can derive a balance sheet and
     profit and loss statements.
-    they are linked to a chart of accounts."""
+    they are linked to a chart of accounts.
+    Every value in the journal is a decimal."""
 
     def __init__(self, chart_of_accounts):
         self._coa = chart_of_accounts
@@ -37,7 +38,11 @@ class JournalEntry:
         return self._coa
 
     def add_dict(self, new_dict):
-        self.dict = {**self.dict, **new_dict}
+        #  Aim to do this
+        #  self.dict = {**self.dict, **new_dict}
+        # but want every value to be a decimal version
+        for k, v in iter(new_dict.items()):
+            self.dict[k] = p(v)
 
     def sum(self):
         result = p(0)
@@ -51,8 +56,10 @@ class JournalEntry:
             raise JournalEntryError('Attempting to add two entries to the same nominal code {} into {}'. \
                                    format(nominal_code, self.dict))
         else:
-            self.dict[nominal_code] = value
-
+            self.dict[nominal_code] = p(value)
 
     def is_valid(self):
         return (len(self.dict) > 0) and (self.sum() == p(0))
+
+    def __getitem__(self, item):
+        return self.dict[item]
