@@ -24,9 +24,11 @@ class ExcelManagementReport():
 
     def write_block(self, ws, sum_list, acct_list, title, sign = 1):
 
-        def get_value(df, nominal_code):
+        def get_value(tb, nominal_code):
+            """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
+            # TODO move this code into the TrialBalance data
             try:
-                value=df.ix[nominal_code].TB * sign
+                value=tb[nominal_code] * sign
             except (KeyError, IndexError) as e:
                 # There is a name value so presumably some data but just none in this series
                 value=0
@@ -34,8 +36,8 @@ class ExcelManagementReport():
 
         def all_values_zero(nominal_code):
             all_zero = True
-            for df in self.rep.df_list:
-                if p(get_value(df, nominal_code)) != p(0):
+            for tb in self.rep.tb_list:
+                if get_value(tb, nominal_code) != p(0):
                     all_zero = False
             return all_zero
 
@@ -56,25 +58,25 @@ class ExcelManagementReport():
         else:
             fmt = self.fmt
             fmt_left = self.left_fmt
-
-        for i, a in enumerate(acct_list):
+        # The acct_list is the simple list of account nominal codes that are to be included in this block
+        for a in acct_list:
             # If there no row then ignore error
             try:
                 if should_print_line(a):
-                    name = self.rep.nc_names.ix[acct_list[i]].NC_Name #Error will show up
+                    name = self.rep.period_ytd.chart_of_accounts[a]
                     cell_location = xl_rowcol_to_cell(self.line_number, 0)
-                    ws.write(cell_location, acct_list[i], self.nc_fmt)
+                    ws.write(cell_location, a, self.nc_fmt)
                     cell_location = xl_rowcol_to_cell(self.line_number, 1)
                     ws.write(cell_location, name, fmt_left)
-                    for j, df in enumerate(self.rep.df_list):
+                    for j, tb in enumerate(self.rep.tb_list):
                         cell_location = xl_rowcol_to_cell(self.line_number, self.col_list[j])
-                        value=get_value(df, a)
+                        value=get_value(tb, a)
                         ws.write(cell_location, value, fmt)
                         block_sum[j] += p(value)
                     self.line_number += 1
             except KeyError:
                 # This is where there is no data in the name
-                print("Missing data for account {}".format(acct_list[i]))
+                print("Missing data for account {}".format(a))
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
@@ -90,12 +92,12 @@ class ExcelManagementReport():
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
 
-        def get_value(df, nominal_code):
+        def get_value(tb, nominal_code):
             if int(nominal_code) == 2126:
-                value = -p(df[df.index > 3000].sum()[0])  # Profit and loss current year
+                value=tb.profit_and_loss  * sign
             else:
                 try:
-                    value = df.ix[nominal_code].TB * sign
+                    value = tb[nominal_code] * sign
                 except (KeyError, IndexError) as e:
                     # There is a name value so presumably some data but just none in this series
                     value = 0
@@ -103,8 +105,8 @@ class ExcelManagementReport():
 
         def all_values_zero(nominal_code):
             all_zero = True
-            for df in self.rep.df_list:
-                if p(get_value(df, nominal_code)) != p(0):
+            for tb in self.rep.tb_list:
+                if p(get_value(tb, nominal_code)) != p(0):
                     all_zero = False
             return all_zero
 
@@ -127,13 +129,15 @@ class ExcelManagementReport():
             # Write title
             ws.write(xl_rowcol_to_cell(self.line_number, 1), title, self.bold_left_fmt)
             self.line_number += 1  # Blank line seperator
+            # Set up the formats
             fmt = self.fmt
             fmt_left = self.left_fmt
-            for i, a in enumerate(acct_list):
+            # The acct_list is the simple list of account nominal codes that are to be included in this block
+            for a in acct_list:
                 # If there no row then ignore error
                 try:
-                    name = self.rep.nc_names.ix[acct_list[i]].NC_Name  # Error will show up
-                    ws.write(xl_rowcol_to_cell(self.line_number, 0), acct_list[i], self.nc_fmt)
+                    name = self.rep.period_ytd.chart_of_accounts[a]
+                    ws.write(xl_rowcol_to_cell(self.line_number, 0), a, self.nc_fmt)
                     ws.write(xl_rowcol_to_cell(self.line_number, 1), name, fmt_left)
                     for df, col, index in ((self.rep.period_ytd, 2, 0,), (self.rep.prior_ytd, 5, 1,)):
                         # Write values
@@ -143,7 +147,7 @@ class ExcelManagementReport():
                     self.line_number += 1
                 except KeyError:
                     # This is where there is no data in the name
-                    print("Missing data for account {}".format(acct_list[i]))
+                    print("Missing data for account {}".format(a))
             # Add a sub total line if required
             self.write_bs_sum(ws, block_sum, 'TOTAL ' + title, indent=indent)
         # Aggregate the local sum into the bigger sum
@@ -154,7 +158,7 @@ class ExcelManagementReport():
     def write_sum(self, ws, sum_list, title):
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
         ws.write(cell_location, title, self.bold_left_fmt)
-        for i, df in enumerate(self.rep.df_list):
+        for i, tb in enumerate(self.rep.tb_list):
             cell_location = xl_rowcol_to_cell(self.line_number, self.col_list[i])
             ws.write(cell_location, sum_list[i], self.bold_fmt)
         self.line_number += 2

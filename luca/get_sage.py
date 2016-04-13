@@ -4,6 +4,7 @@ import pandas as pd
 import pyodbc
 
 from .utils import p
+from .journal_entry import TrialBalance, ChartOfAccounts
 
 class SageDataError(Exception):
     pass
@@ -54,12 +55,14 @@ aj.DATE > '2000-01-01' AND aj.DELETED_FLAG = 0
         if df['ACCOUNT_REF'].dtype != np.int:
             df['ACCOUNT_REF'] = df['ACCOUNT_REF'].astype('int')
 
-
     def transactional_trial_balance(self, start_date, end_date):
         df = self.df
         rec = df[(df['DATE'] >= start_date)
                  & (df['DATE'] <= end_date)][['ACCOUNT_REF', 'AMOUNT']]
-        tb = pd.pivot_table(rec, index=["ACCOUNT_REF"], aggfunc=np.sum)
-        tb1 = tb.apply(lambda x: p(x['AMOUNT']), axis=1)  # equiv to df.sum(1)
-        return tb1
+        pivot = pd.pivot_table(rec, index=["ACCOUNT_REF"], aggfunc=np.sum)
+        sage_coa = ChartOfAccounts('Sage')
+        sage_coa.add_dict({x:'' for x in list(pivot.index)})
+        tb = TrialBalance(sage_coa, start_date, end_date)
+        tb.add_dict(pivot.to_dict()['AMOUNT'])
+        return tb
     

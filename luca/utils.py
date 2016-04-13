@@ -4,6 +4,9 @@ from decimal import Decimal, InvalidOperation
 import pandas as pd
 from sys import exc_info
 
+class LucaError(Exception):
+    pass
+
 one_pence = Decimal('0.01')
 
 def p(value):
