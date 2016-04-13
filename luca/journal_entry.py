@@ -94,10 +94,9 @@ class JournalEntry:
         # Create union of nominal codes
         nc_list = list(set(self.chart_of_accounts.names) | set(b.chart_of_accounts.names))
         # For each nominal code add from both
-        print('Added trial balance')
         nc_list.sort()
         new = copy(self)
-        new.dict = {[fill(nc) for nc in nc_list]}
+        new.dict = {nc:fill(nc) for nc in nc_list}
         return new
 
     def to_series(self):
