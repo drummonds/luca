@@ -21,23 +21,20 @@ PYTEST_FLAGS = ['--doctest-modules']
 # define install_requires for specific Python versions
 python_version_specific_requires = []
 
-"""Project metadata
 
-Information describing the project.
-"""
-
-# The package name, which is also the "UNIX name" for the project.
-package = 'luca'
-project = "Python Trial Balance Accounting"
-project_no_spaces = project.replace(' ', '')
-version = '0.0.1'
-description = 'A pythonic interface Accounting Journal Entries and .'
-authors = ['drummonds']
-authors_string = ', '.join(authors)
-emails = ['hum3@drummond.info']
-license = 'MIT'
-copyright = '2016 ' + authors_string
-url = 'https://github.com/drummonds/luca'
+# Import metadata. Normally this would just be:
+#
+# from luca import metadata
+#
+# However, when we do this, we also import `luca/__init__.py'. If this
+# imports names from some other modules and these modules have third-party
+# dependencies that need installing (which happens after this file is run), the
+# script will crash. What we do instead is to load the metadata module by path
+# instead, effectively side-stepping the dependency problem. Please make sure
+# metadata has no dependencies, otherwise they will need to be added to
+# the setup_requires keyword.
+metadata = imp.load_source(
+    'metadata', os.path.join(CODE_DIRECTORY, 'metadata.py'))
 
 # as of Python >= 2.7 and >= 3.2, the argparse module is maintained within
 # the Python standard library, otherwise we install it as a separate package
