@@ -88,7 +88,7 @@ setup_dict = dict(
         'Topic :: Office/Business :: Financial :: Accounting',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    packages=find_packages(exclude=(TESTS_DIRECTORY, DATA_DIRECTORY)),
+    packages=find_packages(exclude=(TESTS_DIRECTORY, )),
     install_requires=[
                          'sqlite3',
                          'pandas',
