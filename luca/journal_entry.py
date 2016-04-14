@@ -175,17 +175,17 @@ class TrialBalance(JournalEntry):
         assert self.chart_of_accounts.name == 'SLF-MA', 'Only works for SLF-MA chart of accounts- you tried {}'.format(
             self.chart_of_accounts.name)
         pnl = self.profit_and_loss
-        print("P&L = {}".format(pnl))
+        # print("P&L = {}".format(pnl))
         old_pnl = self[2125]
-        print("Prev retain = {}, changing to {}".format(old_pnl, old_pnl+pnl))
+        # print("Prev retain = {}, changing to {}".format(old_pnl, old_pnl+pnl))
         b = copy(self)
         b[2125] = old_pnl+pnl
         new_pnl = b[2125]
-        print("New retained profit = {}".format(new_pnl))
-        print("Sum before clearing old balances = {}".format(b.sum()))
+        # print("New retained profit = {}".format(new_pnl))
+        # print("Sum before clearing old balances = {}".format(b.sum()))
         # As a pondas data series b[b.index > 3000] = p(0)
         for k, v in iter(self.dict.items()):
             if k > 3000:
                 b[k]=p(0)
-        print("Sum after clearing old balances = {}".format(b.sum()))
+        # print("Sum after clearing old balances = {}".format(b.sum()))
         return b
