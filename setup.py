@@ -7,6 +7,8 @@ import imp
 import subprocess
 import platform
 
+from setuptools import setup, find_packages, Command
+# from setuptools.command.test import test as TestCommand
 
 # Add the current directory to the module search path.
 sys.path.append('.')
