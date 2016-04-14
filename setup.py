@@ -108,8 +108,8 @@ setup_dict = dict(
     ],
     packages=find_packages(exclude=(TESTS_DIRECTORY, )),
     install_requires=[
-                         'sqlite3',
-                         'pandas',
+#                         'sqlite3',
+#                         'pandas',
                      ] + python_version_specific_requires,
     # Allow tests to be run with `python setup.py test'.
     tests_require=[
