@@ -29,7 +29,7 @@ class JournalSqlite:
             je.add_dict(df.to_dict()['TB'])
             return je
         else:  # Prevents error of getting nothing back because you have got the period name wrong
-            raise LucaError('Getting Journal Entries from db {} for period () but no data'.format(self.dbname, period))
+            raise LucaError('Getting Journal Entries from db {} for period {} but no data'.format(self.dbname, period))
 
 
 @contextmanager
