@@ -1,0 +1,103 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+import os
+import sys
+import imp
+import subprocess
+import platform
+
+
+# Add the current directory to the module search path.
+sys.path.append('.')
+
+# # Constants
+CODE_DIRECTORY = 'luca'
+# DOCS_DIRECTORY = 'docs'
+TESTS_DIRECTORY = 'tests'
+#DATA_DIRECTORY = 'gnucash_books'
+PYTEST_FLAGS = ['--doctest-modules']
+
+# define install_requires for specific Python versions
+python_version_specific_requires = []
+
+"""Project metadata
+
+Information describing the project.
+"""
+
+# The package name, which is also the "UNIX name" for the project.
+package = 'luca'
+project = "Python Trial Balance Accounting"
+project_no_spaces = project.replace(' ', '')
+version = '0.0.1'
+description = 'A pythonic interface Accounting Journal Entries and .'
+authors = ['drummonds']
+authors_string = ', '.join(authors)
+emails = ['hum3@drummond.info']
+license = 'MIT'
+copyright = '2016 ' + authors_string
+url = 'https://github.com/drummonds/luca'
+
+# as of Python >= 2.7 and >= 3.2, the argparse module is maintained within
+# the Python standard library, otherwise we install it as a separate package
+# if sys.version_info < (2, 7) or (3, 0) <= sys.version_info < (3, 3):
+#     python_version_specific_requires.append('argparse')
+
+
+# See here for more options:
+# <http://pythonhosted.org/setuptools/setuptools.html>
+
+setup_dict = dict(
+    name=metadata.package,
+    version=metadata.version,
+    author=metadata.authors[0],
+    author_email=metadata.emails[0],
+    maintainer=metadata.authors[0],
+    maintainer_email=metadata.emails[0],
+    url=metadata.url,
+    description=metadata.description,
+    long_description=read('README.md'),
+    keywords=['GnuCash', 'python', 'binding', 'interface', 'sqlalchemy'],
+    license='MIT',
+    platforms='any',
+    # Find a list of classifiers here:
+    # <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
+    classifiers=[
+        'Development Status :: 3 - pre Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Financial and Insurance Industry',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Office/Business',
+        'Topic :: Office/Business :: Financial',
+        'Topic :: Office/Business :: Financial :: Accounting',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+    packages=find_packages(exclude=(TESTS_DIRECTORY, DATA_DIRECTORY)),
+    install_requires=[
+                         'sqlite3',
+                         'pandas',
+                     ] + python_version_specific_requires,
+    # Allow tests to be run with `python setup.py test'.
+    tests_require=[
+        'pytest',
+        'py',
+    ],
+    # console=['scripts/piecash_ledger.py','scripts/piecash_toqif.py'],
+    scripts=['scripts/piecash_ledger.py','scripts/piecash_toqif.py','scripts/piecash_prices.py'],
+    cmdclass = {'test': PyTest},
+    test_suite="tests",
+    zip_safe=False,  # don't use eggs
+)
+
+
+def main():
+    setup(**setup_dict)
+
+
+if __name__ == '__main__':
+    main()
