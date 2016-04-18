@@ -13,17 +13,17 @@ def p(value):
     "Convert `value` to Decimal pence implementing AIS rounding (up) or cents"
     try:
         #If user_or_username is a User object
-        test =  Decimal(Decimal(value) * Decimal(100)).quantize(one_pence)
+        test =  Decimal(Decimal(float(value)) * Decimal(100)).quantize(one_pence)
         i, d = divmod(test, 1)
         if abs(d) == Decimal(0.50):
-            # Implement AIS rounding
+            # Implement rounding
             if value > 0:
                 result =  (Decimal(value) + Decimal(0.0025)).quantize(one_pence)
             else:
                 result =  (Decimal(value) - Decimal(0.0025)).quantize(one_pence)
             # print('p Rounding |{}| to {}'.format(value, result))
         else:
-            result =  Decimal(value).quantize(one_pence)
+            result =  Decimal(float(value)).quantize(one_pence)
     except InvalidOperation:
         print('Invalid Operation Val = |{}|'.format(value))
         t, v, tb = exc_info()

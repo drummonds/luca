@@ -2,22 +2,28 @@ import datetime as dt
 import pandas as pd
 import unittest
 
-from luca import TransactionalTrialBalance, p
+from luca import TransactionalTrialBalance, p, ChartOfAccounts, chart_of_accounts_from_db
+from luca import TrialBalance
+
 
 class TestTTB(unittest.TestCase):
 
     def test_convert_trial_balance(self):
-        s = pd.Series([p(4.99), p(5.01), p(6), p(-16)], index=[10, 30, 1200, 2125])
-        case_1 = pd.DataFrame(s, columns=['TB'])
-        ttb_converter = TransactionalTrialBalance()
+        # Data to convert from
+        coa_from = ChartOfAccounts('Sage')
+        coa_from.add_dict({1200: 'Bank', 2120: 'Share Capital'})
+        case_1 = TrialBalance(coa_from)
+        case_1.add_dict({1200: p(100), 2120: p(-100)})
+        # Converting to
+        with chart_of_accounts_from_db("test_historic_trial_balances00.db") as coa_s:
+            coa_to = coa_s.get_chart_of_account('SLF-MA')
+        ttb_converter = TransactionalTrialBalance(coa_to)
+        # Now do the conversion
         test_1 = ttb_converter.convert_trial_balance(case_1)
-        self.assertEqual(case_1['TB'].sum(), p(0.0))
-        self.assertEqual(case_1['TB'].sum(), p(0.0))
+        self.assertEqual(case_1.sum(), p(0.0))
 
-        self.assertEqual(type(test_1), type(pd.DataFrame()))
-        self.assertEqual(test_1.ix[1200][0], p(6))
-        self.assertEqual(test_1.ix[10][0], p(10.0))
-
-
+        self.assertEqual(type(test_1), type(TrialBalance(coa_from)))
+        self.assertEqual(test_1[1200], p(100))
+        self.assertEqual(test_1[10], p(0.0))
 
 

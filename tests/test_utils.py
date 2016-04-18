@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import unittest
 
 from luca import p
@@ -31,4 +32,14 @@ class UtilsTest(unittest.TestCase):
         assert r1[2] == p(1)
         assert r1[3] == p(-1)
         assert r1[4] == p(-1)
+
+
+    def test_p_types(self):
+        """Testing some some types which used to fail"""
+        x = np.array([1, 2, 3], dtype=np.int64)  # Used to fail but added catch all conversion to float
+        assert p(x[0]) == p(1)
+        # r1 = p(x)  # TODO Make p properly listable like mathematica
+        # assert r1[0] == p(1)
+        # assert r1[1] == p(2)
+        # assert r1[2] == p(3)
 
