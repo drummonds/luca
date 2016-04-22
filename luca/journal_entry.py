@@ -172,7 +172,9 @@ class TrialBalance(JournalEntry):
         """AT the end of a year you want to close off a year and only roll forward the Balance sheet items.
         These calculations do that."""
         # TODO make generic rather than specific to a chart of accounts
-        assert self.chart_of_accounts.name == 'SLF-MA', 'Only works for SLF-MA chart of accounts- you tried {}'.format(
+        allowed_coa = ('SLF-MA', 'drummonds')
+        assert self.chart_of_accounts.name in allowed_coa, \
+            'Only works for {} chart of accounts- you tried {}'.format(allowed_coa, 
             self.chart_of_accounts.name)
         pnl = self.profit_and_loss
         # print("P&L = {}".format(pnl))
