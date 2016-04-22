@@ -208,7 +208,10 @@ class TrialBalance(JournalEntry):
         self.chart_of_accounts.assert_valid_name()
         pnl = self.profit_and_loss
         # print("P&L = {}".format(pnl))
-        old_pnl = self[self.chart_of_accounts.period_pnl]
+        try:
+            old_pnl = self[self.chart_of_accounts.period_pnl]
+        except KeyError:  # There is no old pnl
+            old_pnl = p(0)
         # print("Prev retain = {}, changing to {}".format(old_pnl, old_pnl+pnl))
         b = copy(self)
         b[self.chart_of_accounts.period_pnl] = old_pnl+pnl
