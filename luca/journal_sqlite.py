@@ -76,16 +76,15 @@ class LoadDatabase():
         return  pd.read_sql(sql, self.conn, index_col='Code')
 
 
-    def load_tb_to_database(self, trial_balance, period, overwrite = False):
+    def load_tb_to_database(self, trial_balance, period, overwrite = False, coa_name = 'SLF_MA'):
         """Assume the data is of the correct chart of accounts.  The period is a tag that describes the data.
         this is manually built although there should be a 1:1 relationship with the data in Journal"""
         # TODO build the Period label from the data in the transaction data
-        assert trial_balance.chart_of_accounts.name == 'SLF-MA', 'Currently only saving SLF-MA not {}'.\
-            format(trial_balance.chart_of_accounts.name)
+        trial_balance.chart_of_accounts.assert_valid_name()
         if self.empty(period) or overwrite:
             if overwrite:
                     self.cursor.execute("DELETE FROM trial_balance WHERE period = '{}'".format(period))
-            coa=self.get_coa('SLF-MA')
+            coa=self.get_coa(coa_name)
             # TODO would be better if checked that the COA is accurate before posting the data
             for nominal_code, value in trial_balance.to_series().iteritems():
                 if value == '-' or math.isnan(value):  # Not sure this check is necessary any longer

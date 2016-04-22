@@ -14,6 +14,11 @@ class JournalItem:
     """This is simply a nominal code and an amount"""
     pass
 
+def _allowed_chart_of_account(name):
+    allowed_coa = ('SLF-MA', 'drummonds')
+    assert name in allowed_coa, 'Only works for {} chart of accounts- you tried {}'.format(
+        allowed_coa, name)
+
 
 class ChartOfAccounts:
     """This has to be built before the journal entries are made"""
@@ -21,6 +26,23 @@ class ChartOfAccounts:
     def __init__(self, name):
         self.name = name
         self.dict = {}
+        if name == 'SLF-MA':
+            self.constants= {
+                'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
+                'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
+            }
+        elif name == 'drummonds':
+            self.constants= {
+                'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
+                'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
+            }
+        elif name == 'Test':
+            self.constants = {
+                'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
+                'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
+            }
+        else:
+            self.constants = {}
 
     def __len__(self):
         return len(self.dict)
@@ -54,6 +76,18 @@ class ChartOfAccounts:
         n.sort()
         return n
 
+    def assert_valid_name(self):
+        """Assert that the name of the chart of accounts is a valid one and supported.  This is more a temporary
+        functon when only a small subset of chart of accounts are supported."""
+        _allowed_chart_of_account(self.name)
+
+    @property
+    def pnl_nc_start(self):
+        return self.constants['pnl_nc_start']
+
+    @property
+    def period_pnl(self):
+        return self.constants['period_pnl']
 
 
 class JournalEntry:
@@ -163,7 +197,7 @@ class TrialBalance(JournalEntry):
     def profit_and_loss(self):
         result = p(0)
         for k, v in iter(self.dict.items()):
-            if k > 3000:
+            if k > self.chart_of_accounts.pnl_nc_start:
                 result += v
         return result
 
@@ -171,23 +205,16 @@ class TrialBalance(JournalEntry):
     def close_period(self):
         """AT the end of a year you want to close off a year and only roll forward the Balance sheet items.
         These calculations do that."""
-        # TODO make generic rather than specific to a chart of accounts
-        allowed_coa = ('SLF-MA', 'drummonds')
-        assert self.chart_of_accounts.name in allowed_coa, \
-            'Only works for {} chart of accounts- you tried {}'.format(allowed_coa, 
-            self.chart_of_accounts.name)
+        self.chart_of_accounts.assert_valid_name()
         pnl = self.profit_and_loss
         # print("P&L = {}".format(pnl))
-        old_pnl = self[2125]
+        old_pnl = self[self.chart_of_accounts.period_pnl]
         # print("Prev retain = {}, changing to {}".format(old_pnl, old_pnl+pnl))
         b = copy(self)
-        b[2125] = old_pnl+pnl
-        new_pnl = b[2125]
-        # print("New retained profit = {}".format(new_pnl))
-        # print("Sum before clearing old balances = {}".format(b.sum()))
-        # As a pondas data series b[b.index > 3000] = p(0)
+        b[self.chart_of_accounts.period_pnl] = old_pnl+pnl
+        new_pnl = b[self.chart_of_accounts.period_pnl]
         for k, v in iter(self.dict.items()):
-            if k > 3000:
+            if k > self.chart_of_accounts.pnl_nc_start:
                 b[k]=p(0)
         # print("Sum after clearing old balances = {}".format(b.sum()))
         return b

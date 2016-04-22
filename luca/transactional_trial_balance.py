@@ -10,10 +10,8 @@ class TransactionalTrialBalance():
 
     def __init__(self, coa_to):
         self.coa_to = coa_to
-        # The following constants are part of the conversion table.
-        self.coa_from_name='Sage'
-        self.coa_to_name='SLF-MA'
-        self.conversion = conversion = {
+        self.conversion = {}
+        self.conversion['Sage to SLF-MA'] = {
             10: (10, 20, 21, 30, 31, 40, 41,),
             1001: (1001, 1004, 1254, 1256, 7906,),
             1100: (1100, 1101,),
@@ -78,20 +76,19 @@ class TransactionalTrialBalance():
         }
 
     def convert_trial_balance(self, ttb):
-        """Requires transactional trial balance with SAage as input and converts to SLF-MA"""
-        assert ttb.chart_of_accounts.name == self.coa_from_name, 'Convert from {} not {}.'.\
-            format(self.coa_from_name, ttb.chart_of_accounts.name)
-        assert self.coa_to.name == self.coa_to_name, 'Convert to {} not {}.'.\
-            format(self.coa_to_name, self.coa_to.name)
+        # This will fail if the from and to are not predefined.
+        conversion = self.conversion['{} to {}'.format(
+            ttb.chart_of_accounts.name,  # Converting from this COA
+            self.coa_to.name)]  # converting to this COA
         index = []
-        for key, value in self.conversion.items():
+        for key, value in conversion.items():
             index.append(key)
         index.sort()
         new = TrialBalance(self.coa_to, ttb.period_start, ttb.period_end)
         # TODO more checking to make sure all old data is used
         for name in new.chart_of_accounts.names:
             result = p(0)
-            old_tb_list = self.conversion[name]
+            old_tb_list = conversion[name]
             for nc in old_tb_list:  # a list of accounts in the old trial balance
                 try:
                     result += ttb[nc]
