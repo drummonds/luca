@@ -1,6 +1,7 @@
 import datetime as dt
 import os
 import pandas as pd
+import sys
 from xlsxwriter.utility import xl_rowcol_to_cell
 
 from .utils import p
@@ -29,7 +30,7 @@ class ExcelManagementReport2():
         # TODO move this code into the TrialBalance data
         try:
             value = tb[nominal_code] * sign
-        except (KeyError, IndexError, TypeError) as e:
+        except (KeyError, IndexError, TypeError):
             # There is a name value so presumably some data but just none in this series
             value = 0
         return value
@@ -59,6 +60,7 @@ class ExcelManagementReport2():
             fmt = self.fmt
             fmt_left = self.left_fmt
         # The acct_list is the simple list of account nominal codes that are to be included in this block
+        print('Acct list {}'.format(acct_list))
         for nc in acct_list:
             # If there no row then ignore error
             try:
@@ -71,12 +73,13 @@ class ExcelManagementReport2():
                     for j, tb in enumerate(self.rep.trial_balances):
                         cell_location = xl_rowcol_to_cell(self.line_number, self.col_list[j])
                         value=self.get_value(tb, nc, sign)
+                        print('  Values {} {}'.format(j, value))
                         ws.write(cell_location, value, fmt)
                         block_sum[j] += p(value)
                     self.line_number += 1
-            except KeyError as err:
+            except KeyError:
                 # This is where there is no data in the name
-                print("Missing data for account {}. Error {}".format(nc, err))
+                print("Missing data for account {}. Error {}".format(nc, sys.exc_info()[0]))
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
