@@ -74,9 +74,9 @@ class ExcelManagementReport2():
                         ws.write(cell_location, value, fmt)
                         block_sum[j] += p(value)
                     self.line_number += 1
-            except KeyError:
+            except KeyError as err:
                 # This is where there is no data in the name
-                print("Missing data for account {}".format(nc))
+                print("Missing data for account {}. Error {}".format(nc, err))
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
