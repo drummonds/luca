@@ -203,7 +203,7 @@ class ExcelManagementReport2():
         self.write_block(ws, self.expense_list, self.rep.coa.variable_costs, 'Variable Works Expense')
         self.write_block(ws, self.expense_list, self.rep.coa.fixed_production_costs, 'Fixed Works Expenses')
         self.write_block(ws, self.expense_list, self.rep.coa.admin_costs, 'Admin Expenses')
-        self.write_block(ws, self.expense_list, self.rep.coa.selling_costs[4905, 6100, 6200, 6201, 4009], 'Selling Expenses')
+        self.write_block(ws, self.expense_list, self.rep.coa.selling_costs, 'Selling Expenses')
         self.write_sum(ws, self.expense_list, 'TOTAL EXPENSES')
         # Calculate profit and Loss
         self.profit_loss = [0, 0, 0, 0]
