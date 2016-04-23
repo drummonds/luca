@@ -43,12 +43,13 @@ class ChartOfAccounts:
             self.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110],
             self.long_term_liabilities = [2103]
             self.owners_equity = [2120, 2125, 2126]
+            self.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
         elif name == 'drummonds':
             self.constants= {
                 'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
             }
-            self.sales = [5000]
+            self.sales = [5000, 5100]
             self.material_costs = []
             self.variable_costs = [7000]
             self.fixed_production_costs = [7001, 7002, 7003, 7100, 7200, 7205, 7300]
@@ -60,6 +61,7 @@ class ChartOfAccounts:
             self.short_term_liabilities = [2000]
             self.long_term_liabilities = []
             self.owners_equity = [4100, 4200, 4999]
+            self.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         elif name == 'Test':
             self.constants = {
                 'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
@@ -76,6 +78,7 @@ class ChartOfAccounts:
             self.short_term_liabilities = [2100]
             self.long_term_liabilities = [2103]
             self.owners_equity = [2125]
+            self.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
         else:
             self.constants = {}
 

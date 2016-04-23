@@ -11,9 +11,10 @@ class ExcelManagementReport2():
     def report_filename(self):
         return 'Management Report {}.xlsx'.format(dt.datetime.today().strftime('%Y-%m-%dT%H_%M_%S'))
 
-    def __init__(self):
+    def __init__(self, file_name = 'Management Report'):
         # Setup
         self.col_list=(2, 3, 5, 6)
+        self.file_name = file_name
 
     def write_row(self, ws, entries):
         # Add titles
@@ -42,7 +43,7 @@ class ExcelManagementReport2():
 
     def should_print_line(self, nominal_code, sign):
         should_print = True
-        if nominal_code in (5001,) and self.all_values_zero(nominal_code, sign):
+        if nominal_code in self.rep.chart_of_accounts.optional_accounts and self.all_values_zero(nominal_code, sign):
             should_print = False
         return should_print
 
