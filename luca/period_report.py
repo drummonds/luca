@@ -64,3 +64,4 @@ class PeriodReport:
     @property
     def year_start_string(self, seperator=' '):
         return self.year_start.strftime('%b{}%y'.format(seperator))
+

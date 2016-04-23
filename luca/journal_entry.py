@@ -31,16 +31,51 @@ class ChartOfAccounts:
                 'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
+            self.sales = [4000]
+            self.material_costs = [5000, 5001]
+            self.variable_costs = [7000, 7100, 7103, 7102, 7105, 7006]
+            self.fixed_production_costs = [7200, 7202, 7204, 7206]
+            self.admin_costs = [7020, 8100, 8200, 8204, 8300, 7906, 8310, 8400, 8402, 8405, 8201,
+                                8433, 8408, 8410, 8414, 8420, 8424, 8426, 8430, 8435, 8440]
+            self.selling_costs = [4905, 6100, 6200, 6201, 4009]
+            self.fixed_asset = [10]
+            self.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
+            self.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110],
+            self.long_term_liabilities = [2103]
+            self.owners_equity = [2120, 2125, 2126]
         elif name == 'drummonds':
             self.constants= {
                 'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
             }
+            self.sales = [5000]
+            self.material_costs = []
+            self.variable_costs = [7000]
+            self.fixed_production_costs = [7001, 7002, 7003, 7100, 7200, 7205, 7300]
+            self.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
+                                8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
+            self.selling_costs = []
+            self.fixed_asset = [100]
+            self.current_asset = [1200, 1205, 1250, 2200]
+            self.short_term_liabilities = [2000]
+            self.long_term_liabilities = []
+            self.owners_equity = [4100, 4200, 4999]
         elif name == 'Test':
             self.constants = {
                 'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
+            self.sales = [4000]
+            self.material_costs = [5000]
+            self.variable_costs = [7000]
+            self.fixed_production_costs = [7200]
+            self.admin_costs = [8100, 8200]
+            self.selling_costs = [6100]
+            self.fixed_asset = [10]
+            self.current_asset = [1200]
+            self.short_term_liabilities = [2100]
+            self.long_term_liabilities = [2103]
+            self.owners_equity = [2125]
         else:
             self.constants = {}
 
