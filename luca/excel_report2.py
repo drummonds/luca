@@ -23,32 +23,30 @@ class ExcelManagementReport2():
             ws.write(cell_location, entries[i], self.bold_fmt)
         self.line_number += 1
 
+    def get_value(self, tb, nominal_code, sign):
+        """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
+        # TODO move this code into the TrialBalance data
+        try:
+            value = tb[nominal_code] * sign
+        except (KeyError, IndexError, TypeError) as e:
+            # There is a name value so presumably some data but just none in this series
+            value = 0
+        return value
+
+    def all_values_zero(self, nominal_code, sign):
+        all_zero = True
+        for tb in self.rep.trial_balances:
+            if self.get_value(tb, nominal_code, sign) != p(0):
+                all_zero = False
+        return all_zero
+
+    def should_print_line(self, nominal_code, sign):
+        should_print = True
+        if nominal_code in (5001,) and self.all_values_zero(nominal_code, sign):
+            should_print = False
+        return should_print
+
     def write_block(self, ws, sum_list, acct_list, title, sign = 1):
-
-        def get_value(tb, nominal_code):
-            """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
-            # TODO move this code into the TrialBalance data
-            try:
-                value=tb[nominal_code] * sign
-            except (KeyError, IndexError) as e:
-                # There is a name value so presumably some data but just none in this series
-                value=0
-            return value
-
-        def all_values_zero(nominal_code):
-            all_zero = True
-            for tb in self.rep.trial_balances:
-                if get_value(tb, nominal_code) != p(0):
-                    all_zero = False
-            return all_zero
-
-
-        def should_print_line(nominal_code):
-            should_print = True
-            if nominal_code in (5001, ) and all_values_zero(nominal_code):
-                should_print = False
-            return should_print
-
         block_sum = [p(0)] * 4
         # TODO The account list may have entries for which there is no data.  Under these circumstances
         # the aim is to leave out those columns in the reporting.
@@ -60,18 +58,18 @@ class ExcelManagementReport2():
             fmt = self.fmt
             fmt_left = self.left_fmt
         # The acct_list is the simple list of account nominal codes that are to be included in this block
-        for a in acct_list:
+        for nc in acct_list:
             # If there no row then ignore error
             try:
-                if should_print_line(a):
-                    name = self.rep.chart_of_accounts[a]
+                if self.should_print_line(nc, sign):
+                    name = self.rep.chart_of_accounts[nc]
                     cell_location = xl_rowcol_to_cell(self.line_number, 0)
-                    ws.write(cell_location, a, self.nc_fmt)
+                    ws.write(cell_location, nc, self.nc_fmt)
                     cell_location = xl_rowcol_to_cell(self.line_number, 1)
                     ws.write(cell_location, name, fmt_left)
                     for j, tb in enumerate(self.rep.trial_balances):
                         cell_location = xl_rowcol_to_cell(self.line_number, self.col_list[j])
-                        value=get_value(tb, a)
+                        value=self.get_value(tb, nc, sign)
                         ws.write(cell_location, value, fmt)
                         block_sum[j] += p(value)
                     self.line_number += 1
@@ -92,25 +90,6 @@ class ExcelManagementReport2():
         self.line_number += 1  # Blank line seperator
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
-
-        def get_value(tb, nominal_code):
-            if int(nominal_code) == 2126:
-                value=tb.profit_and_loss  * sign
-            else:
-                try:
-                    value = tb[nominal_code] * sign
-                except (KeyError, IndexError) as e:
-                    # There is a name value so presumably some data but just none in this series
-                    value = 0
-            return value
-
-        def all_values_zero(nominal_code):
-            all_zero = True
-            for tb in self.rep.trial_balances:
-                if p(get_value(tb, nominal_code)) != p(0):
-                    all_zero = False
-            return all_zero
-
         block_sum = [p(0)] * 2
         single_row = len(acct_list) == 1 and not sub_total
         if single_row:  # Single row so no summary row
@@ -122,7 +101,7 @@ class ExcelManagementReport2():
             for col, index in ((3, 0,), (6, 1,)):
                 tb = self.rep.trial_balances[index]
                 # Write values
-                value = get_value(tb, acct_list[0])
+                value = self.get_value(tb, acct_list[0], sign)
                 ws.write(xl_rowcol_to_cell(self.line_number, col + indent),
                          value, self.bold_left_fmt)
                 block_sum[index] += p(value)
@@ -144,7 +123,7 @@ class ExcelManagementReport2():
                     for col, index in ((2, 0,), (5, 1,)):
                         tb = self.rep.trial_balances[index]
                         # Write values
-                        value = get_value(tb, a)
+                        value = self.get_value(tb, a, sign)
                         ws.write(xl_rowcol_to_cell(self.line_number, col), value, fmt)
                         block_sum[index] += p(value)
                     self.line_number += 1
