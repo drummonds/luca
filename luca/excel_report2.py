@@ -75,7 +75,7 @@ class ExcelManagementReport2():
                     self.line_number += 1
             except KeyError:
                 # This is where there is no data in the name
-                print("Missing data for account {}".format(a))
+                print("Missing data for account {}".format(nc))
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
@@ -114,22 +114,22 @@ class ExcelManagementReport2():
             fmt = self.fmt
             fmt_left = self.left_fmt
             # The acct_list is the simple list of account nominal codes that are to be included in this block
-            for a in acct_list:
+            for nc in acct_list:
                 # If there no row then ignore error
                 try:
-                    name = self.rep.chart_of_accounts[a]
-                    ws.write(xl_rowcol_to_cell(self.line_number, 0), a, self.nc_fmt)
+                    name = self.rep.chart_of_accounts[nc]
+                    ws.write(xl_rowcol_to_cell(self.line_number, 0), nc, self.nc_fmt)
                     ws.write(xl_rowcol_to_cell(self.line_number, 1), name, fmt_left)
                     for col, index in ((2, 0,), (5, 1,)):
                         tb = self.rep.trial_balances[index]
                         # Write values
-                        value = self.get_value(tb, a, sign)
+                        value = self.get_value(tb, nc, sign)
                         ws.write(xl_rowcol_to_cell(self.line_number, col), value, fmt)
                         block_sum[index] += p(value)
                     self.line_number += 1
                 except KeyError:
                     # This is where there is no data in the name
-                    print("Missing data for account {}".format(a))
+                    print("Missing data for account {}".format(nc))
             # Add a sub total line if required
             self.write_bs_sum(ws, block_sum, 'TOTAL ' + title, indent=indent)
         # Aggregate the local sum into the bigger sum
