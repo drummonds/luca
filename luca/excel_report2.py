@@ -10,7 +10,7 @@ class ExcelManagementReport2():
     """This is a generalised managment report for produce proift and loss statements as well as balance sheets."""
 
     def report_filename(self):
-        return 'Management Report {}.xlsx'.format(dt.datetime.today().strftime('%Y-%m-%dT%H_%M_%S'))
+        return '{} {}.xlsx'.format(self.file_name, dt.datetime.today().strftime('%Y-%m-%dT%H_%M_%S'))
 
     def __init__(self, file_name = 'Management Report'):
         # Setup
@@ -60,7 +60,6 @@ class ExcelManagementReport2():
             fmt = self.fmt
             fmt_left = self.left_fmt
         # The acct_list is the simple list of account nominal codes that are to be included in this block
-        print('Acct list {}'.format(acct_list))
         for nc in acct_list:
             # If there no row then ignore error
             try:
@@ -73,13 +72,12 @@ class ExcelManagementReport2():
                     for j, tb in enumerate(self.rep.trial_balances):
                         cell_location = xl_rowcol_to_cell(self.line_number, self.col_list[j])
                         value=self.get_value(tb, nc, sign)
-                        print('  Values {} {}'.format(j, value))
                         ws.write(cell_location, value, fmt)
                         block_sum[j] += p(value)
                     self.line_number += 1
             except KeyError:
                 # This is where there is no data in the name
-                print("Missing data for account {}. Error {}".format(nc, sys.exc_info()[0]))
+                print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
