@@ -56,7 +56,7 @@ TODO the duration of the period should also come from the database"""
 
     @property
     def coa(self):
-        return self.coa
+        return self._coa
 
     @property
     def chart_of_accounts(self):
