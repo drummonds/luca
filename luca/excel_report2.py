@@ -201,6 +201,12 @@ class ExcelManagementReport2():
         ws.hide_gridlines(0)
         ws.fit_to_pages(1, 1)  # Fit to one page
 
+    def write_merged_header(self, ws, text, col_start = 'B', col_end = 'E'):
+        # Add titles
+        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
+        self.line_number += 1
+        ws.merge_range('{}{0}:{}{0}'.format(col_start, [0], self.line_number), col_end, text, fmt)
+
     def write_merged_header_row(self, ws, header_list):
         # Add titles
         fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
