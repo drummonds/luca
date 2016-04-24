@@ -48,8 +48,9 @@ class FYPnLPage(ExcelReportPage):
                              ('D:E', 12),]:  # Dates
             ws.set_column(range, width)
         xlb.col_list=(4, 5, )  # Two column report
-        xlb.write_merged_header(ws, coa.company_name, col_start='B', col_end='E')
-        xlb.write_merged_header(ws, 'Profit and Loss Acocunt for the Year Ended {}'.format(rep.full_datestring), col_start='B', col_end='E')
+        xlb.write_merged_header(ws, coa.company_name, cols='B:E')
+        xlb.write_merged_header(ws, 'Profit and Loss Acocunt for the Year Ended {}'.format(rep.full_datestring),
+                                cols='B:E')
         xlb.write_row(ws, rep.datestrings)
         ws.write('C5', 'Note', xlb.bold_fmt)
         xlb.write_row(ws, ['£']*2)
