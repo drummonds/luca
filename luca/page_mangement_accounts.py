@@ -24,7 +24,7 @@ class ManagementPnLPage(ExcelReportPage):
         for range, width in [('A:A', 8.5), ('B:B', 30), ('C:D', 11.5), ('E:E', 7), ('F:G', 11.5)]:
             ws.set_column(range, width)
         xlb.col_list=(2, 3, 5, 6)
-        xlb.write_row(ws, rep.datastrings)
+        xlb.write_row(ws, rep.datestrings)
         ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['PERIOD', 'PERIOD', 'YTD', 'YTD'])
         xlb.write_row(ws, ['£']*4)
@@ -67,7 +67,7 @@ class ManagementBSPage(ExcelReportPage):
         xlb.col_list=(2, 3, 5, 6)
         xlb.add_standard_formats()
         xlb.line_number=0
-        xlb.write_merged_header_row(ws, rep.datastrings)
+        xlb.write_merged_header_row(ws, rep.datestrings)
         ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['£']*4)
         zero = [p(0)] * 2
