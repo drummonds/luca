@@ -19,7 +19,6 @@ class ExcelReportPage:
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
-        xlb.rep = self.rep
         # Demo header
         ws.set_column('B:B', 30)
         xlb.add_standard_formats()
@@ -204,7 +203,7 @@ class ExcelManagementReport2():
 
     def write_merged_header_row(self, ws, header_list):
         # Add titles
-        fmt = self.wb.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
+        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
         self.line_number += 1
         ws.merge_range('C{0}:D{0}'.format(self.line_number), header_list[0], fmt)
         ws.merge_range('F{0}:G{0}'.format(self.line_number), header_list[1], fmt)
