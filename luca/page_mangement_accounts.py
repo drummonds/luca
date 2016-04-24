@@ -17,6 +17,7 @@ class ManagementPnLPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
+        xlb.rep = self.rep
         rep = self.rep
         coa = rep.coa
         # Nominal code info columns
@@ -24,7 +25,7 @@ class ManagementPnLPage(ExcelReportPage):
             ws.set_column(range, width)
         xlb.col_list=(2, 3, 5, 6)
         xlb.write_row(ws, rep.datastrings)
-        ws.write('A2', 'From End of Year ({})'.format(self.rep.year_start_string), self.bold_left_italic_fmt)
+        ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['PERIOD', 'PERIOD', 'YTD', 'YTD'])
         xlb.write_row(ws, ['£']*4)
         zero = [p(0)] * 4
@@ -37,7 +38,7 @@ class ManagementPnLPage(ExcelReportPage):
         xlb.write_block(ws, expense_list, coa.fixed_production_costs, 'Fixed Works Expenses')
         xlb.write_block(ws, expense_list, coa.admin_costs, 'Admin Expenses')
         xlb.write_block(ws, expense_list, coa.selling_costs, 'Selling Expenses')
-        self.write_sum(ws, expense_list, 'TOTAL EXPENSES')
+        xlb.write_sum(ws, expense_list, 'TOTAL EXPENSES')
         # Calculate profit and Loss
         profit_loss = [0, 0, 0, 0]
         for i,e in enumerate(profit_list):
@@ -57,6 +58,7 @@ class ManagementBSPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
+        xlb.rep = self.rep
         rep = self.rep
         coa = rep.coa
         # Nominal code info columns
@@ -66,8 +68,8 @@ class ManagementBSPage(ExcelReportPage):
         xlb.add_standard_formats()
         xlb.line_number=0
         xlb.write_merged_header_row(ws, rep.datastrings)
-        ws.write('A2', 'From End of Year ({})'.format(self.rep.year_start_string), self.bold_left_italic_fmt)
-        self.write_row(ws, ['£']*4)
+        ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
+        xlb.write_row(ws, ['£']*4)
         zero = [p(0)] * 2
         fixed_assets = zero.copy()
         current_assets = zero.copy()
@@ -90,5 +92,5 @@ class ManagementBSPage(ExcelReportPage):
             total_net_assets[i] = fixed_assets[i] + net_current_assets[i] - long_term_liabilities[i]
             xlb.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap=3)
         # Owners equity side of balance sheet
-        xlb.write_bs_block(ws, owners_equity, self.rep.coa.owners_equity, "SHAREHOLDERS' FUNDS", sign=-1)
+        xlb.write_bs_block(ws, owners_equity, coa.owners_equity, "SHAREHOLDERS' FUNDS", sign=-1)
         xlb.format_print_area(ws, 'BALANCE SHEET')

@@ -19,6 +19,7 @@ class ExcelReportPage:
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
+        xlb.rep = self.rep
         # Demo header
         ws.set_column('B:B', 30)
         xlb.add_standard_formats()
