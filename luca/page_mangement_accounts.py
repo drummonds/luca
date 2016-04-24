@@ -62,8 +62,8 @@ class ManagementBSPage(ExcelReportPage):
         rep = self.rep
         coa = rep.coa
         # Nominal code info columns
-        for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
-            ws.set_column(range, width)
+        for xl_range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
+            ws.set_column(xl_range, width)
         xlb.col_list=(2, 3, 5, 6)
         xlb.add_standard_formats()
         xlb.line_number=0
