@@ -70,7 +70,9 @@ class ManagementBSPage(ExcelReportPage):
         xlb.write_merged_header_row(ws, rep.datestrings)
         ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['£']*4)
-        zero = [p(0)] * 2
+        # Todo move this to PeriodReport
+        num_periods = 2
+        zero = [p(0)] * num_periods
         fixed_assets = zero.copy()
         current_assets = zero.copy()
         short_term_liabilities = zero.copy()
@@ -83,12 +85,12 @@ class ManagementBSPage(ExcelReportPage):
         xlb.write_bs_block(ws, current_assets, coa.current_asset, 'CURRENT ASSETS', indent=-1)
         xlb.write_bs_block(ws, short_term_liabilities, coa.short_term_liabilities,
                         'CREDITORS PAYABLE WITHIN 1 YEAR', sign=-1, indent=-1)
-        for i in range(len(net_current_assets)):
+        for i in range(num_periods):
             net_current_assets[i] = current_assets[i] - short_term_liabilities[i]
         xlb.write_bs_sum(ws, net_current_assets, 'NET CURRENT ASSETS', gap=2)
         xlb.write_bs_block(ws, long_term_liabilities, coa.long_term_liabilities,
                         'CREDITORS DUE AFTER MORE THAN 1 YEAR', sub_total=True, sign=-1)
-        for i in range(len(total_net_assets)):
+        for i in range(num_periods):
             total_net_assets[i] = fixed_assets[i] + net_current_assets[i] - long_term_liabilities[i]
             xlb.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap=3)
         # Owners equity side of balance sheet
