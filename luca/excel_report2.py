@@ -6,6 +6,26 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 
 from .utils import p
 
+
+class ExcelReportPage:
+
+    def __init__(self, report_data):
+        self.rep = report_data  ## report_data
+
+    def sheetname(self):
+        return 'Blank'
+
+    def format_page(self, excel_base, worksheet):
+        ws = worksheet
+        xlb = excel_base
+        # Demo header
+        ws.set_column('B:B', 30)
+        xlb.add_standard_formats()
+        xlb.line_number=0
+        cell_location = xl_rowcol_to_cell(2, 2)
+        ws.write(cell_location, 'Blank Page', self.bold_fmt)
+
+
 class ExcelManagementReport2():
     """This is a generalised managment report for produce proift and loss statements as well as balance sheets."""
 
@@ -155,7 +175,8 @@ class ExcelManagementReport2():
         ws.write(xl_rowcol_to_cell(self.line_number, 6+indent), sum_list[1], self.bold_left_fmt)
         self.line_number += gap
 
-    def add_standard_formats(self, wb):
+    def add_standard_formats(self):
+        wb = self.workbook  # Done for each workbook
         # Total formatting
         fmt = {'align': 'center', 'font_name': 'Arial', 'font_size': 10,
                'num_format': '_(* #,##0_);_(* (#,##0);_(* "-"_);_(@_)'}
@@ -179,93 +200,12 @@ class ExcelManagementReport2():
         ws.hide_gridlines(0)
         ws.fit_to_pages(1, 1)  # Fit to one page
 
-    def format_pnl(self, wb, ws):
-        # Nominal code info columns
-        ws.set_column('A:A', 8.5)
-        # Description column
-        ws.set_column('B:B', 30)
-        # This years figures
-        ws.set_column('C:D', 11.5)
-        # Margin
-        ws.set_column('E:E', 7)
-        # Historic figures
-        ws.set_column('F:G', 11.5)
-        self.add_standard_formats(wb)
-        self.line_number=0
-        self.write_row(ws, [self.rep.datestring, self.rep.prev_datestring, self.rep.datestring, self.rep.prev_datestring])
-        ws.write('A2', 'From End of Year ({})'.format(self.rep.year_start_string), self.bold_left_italic_fmt)
-        self.write_row(ws, ['PERIOD', 'PERIOD', 'YTD', 'YTD'])
-        self.write_row(ws, ['£', '£', '£', '£'])
-        zero = [p(0)] * 4
-        self.profit_list = zero.copy()
-        self.expense_list = zero.copy()
-        self.line_number=4
-        self.write_block(ws, self.profit_list, self.rep.coa.sales, 'Sales', sign=-1)
-        self.write_block(ws, self.expense_list, self.rep.coa.material_costs, self.rep.coa.material_costs_name)
-        self.write_block(ws, self.expense_list, self.rep.coa.variable_costs, 'Variable Works Expense')
-        self.write_block(ws, self.expense_list, self.rep.coa.fixed_production_costs, 'Fixed Works Expenses')
-        self.write_block(ws, self.expense_list, self.rep.coa.admin_costs, 'Admin Expenses')
-        self.write_block(ws, self.expense_list, self.rep.coa.selling_costs, 'Selling Expenses')
-        self.write_sum(ws, self.expense_list, 'TOTAL EXPENSES')
-        # Calculate profit and Loss
-        self.profit_loss = [0, 0, 0, 0]
-        for i,e in enumerate(self.profit_list):
-            self.profit_loss[i]+=e
-        for i,e in enumerate(self.expense_list):
-            self.profit_loss[i]-=e
-        self.write_sum(ws, self.profit_loss, 'PROFIT/(LOSS)')
-        self.format_print_area(ws, 'PROFIT & LOSS ACCOUNT')
-
-    def write_merged_header_row(self, wb, ws, header_list):
+    def write_merged_header_row(self, ws, header_list):
         # Add titles
-        fmt = wb.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
+        fmt = self.wb.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
         self.line_number += 1
         ws.merge_range('C{0}:D{0}'.format(self.line_number), header_list[0], fmt)
         ws.merge_range('F{0}:G{0}'.format(self.line_number), header_list[1], fmt)
-
-    def format_bs(self, wb, ws):
-        # Nominal code info columns
-        ws.set_column('A:A', 5.5)
-        # Description column
-        ws.set_column('B:B', 46)
-        # This years figures
-        ws.set_column('C:D', 10)
-        # Margin
-        ws.set_column('E:E', 6)
-        # Historic figures
-        ws.set_column('F:G', 10)
-        self.add_standard_formats(wb)
-        self.line_number = 0
-        self.write_merged_header_row(wb, ws, [self.rep.datestring, self.rep.prev_datestring])
-        ws.write('A2', 'From End of Year ({})'.format(self.rep.year_start_string), self.bold_left_italic_fmt)
-        self.write_row(ws, ['£', '£', '£', '£'])
-        zero = [p(0)] * 2
-        fixed_assets = zero.copy()
-        current_assets = zero.copy()
-        short_term_liabilities = zero.copy()
-        long_term_liabilities = zero.copy()
-        net_current_assets = zero.copy()
-        total_net_assets = zero.copy()
-        owners_equity = zero.copy()
-        self.line_number = 4
-        self.write_bs_block(ws, fixed_assets, self.rep.coa.fixed_asset, 'FIXED ASSETS')
-        self.write_bs_block(ws, current_assets, self.rep.coa.current_asset, 'CURRENT ASSETS', indent=-1)
-        self.write_bs_block(ws, short_term_liabilities, self.rep.coa.short_term_liabilities,
-                            'CREDITORS PAYABLE WITHIN 1 YEAR', sign=-1, indent=-1)
-        for i in range(len(net_current_assets)):
-            net_current_assets[i] = current_assets[i] - short_term_liabilities[i]
-        self.write_bs_sum(ws, net_current_assets, 'NET CURRENT ASSETS', gap=2)
-        self.write_bs_block(ws, long_term_liabilities,  self.rep.coa.long_term_liabilities,
-                            'CREDITORS DUE AFTER MORE THAN 1 YEAR', sub_total=True, sign=-1)
-        # print('fixed = {}'.format(fixed_assets))
-        # print('net current {}'.format(net_current_assets))
-        # print('long_term_liabilities = {}'.format(long_term_liabilities))
-        for i in range(len(total_net_assets)):
-            total_net_assets[i] = fixed_assets[i] + net_current_assets[i] - long_term_liabilities[i]
-        self.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap = 3)
-        # Owners equity side of balance sheet
-        self.write_bs_block(ws, owners_equity, self.rep.coa.owners_equity, "SHAREHOLDERS' FUNDS", sign=-1)
-        self.format_print_area(ws, 'BALANCE SHEET')
 
     def open(self):
         fn = os.getcwd() + '\\' + self.report_filename()
@@ -276,23 +216,11 @@ class ExcelManagementReport2():
         # Get the xlsxwriter objects from the dataframe writer object.
         self.workbook  = self.writer.book
 
-    def add_sheet_pnl(self, rep):
-        self.rep = rep
-        sheetname = 'P&L '+ self.rep.datestring
-        worksheet = self.workbook.add_worksheet(sheetname)
-        self.format_pnl(self.workbook, worksheet)
-
-    def add_sheet_bs(self, rep):
-        self.rep = rep
-        sheetname = 'BS ' + self.rep.datestring
-        worksheet = self.workbook.add_worksheet(sheetname)
-        self.format_bs(self.workbook, worksheet)
-
     def close(self):
         self.writer.save()
 
-    def create_one_report(self, rep):
-        self.open()
-        self.add_sheet_pnl(rep)
-        self.add_sheet_bs(rep)
-        self.close()
+    def add(self, new_page):
+        worksheet = self.workbook.add_worksheet(new_page.sheetname)
+        self.add_standard_formats()
+        self.line_number=0
+        new_page.format_page(self, worksheet)

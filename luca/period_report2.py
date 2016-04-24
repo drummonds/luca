@@ -48,6 +48,10 @@ TODO the duration of the period should also come from the database"""
             return 'NoDate'
 
     @property
+    def datestrings(self):
+        return [self.datestring, self.prev_datestring, self.datestring, self.prev_datestring]
+
+    @property
     def year_start_string(self, seperator=' '):
         if self.year_start_date:
             return self.year_start_date.strftime('%b{}%y'.format(seperator))
