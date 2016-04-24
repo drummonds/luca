@@ -10,6 +10,7 @@ from .utils import p
 
 class FYCoverPage(ExcelReportPage):
 
+    @property
     def sheetname(self):
         return 'P&L '+ self.rep.datestring
 

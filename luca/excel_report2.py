@@ -12,6 +12,7 @@ class ExcelReportPage:
     def __init__(self, report_data):
         self.rep = report_data  ## report_data
 
+    @property
     def sheetname(self):
         return 'Blank'
 

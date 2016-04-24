@@ -10,6 +10,7 @@ from .utils import p
 
 class ManagementPnLPage(ExcelReportPage):
 
+    @property
     def sheetname(self):
         return 'P&L '+ self.rep.datestring
 
@@ -49,6 +50,7 @@ class ManagementPnLPage(ExcelReportPage):
 
 class ManagementBSPage(ExcelReportPage):
 
+    @property
     def sheetname(self):
         return 'BS '+ self.rep.datestring
 
