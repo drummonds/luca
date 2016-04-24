@@ -17,7 +17,7 @@ class FYCoverPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
-        rep = xlb.rep
+        rep = self.rep
         coa = rep.coa
         #Todo move this to Chart of Accounts data
         rep.company_name = 'Drummonds.net Limited'
