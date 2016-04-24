@@ -26,8 +26,8 @@ class FYCoverPage(ExcelReportPage):
         # Nominal code info columns
         for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
             ws.set_column(range, width)
-        ws.write('G1', 'Registration number: {}'.format(xlb.rep.company_number), xlb.bold_left_italic_fmt)
+        ws.write('G1', 'Registration number: {}'.format(rep.company_number), xlb.bold_left_italic_fmt)
         ws.write('C10', '{}'.format(xlb.rep.company_name), xlb.bold_fmt)
         ws.write('C11', 'Annual Rep Financial Statements', xlb.fmt)
-        ws.write('C12', 'for the Year Ended {}'.format(xlb.rep.year_end_date), xlb.fmt)
+        ws.write('C12', 'for the Year Ended {}'.format(rep.year_end_date), xlb.fmt)
         xlb.format_print_area(ws, 'COVER SHEET')
