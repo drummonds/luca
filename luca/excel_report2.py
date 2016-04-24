@@ -201,7 +201,7 @@ class ExcelManagementReport2():
         self.expense_list = zero.copy()
         self.line_number=4
         self.write_block(ws, self.profit_list, self.rep.coa.sales, 'Sales', sign=-1)
-        self.write_block(ws, self.expense_list, self.rep.coa.material_costs, 'Total Material Cost')
+        self.write_block(ws, self.expense_list, self.rep.coa.material_costs, self.rep.coa.material_costs_name'Total Material Cost')
         self.write_block(ws, self.expense_list, self.rep.coa.variable_costs, 'Variable Works Expense')
         self.write_block(ws, self.expense_list, self.rep.coa.fixed_production_costs, 'Fixed Works Expenses')
         self.write_block(ws, self.expense_list, self.rep.coa.admin_costs, 'Admin Expenses')

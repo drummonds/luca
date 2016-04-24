@@ -32,6 +32,7 @@ class ChartOfAccounts:
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
             self.sales = [4000]
+            self.material_costs_name = 'Total Material Cost'
             self.material_costs = [5000, 5001]
             self.variable_costs = [7000, 7100, 7103, 7102, 7105, 7006]
             self.fixed_production_costs = [7200, 7202, 7204, 7206]
@@ -50,9 +51,10 @@ class ChartOfAccounts:
                 'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
             }
             self.sales = [5000, 5100]
-            self.material_costs = []
+            self.material_costs_name = 'Cost of Sales'
+            self.material_costs = [6000, 6100, 6200]
             self.variable_costs = [7000]
-            self.fixed_production_costs = [7001, 7002, 7003, 7100, 7200, 7205, 7300]
+            self.fixed_production_costs = [7001, 7002, 7100, 7205, 7300]
             self.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                                 8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
             self.selling_costs = []
@@ -68,6 +70,7 @@ class ChartOfAccounts:
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
             self.sales = [4000]
+            self.material_costs_name = 'Total Material Cost'
             self.material_costs = [5000]
             self.variable_costs = [7000]
             self.fixed_production_costs = [7200]
