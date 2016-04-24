@@ -42,7 +42,7 @@ TODO the duration of the period should also come from the database"""
 
     @property
     def full_datestring(self):
-        return self.period_date.strftime('%-d %B %Y')
+        return self.period_date.strftime('%d %B %Y')
 
     @property
     def prev_datestring(self, seperator=' '):
