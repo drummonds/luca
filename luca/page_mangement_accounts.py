@@ -17,7 +17,7 @@ class ManagementPnLPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
-        rep = xlb.rep
+        rep = self.rep
         coa = rep.coa
         # Nominal code info columns
         for range, width in [('A:A', 8.5), ('B:B', 30), ('C:D', 11.5), ('E:E', 7), ('F:G', 11.5)]:
@@ -57,7 +57,7 @@ class ManagementBSPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
         ws = worksheet
         xlb = excel_base
-        rep = xlb.rep
+        rep = self.rep
         coa = rep.coa
         # Nominal code info columns
         for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
