@@ -47,23 +47,27 @@ class FYPnLPage(ExcelReportPage):
                              ('C:C', 10),  # Note
                              ('D:E', 12),]:  # Dates
             ws.set_column(range, width)
-        xlb.col_list=(4, 5, )  # Two column report
+        xlb.col_list=(3, 4, )  # Two column report
         xlb.write_merged_header(ws, coa.company_name, cols='B:E')
-        xlb.write_merged_header(ws, 'Profit and Loss Acocunt for the Year Ended {}'.format(rep.full_datestring),
+        xlb.write_merged_header(ws, 'Profit and Loss Account for the Year Ended {}'.format(rep.full_datestring),
                                 cols='B:E')
         xlb.write_row(ws, rep.datestrings)
-        ws.write('C5', 'Note', xlb.bold_fmt)
+        ws.write('C4', 'Note', xlb.bold_fmt)
         xlb.write_row(ws, ['£']*2)
-        ws.write('B6', 'Turnover', xlb.bold_fmt)
-        ws.write('B7', 'Cost of sales', xlb.bold_fmt)
-        ws.write('B8', 'Gross profit', xlb.bold_fmt)
-        ws.write('B9', 'Administrative expenses', xlb.bold_fmt)
-        ws.write('B10', 'Operating (loss)/profit', xlb.bold_fmt)
-        ws.write('B11', '(Loss)/profit on ordinary activities before taxation', xlb.bold_fmt)
-        ws.write('B12', 'Tax on (loss)/orifut on ordinary activities', xlb.bold_fmt)
-        ws.write('B13', '(Loss)/profit for the financial year', xlb.bold_fmt)
+        xlb.line_number = 5
+        turnover = xlb.sum(coa.sales)
+        xlb.write_fy_row(ws, turnover, 'Turnover')
+        cost_of_sales = xlb.sum(coa.sales)
+        xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales')
+        gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
+        xlb.write_fy_row(ws, gross_profit, 'Gross profit')
+        ws.write('B9', 'Administrative expenses', xlb.left_fmt)
+        ws.write('B10', 'Operating (loss)/profit', xlb.left_fmt)
+        ws.write('B11', '(Loss)/profit on ordinary activities before taxation', xlb.left_fmt)
+        ws.write('B12', 'Tax on (loss)/orifut on ordinary activities', xlb.left_fmt)
+        ws.write('B13', '(Loss)/profit for the financial year', xlb.left_fmt)
 
-        ws.write('C10', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
+        ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT')
 
 

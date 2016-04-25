@@ -47,6 +47,17 @@ class ExcelManagementReport2():
             ws.write(cell_location, entries[i], self.bold_fmt)
         self.line_number += 1
 
+    def write_fy_row(self, ws, entries, label, note =''):
+        cell_location = xl_rowcol_to_cell(self.line_number, 1)
+        ws.write('B6', 'Turnover', self.left_fmt)
+
+        # Add titles
+        for i, column in enumerate(self.col_list):
+            # Determine where we will place the formula
+            cell_location = xl_rowcol_to_cell(self.line_number, column)
+            ws.write(cell_location, entries[i], self.bold_fmt)
+        self.line_number += 1
+
     def get_value(self, tb, nominal_code, sign):
         """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
         # TODO move this code into the TrialBalance data
@@ -112,6 +123,20 @@ class ExcelManagementReport2():
         for i,e in enumerate(block_sum):
             sum_list[i]+=e
         self.line_number += 1  # Blank line seperator
+
+    def sum(self, nc_list):
+        """Return a sum list of all the nominal codes in the list"""
+        block_sum = [p(0)] * 4
+        for nc in nc_list:
+            # If there no row then ignore error
+            try:
+                for col, tb in self.rep.trial_balances:
+                    value = self.get_value(tb, nc, 1)  # Don't change the sign
+                    block_sum[col] += p(value)
+            except KeyError:
+                # This is where there is no data in the name
+                print("ER2.Sum Missing data for account {}".format(nc))
+        return block_sum
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
         block_sum = [p(0)] * 2
