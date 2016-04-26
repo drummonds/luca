@@ -57,7 +57,8 @@ class FYPnLPage(ExcelReportPage):
         xlb.line_number = 5
         turnover = xlb.sum(coa.sales)
         xlb.write_fy_row(ws, turnover, 'Turnover')
-        cost_of_sales = xlb.sum(coa.sales)
+        print(turnover)
+        cost_of_sales = xlb.sum(coa.material_costs)
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales')
         gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
         xlb.write_fy_row(ws, gross_profit, 'Gross profit')

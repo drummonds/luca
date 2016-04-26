@@ -49,7 +49,7 @@ class ExcelManagementReport2():
 
     def write_fy_row(self, ws, entries, label, note =''):
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
-        ws.write('B6', 'Turnover', self.left_fmt)
+        ws.write(cell_location, label, self.left_fmt)
 
         # Add titles
         for i, column in enumerate(self.col_list):
@@ -134,8 +134,9 @@ class ExcelManagementReport2():
                     value = self.get_value(tb, nc, 1)  # Don't change the sign
                     block_sum[col] += p(value)
             except KeyError:
-                # This is where there is no data in the name
-                print("ER2.Sum Missing data for account {}".format(nc))
+                # This is where there is no data in the name  This happens with mismatch lengths
+                # print("ER2.Sum Missing data for account {}".format(nc))
+                pass
         return block_sum
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
