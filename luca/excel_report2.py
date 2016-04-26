@@ -111,6 +111,7 @@ class ExcelManagementReport2():
             except KeyError:
                 # This is where there is no data in the name
                 print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
+                pass
         # Add a sub total line if required
         if len(acct_list) != 1:
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
@@ -124,7 +125,7 @@ class ExcelManagementReport2():
             sum_list[i]+=e
         self.line_number += 1  # Blank line seperator
 
-    def sum(self, nc_list):
+    def sum(self, nc_list, sign = 1):
         """Return a sum list of all the nominal codes in the list"""
         block_sum = [p(0)] * 4
         for nc in nc_list:
@@ -132,7 +133,7 @@ class ExcelManagementReport2():
             try:
                 for col, tb in enumerate(self.rep.trial_balances):
                     value = self.get_value(tb, nc, 1)  # Don't change the sign
-                    block_sum[col] += p(value)
+                    block_sum[col] += p(value * sign)
             except KeyError:
                 # This is where there is no data in the name  This happens with mismatch lengths
                 # print("ER2.Sum Missing data for account {}".format(nc))
@@ -180,6 +181,7 @@ class ExcelManagementReport2():
                 except KeyError:
                     # This is where there is no data in the name
                     print("Missing data for account {}".format(nc))
+                    pass
             # Add a sub total line if required
             self.write_bs_sum(ws, block_sum, 'TOTAL ' + title, indent=indent)
         # Aggregate the local sum into the bigger sum

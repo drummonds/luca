@@ -55,7 +55,7 @@ class FYPnLPage(ExcelReportPage):
         ws.write('C4', 'Note', xlb.bold_fmt)
         xlb.write_row(ws, ['£']*2)
         xlb.line_number = 5
-        turnover = -xlb.sum(coa.sales)
+        turnover = xlb.sum(coa.sales, sign=-1)
         xlb.write_fy_row(ws, turnover, 'Turnover')
         cost_of_sales = xlb.sum(coa.material_costs)
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales')
