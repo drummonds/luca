@@ -129,11 +129,9 @@ class ExcelManagementReport2():
         block_sum = [p(0)] * 4
         for nc in nc_list:
             # If there no row then ignore error
-            print(' nc = {}'.format(nc))
             try:
                 for col, tb in enumerate(self.rep.trial_balances):
                     value = self.get_value(tb, nc, 1)  # Don't change the sign
-                    print(' {}:{}'.format(col, value), end='')
                     block_sum[col] += p(value)
             except KeyError:
                 # This is where there is no data in the name  This happens with mismatch lengths

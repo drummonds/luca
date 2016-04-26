@@ -55,17 +55,20 @@ class FYPnLPage(ExcelReportPage):
         ws.write('C4', 'Note', xlb.bold_fmt)
         xlb.write_row(ws, ['£']*2)
         xlb.line_number = 5
-        turnover = xlb.sum(coa.sales)
+        turnover = -xlb.sum(coa.sales)
         xlb.write_fy_row(ws, turnover, 'Turnover')
-        print(turnover)
         cost_of_sales = xlb.sum(coa.material_costs)
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales')
         gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
         xlb.write_fy_row(ws, gross_profit, 'Gross profit')
-        ws.write('B9', 'Administrative expenses', xlb.left_fmt)
-        ws.write('B10', 'Operating (loss)/profit', xlb.left_fmt)
-        ws.write('B11', '(Loss)/profit on ordinary activities before taxation', xlb.left_fmt)
-        ws.write('B12', 'Tax on (loss)/orifut on ordinary activities', xlb.left_fmt)
+        admin_expenses = xlb.sum(coa.variable_costs
+                                 + coa.fixed_production_costs
+                                 + coa.admin_costs )
+        xlb.write_fy_row(ws, admin_expenses, 'Administrative expenses')
+        operating_profit = [x[0]-x[1] for x in zip(gross_profit, admin_expenses)]
+        xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit')
+        xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation')
+        ws.write('B12', 'Tax on (loss)/profit on ordinary activities', xlb.left_fmt)
         ws.write('B13', '(Loss)/profit for the financial year', xlb.left_fmt)
 
         ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
