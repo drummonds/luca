@@ -131,7 +131,7 @@ class ExcelManagementReport2():
             # If there no row then ignore error
             print(' nc = {}'.format(nc))
             try:
-                for col, tb in self.rep.trial_balances:
+                for col, tb in enumerate(self.rep.trial_balances):
                     value = self.get_value(tb, nc, 1)  # Don't change the sign
                     print(' {}:{}'.format(col, value), end='')
                     block_sum[col] += p(value)
