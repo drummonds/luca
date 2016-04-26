@@ -127,6 +127,7 @@ class ExcelManagementReport2():
     def sum(self, nc_list):
         """Return a sum list of all the nominal codes in the list"""
         block_sum = [p(0)] * 4
+        print(' sum list = {}'.format(nc_list))
         for nc in nc_list:
             # If there no row then ignore error
             try:
