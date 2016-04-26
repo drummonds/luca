@@ -127,17 +127,18 @@ class ExcelManagementReport2():
     def sum(self, nc_list):
         """Return a sum list of all the nominal codes in the list"""
         block_sum = [p(0)] * 4
-        print(' sum list = {}'.format(nc_list))
         for nc in nc_list:
             # If there no row then ignore error
             try:
                 for col, tb in self.rep.trial_balances:
                     value = self.get_value(tb, nc, 1)  # Don't change the sign
+                    print(' {}:{}'.format(col, value), end='')
                     block_sum[col] += p(value)
             except KeyError:
                 # This is where there is no data in the name  This happens with mismatch lengths
                 # print("ER2.Sum Missing data for account {}".format(nc))
                 pass
+        print(' sum list = {}'.format(nc_list))
         return block_sum
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
