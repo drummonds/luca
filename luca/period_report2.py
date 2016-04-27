@@ -1,4 +1,5 @@
 import calendar
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 import sqlite3
 
@@ -21,7 +22,8 @@ TODO the duration of the period should also come from the database"""
     def __init__(self, dbname, coa, period_date, period_1, period_1_prior='', period_2='', period_2_prior='',
                  prior_period_date=None, year_start_date=None):
         self.period_date = period_date
-        self.prior_period_date = prior_period_date
+        if self.prior_period_date == None:
+            self.prior_period_date = period_date - relativedelta(years=1)
         self.year_start_date = year_start_date
         self._coa = coa
         self.period_names = [period_1, period_1_prior, period_2, period_2_prior]
