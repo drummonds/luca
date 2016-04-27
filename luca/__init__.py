@@ -1,5 +1,6 @@
 from .utils import p, LucaError
-from .journal_entry import JournalEntry, ChartOfAccounts, TrialBalance
+from .chart_of_accounts import ChartOfAccounts
+from .journal_entry import JournalEntry, TrialBalance
 from .period_report import PeriodReport
 from .period_report2 import PeriodReport2
 from .excel_report import ExcelManagementReport

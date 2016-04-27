@@ -6,7 +6,7 @@ import pandas as pd
 import sqlite3
 
 from .utils import LucaError
-from .journal_entry import JournalEntry, ChartOfAccounts
+from .chart_of_accounts import ChartOfAccounts
 
 
 class ChartOfAccountsSqlite:

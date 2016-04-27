@@ -4,7 +4,8 @@ import pandas as pd
 import pyodbc
 
 from .utils import p
-from .journal_entry import TrialBalance, ChartOfAccounts
+from .chart_of_accounts import ChartOfAccounts
+from .journal_entry import TrialBalance
 
 class SageDataError(Exception):
     pass
