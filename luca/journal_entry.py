@@ -68,6 +68,8 @@ class ChartOfAccounts:
             self.long_term_liabilities = []
             self.owners_equity = [4100, 4200, 4999]
             self.optional_accounts = []  # These nominal codes should only be present in the report if non zero
+            self.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
+            self.year_coporation_tax = 9510
         elif name == 'Test':
             self.company_name = 'Test Co Not Limited'
             self.company_number = '123'
