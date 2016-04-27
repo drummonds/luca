@@ -43,7 +43,7 @@ class ChartOfAccounts:
             self.selling_costs = [4905, 6100, 6200, 6201, 4009]
             self.fixed_asset = [10]
             self.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
-            self.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110],
+            self.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110]
             self.long_term_liabilities = [2103]
             self.owners_equity = [2120, 2125, 2126]
             self.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
