@@ -1,3 +1,4 @@
+DELETE FROM chart_of_accounts WHERE chart='SLF-MA'
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 8435, 'Admin Travel', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 8414, 'Repairs/Maint/Bldgs', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 8410, 'Admin Rent & Rates', 'Expense');

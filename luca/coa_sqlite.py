@@ -29,7 +29,8 @@ class ChartOfAccountsSqlite:
                 coa.append(index, row['NC_Name'], row['Category'])
             return coa
         else:  # Prevents error of getting nothing back because you have got the period name wrong
-            raise LucaError('Getting Chart of Account entries from db {} for  () but no data'.format(self.dbname, period))
+            raise LucaError('Getting Chart of Account entries from db {} for {} but no data'.\
+                            format(self.dbname, chart_of_account_name))
 
 
 @contextmanager
