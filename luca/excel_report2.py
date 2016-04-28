@@ -218,13 +218,18 @@ class ExcelManagementReport2():
         self.bold_left_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True}})
         self.bold_left_italic_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True, 'italic': True}})
 
-    def format_print_area(self, ws, title):
+    def format_print_area(self, ws, title, show_header = True, show_footer = True):
         # Format for printing
         ws.print_area(0, 0, self.line_number, 6)
-        header = '&LSLUMBERFLEECE' + '&C{}'.format(title) + '&R{}'.format(self.rep.long_datestring)
-        footer = '&L&F' + '&R&D: &T'
-        ws.set_header(header)
-        ws.set_footer(footer)
+        if show_header:
+            try:
+                header = '&L{} &C{} &R{}'.format(self.rep.company_name, self.rep.long_datestring, title)
+                ws.set_header(header)
+            except:
+                pass
+        if show_footer:
+            footer = '&L&F' + '&R&D: &T'
+            ws.set_footer(footer)
         # Set A4 paper
         ws.set_paper(9)
         ws.hide_gridlines(0)

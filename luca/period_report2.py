@@ -73,3 +73,10 @@ TODO the duration of the period should also come from the database"""
     @property
     def chart_of_accounts(self):
         return self.coa
+
+    @property
+    def company_name(self):
+        try:
+            return self.coa.company_name
+        except AtributeError:
+            return ''
