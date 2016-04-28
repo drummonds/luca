@@ -29,7 +29,7 @@ class ExcelReportPage:
 
 
 class ExcelManagementReport2():
-    """This is a generalised managment report for produce proift and loss statements as well as balance sheets."""
+    """This is a generalised management report for produce profit and loss statements as well as balance sheets."""
 
     def report_filename(self):
         return '{} {}.xlsx'.format(self.file_name, dt.datetime.today().strftime('%Y-%m-%dT%H_%M_%S'))
@@ -61,11 +61,15 @@ class ExcelManagementReport2():
     def get_value(self, tb, nominal_code, sign):
         """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
         # TODO move this code into the TrialBalance data
-        try:
-            value = tb[nominal_code] * sign
-        except (KeyError, IndexError, TypeError):
-            # There is a name value so presumably some data but just none in this series
-            value = 0
+
+        if int(nominal_code) == tb.chart_of_accounts.calc_pnl:
+                value=tb.profit_and_loss  * sign
+        else:
+            try:
+                value = tb[nominal_code] * sign
+            except (KeyError, IndexError, TypeError):
+                # There is a name value so presumably some data but just none in for this nominal code on this period
+                value = p(0)
         return value
 
     def all_values_zero(self, nominal_code, sign):

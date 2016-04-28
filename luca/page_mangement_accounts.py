@@ -94,7 +94,7 @@ class ManagementBSPage(ExcelReportPage):
                         'CREDITORS DUE AFTER MORE THAN 1 YEAR', sub_total=True, sign=-1)
         for i in range(num_periods):
             total_net_assets[i] = fixed_assets[i] + net_current_assets[i] - long_term_liabilities[i]
-            xlb.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap=3)
+        xlb.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap=3)
         # Owners equity side of balance sheet
         xlb.write_bs_block(ws, owners_equity, coa.owners_equity, "SHAREHOLDERS' FUNDS", sign=-1)
         xlb.format_print_area(ws, 'BALANCE SHEET')

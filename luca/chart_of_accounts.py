@@ -25,9 +25,11 @@ class ChartOfAccounts:
             self.company_name = 'Slumberfleece Limited'
             self.company_number = '123'
             self.constants= {
-                'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
+                'period_pnl': 2125,  # Period to date Profit and Loss
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
+            self.calc_pnl = 2126  # This is virtual nominal code as it is the balance of the P&L items for use in
+            # balance sheet reports
             self.sales = [4000]
             self.material_costs_name = 'Total Material Cost'
             self.material_costs = [5000, 5001]
@@ -49,6 +51,8 @@ class ChartOfAccounts:
                 'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
             }
+            self.calc_pnl = 4300  # This is virtual nominal code as it is the balance of the P&L items for use in
+            # balance sheet reports
             self.sales = [5000, 5100]
             self.material_costs_name = 'Cost of Sales'
             self.material_costs = [6000, 6100, 6200]
@@ -61,7 +65,7 @@ class ChartOfAccounts:
             self.current_asset = [1200, 1205, 1250, 2200]
             self.short_term_liabilities = [2000]
             self.long_term_liabilities = []
-            self.owners_equity = [4100, 4200, 4999]
+            self.owners_equity = [4100, 4200, 4300]
             self.optional_accounts = []  # These nominal codes should only be present in the report if non zero
             self.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
             self.year_coporation_tax = 9510
@@ -72,6 +76,8 @@ class ChartOfAccounts:
                 'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
+            self.calc_pnl = 2126  # This is virtual nominal code as it is the balance of the P&L items for use in
+            # balance sheet reports
             self.sales = [4000]
             self.material_costs_name = 'Total Material Cost'
             self.material_costs = [5000]
