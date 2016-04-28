@@ -71,7 +71,9 @@ class ManagementBSPage(ExcelReportPage):
         ws.write('A2', 'From End of Year ({})'.format(rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['£']*4)
         # Todo move this to PeriodReport
-        num_periods = 2
+        num_periods = 4  # Should still be moved but moving on so that BS ignores cols first 2 cols with MTD and
+        # only uses the last two cols (2,3) with the YTD date in them. The problem with the MTD balance sheet is that
+        # correct profit for the period is just the month.
         zero = [p(0)] * num_periods
         fixed_assets = zero.copy()
         current_assets = zero.copy()
