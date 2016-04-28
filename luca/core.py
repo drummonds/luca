@@ -68,6 +68,21 @@ DRUMMONDS_TO_FY_SUMMARY = {
     8435: (8435,),
     8440: (7503, 8440,),}
 
+SLF_MA_TO_FY_SUMMARY = {
+    10: (10, ),  # 20, 21, 30, 31, 40, 41,),
+    11: (1100, ),
+    12: (1001, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204),
+    20: (2100, 2107, 2108, 2109, 2110),
+    21: (2103, ),
+    30: (2125, 2126),
+    31: (2120, ),
+    50: (4000, ),
+    60: (5000, 5001, 4905, 6100, 6200, 6201, 4009),
+    80: (7000, 7100, 7103, 7102, 7105, 7006, 7200, 7202, 7204, 7206, 7020, 8100, 8200, 8204, 8300, 7906, 8310, 8400,
+         8402, 8405, 8201, 8433, 8408, 8410, 8414, 8420, 8424, 8426, 8430, 8435, 8440),
+    91: (2106, ),
+}
+
 SAGE_TO_SLF_MA = {
     10: (10, 20, 21, 30, 31, 40, 41,),
     1001: (1001, 1004, 1254, 1256, 7906,),
@@ -176,6 +191,6 @@ class CoreSlumberfleece(Core):
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
         self.converter = TrialBalanceConversion(self.coa)
-        self.converter.add_conversion(SAGE_TO_SLF_MA, self.coa, self.fy_coa)
+        self.converter.add_conversion(SLF_MA_TO_FY_SUMMARY, self.coa, self.fy_coa)
 
 

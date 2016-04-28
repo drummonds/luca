@@ -23,17 +23,29 @@ class TrialBalanceConversion():
             set_nc_to = set_nc_to | set([nc_to])
             set_nc_from = set_nc_from | set(nc_from_list)
 
-        print("Conversion set from {}".format(set_nc_from))
-        print("Chart of acounts set from {}".format(coa_from.nc_set()))
-        print("Conversion set to {}".format(set_nc_from))
-        print("Chart of acounts set to {}".format(coa_to.nc_set()))
-        from_nc_not_acounted_for = set_nc_from ^ coa_from.nc_set()
-        assert from_nc_not_acounted_for == set(),\
+        from_nc_not_accounted_for = set_nc_from ^ coa_from.nc_set()
+        if from_nc_not_accounted_for != set():
+            print("From nominal codes mismatch {}".format(from_nc_not_accounted_for))
+            f1 = list(set_nc_from)
+            f1.sort()
+            print("Conversion set from {}".format(f1))
+            f2 = list(coa_from.nc_set())
+            f2.sort()
+            print("Chart of acounts set from {}".format(f2))
+        assert from_nc_not_accounted_for == set(),\
             'Make sure that in conversion all codes from are in the chart of accounts for {}'.format(coa_from.name)
-        to_nc_not_acounted_for = set_nc_to ^ coa_to.nc_set()
-        assert set_nc_to ^ coa_to.nc_set() == set(),\
+        to_nc_not_accounted_for = set_nc_to ^ coa_to.nc_set()
+        if to_nc_not_accounted_for != set():
+            print("From nominal codes mismatch {}".format(to_nc_not_accounted_for))
+            t1 = list(set_nc_from)
+            t1.sort()
+            print("Conversion set to {}".format(t1))
+            t2 = list(coa_to.nc_set())
+            t2.sort()
+            print("Chart of acounts set to {}".format(t2))
+        assert to_nc_not_accounted_for == set(),\
             'Make sure that in conversion all codes to are in the chart of accounts for {}'.format(coa_to.name)
-        self.conversion[self.coa_from.name+'_to_'+self.coa_to.name] = conversion
+        self.conversion[coa_from.name+'_to_'+coa_to.name] = conversion
 
     def convert_trial_balance(self, ttb):
         # This will fail if the from and to are not predefined.

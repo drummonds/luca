@@ -17,7 +17,7 @@ class TestTTB(unittest.TestCase):
         case_1 = TrialBalance(coa_from)
         case_1.add_dict({1200: p(100), 2120: p(-100)})
         # Converting to
-        with chart_of_accounts_from_db() as coa_s:
+        with chart_of_accounts_from_db(cs.dbname) as coa_s:
             coa_to = coa_s.get_chart_of_account('SLF-MA')
         ttb_converter = TrialBalanceConversion(coa_to)
         # Now do the conversion
