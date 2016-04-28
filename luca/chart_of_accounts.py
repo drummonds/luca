@@ -116,7 +116,7 @@ class ChartOfAccounts:
 
     @property
     def names(self):
-        n = list(self.dict.keys())
+        n = [self.name_of(nc) for nc in self.dict.keys()]
         n.sort()
         return n
 
@@ -136,6 +136,6 @@ class ChartOfAccounts:
     def nc_set(self):
         """Return set of all nominal codes"""
         set_nc = set()
-        for name, nc in self.dict.items():
+        for nc, name in self.dict.items():
             set_nc = set_nc | set([nc])
         return set_nc

@@ -1,5 +1,3 @@
-import datetime as dt
-import pandas as pd
 import unittest
 
 from luca import ChartOfAccounts, JournalEntry, TrialBalance, p

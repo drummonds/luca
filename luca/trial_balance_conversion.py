@@ -1,5 +1,5 @@
-"""Transactional Trial Balanc
-Holding all conversion of a TTB to a managment account"""
+"""Trial Balance covnersion
+Holding all conversion from one chart of account to another."""
 
 import pandas as pd
 
@@ -23,10 +23,15 @@ class TrialBalanceConversion():
             set_nc_to = set_nc_to | set([nc_to])
             set_nc_from = set_nc_from | set(nc_from_list)
 
-        print(set_nc_from, set_nc_to)
-        assert (set_nc_from ^ coa_from.nc_set()) == set(),\
+        print("Conversion set from {}".format(set_nc_from))
+        print("Chart of acounts set from {}".format(coa_from.nc_set()))
+        print("Conversion set to {}".format(set_nc_from))
+        print("Chart of acounts set to {}".format(coa_to.nc_set()))
+        from_nc_not_acounted_for = set_nc_from ^ coa_from.nc_set()
+        assert from_nc_not_acounted_for == set(),\
             'Make sure that in conversion all codes from are in the chart of accounts for {}'.format(coa_from.name)
-        assert (set_nc_to ^ coa_to.nc_set()) == set(),\
+        to_nc_not_acounted_for = set_nc_to ^ coa_to.nc_set()
+        assert set_nc_to ^ coa_to.nc_set() == set(),\
             'Make sure that in conversion all codes to are in the chart of accounts for {}'.format(coa_to.name)
         self.conversion[self.coa_from.name+'_to_'+self.coa_to.name] = conversion
 
