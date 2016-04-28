@@ -141,7 +141,7 @@ class ExcelManagementReport2():
         return block_sum
 
     def write_bs_block(self, ws, sum_list, acct_list, title, sign=1, sub_total=False, indent=0):
-        block_sum = [p(0)] * 2
+        block_sum = [p(0)] * 4
         single_row = len(acct_list) == 1 and not sub_total
         if single_row:  # Single row so no summary row
             fmt = self.bold_fmt
@@ -149,7 +149,7 @@ class ExcelManagementReport2():
             # Write title
             ws.write(xl_rowcol_to_cell(self.line_number, 0), acct_list[0], self.nc_fmt)
             ws.write(xl_rowcol_to_cell(self.line_number, 1), title, self.bold_left_fmt)
-            for col, index in ((3, 0,), (6, 1,)):
+            for col, index in ((3, 2,), (6, 3,)):
                 tb = self.rep.trial_balances[index]
                 # Write values
                 value = self.get_value(tb, acct_list[0], sign)
@@ -171,7 +171,7 @@ class ExcelManagementReport2():
                     name = self.rep.chart_of_accounts[nc]
                     ws.write(xl_rowcol_to_cell(self.line_number, 0), nc, self.nc_fmt)
                     ws.write(xl_rowcol_to_cell(self.line_number, 1), name, fmt_left)
-                    for col, index in ((2, 0,), (5, 1,)):
+                    for col, index in ((2, 2,), (5, 3,)):
                         tb = self.rep.trial_balances[index]
                         # Write values
                         value = self.get_value(tb, nc, sign)
@@ -201,8 +201,8 @@ class ExcelManagementReport2():
         # Write title
         ws.write(xl_rowcol_to_cell(self.line_number, 1), title, self.bold_left_fmt)
         # Write sums
-        ws.write(xl_rowcol_to_cell(self.line_number, 3+indent), sum_list[0], self.bold_left_fmt)
-        ws.write(xl_rowcol_to_cell(self.line_number, 6+indent), sum_list[1], self.bold_left_fmt)
+        ws.write(xl_rowcol_to_cell(self.line_number, 3+indent), sum_list[2], self.bold_left_fmt)
+        ws.write(xl_rowcol_to_cell(self.line_number, 6+indent), sum_list[3], self.bold_left_fmt)
         self.line_number += gap
 
     def add_standard_formats(self):
