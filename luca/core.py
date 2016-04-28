@@ -1,5 +1,6 @@
 """This is the core of the code that I am using for practicaly purpposes.
 It is however system specific."""
+import sqlite3
 
 from .coa_sqlite import chart_of_accounts_from_db
 from .trial_balance_conversion import TrialBalanceConversion
@@ -139,6 +140,21 @@ class Core:
         self.dbname = file_name  # Default database name
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
+
+    def copy_trial_balance(self, period, old_prefix, new_prefix):
+        """This is a datatabase level cooy"""
+        conn = sqlite3.connect(self.dbname)
+        try:
+            cursor = conn.cursor()
+            sql = """DELETE FROM trial_balance WHERE period = '{1}{0}'""".format(period, new_prefix)
+            cursor.execute(sql)
+            sql = """insert into trial_balance
+    (period, code, balance)
+    select '{2}{0}', code, balance from trial_balance WHERE period = '{1}{0}'""".format(period, old_prefix, new_prefix)
+            cursor.execute(sql)
+            conn.commit()
+        finally:
+            conn.close()
 
 
 class CoreDrummond(Core):
