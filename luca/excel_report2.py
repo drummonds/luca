@@ -218,7 +218,7 @@ class ExcelManagementReport2():
         self.bold_left_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True}})
         self.bold_left_italic_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True, 'italic': True}})
 
-    def format_print_area(self, ws, title, show_header = True, show_footer = True):
+            def format_print_area(self, ws, title, show_header = True, show_footer = True, hide_gridlines = False):
         # Format for printing
         ws.print_area(0, 0, self.line_number, 6)
         if show_header:
@@ -232,7 +232,8 @@ class ExcelManagementReport2():
             ws.set_footer(footer)
         # Set A4 paper
         ws.set_paper(9)
-        ws.hide_gridlines(0)
+        if not hide_gridlines:
+            ws.hide_gridlines(0)
         ws.fit_to_pages(1, 1)  # Fit to one page
 
     def write_merged_header(self, ws, text, cols = 'B:E'):
