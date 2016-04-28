@@ -132,3 +132,10 @@ class ChartOfAccounts:
     @property
     def period_pnl(self):
         return self.constants['period_pnl']
+
+    def nc_set(self):
+        """Return set of all nominal codes"""
+        set_nc = set()
+        for name, nc in self.dict.items():
+            set_nc = set_nc | set([nc])
+        return set_nc
