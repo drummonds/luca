@@ -31,7 +31,7 @@ class TrialBalanceConversion():
             print("Conversion set from {}".format(f1))
             f2 = list(coa_from.nc_set())
             f2.sort()
-            print("Chart of acounts set from {}".format(f2))
+            print("Chart of acounts {} set from {}".format(coa_from.name, f2))
         assert from_nc_not_accounted_for == set(),\
             'Make sure that in conversion all codes from are in the chart of accounts for {}'.format(coa_from.name)
         to_nc_not_accounted_for = set_nc_to ^ coa_to.nc_set()
@@ -42,7 +42,7 @@ class TrialBalanceConversion():
             print("Conversion set to {}".format(t1))
             t2 = list(coa_to.nc_set())
             t2.sort()
-            print("Chart of acounts set to {}".format(t2))
+            print("Chart of acounts {} set to {}".format(coa_to.name, t2))
         assert to_nc_not_accounted_for == set(),\
             'Make sure that in conversion all codes to are in the chart of accounts for {}'.format(coa_to.name)
         self.conversion[coa_from.name+'_to_'+coa_to.name] = conversion

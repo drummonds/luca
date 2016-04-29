@@ -21,30 +21,7 @@ class ChartOfAccounts:
     def __init__(self, name):
         self.name = name
         self.dict = {}
-        if name == 'SLF-MA':
-            self.company_name = 'Slumberfleece Limited'
-            self.company_number = '123'
-            self.constants= {
-                'period_pnl': 2125,  # Period to date Profit and Loss
-                'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
-            }
-            self.calc_pnl = 2126  # This is virtual nominal code as it is the balance of the P&L items for use in
-            # balance sheet reports
-            self.sales = [4000]
-            self.material_costs_name = 'Total Material Cost'
-            self.material_costs = [5000, 5001]
-            self.variable_costs = [7000, 7100, 7103, 7102, 7105, 7006]
-            self.fixed_production_costs = [7200, 7202, 7204, 7206]
-            self.admin_costs = [7020, 8100, 8200, 8204, 8300, 7906, 8310, 8400, 8402, 8405, 8201,
-                                8433, 8408, 8410, 8414, 8420, 8424, 8426, 8430, 8435, 8440]
-            self.selling_costs = [4905, 6100, 6200, 6201, 4009]
-            self.fixed_asset = [10]
-            self.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
-            self.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110]
-            self.long_term_liabilities = [2103]
-            self.owners_equity = [2120, 2125, 2126]
-            self.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
-        elif name == 'drummonds':
+        if name == 'drummonds':
             self.company_name = 'Drummonds.net Limited'
             self.company_number = '05759862'
             self.constants= {
