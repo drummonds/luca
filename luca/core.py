@@ -148,7 +148,7 @@ class Core:
         coa.owners_equity = [30, 31, 32]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 91  # This is a balancing account for tax that is carried forward
-        coa.year_corporation_tax = 91
+        coa.year_corporation_tax = [91]
 
     def copy_trial_balance(self, period, old_prefix, new_prefix):
         """This is a datatabase level copy"""
@@ -220,7 +220,7 @@ class CoreDrummonds(Core):
         coa.owners_equity = [4100, 4200, 4300]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
-        coa.year_corporation_tax = 9510
+        coa.year_corporation_tax = [9510]
 
     def __setup_core_detail_chart_of_accounts(self):
         coa = self.fy_detail_coa
@@ -244,7 +244,7 @@ class CoreDrummonds(Core):
         coa.owners_equity = [300, 310, 320]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 910  # This is a balancing account for tax that is carried forward
-        coa.year_corporation_tax = 910
+        coa.year_corporation_tax = [910]
 
 
 class CoreSlumberfleece(Core):
