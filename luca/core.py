@@ -109,6 +109,31 @@ class Core:
         self.dbname = file_name  # Default database name
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
+        self.setup_core_chart_of_accounts()
+
+    def setup_core_chart_of_accounts(self):
+        coa = self.fy_coa
+        coa.constants = {
+            'period_pnl': 32,  # Period Profit and Loss - is a caculated item from trial balance
+            'pnl_nc_start': 49  # Nominal codes greater than this are all profit and loss
+        }
+        coa.calc_pnl = 32  # This is virtual nominal code as it is the balance of the P&L items for use in
+        # balance sheet reports
+        coa.sales = [50]
+        coa.material_costs_name = 'Cost of Sales'
+        coa.material_costs = [60]
+        coa.variable_costs = []
+        coa.fixed_production_costs = []
+        coa.admin_costs = [80]
+        coa.selling_costs = []
+        coa.fixed_asset = [10]
+        coa.current_asset = [12]
+        coa.short_term_liabilities = [20]
+        coa.long_term_liabilities = [21]
+        coa.owners_equity = [30, 31, 32]
+        coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
+        coa.tax_control_account = 91  # This is a balancing account for tax that is carried forward
+        coa.year_coporation_tax = 91
 
     def copy_trial_balance(self, period, old_prefix, new_prefix):
         """This is a datatabase level copy"""
@@ -144,18 +169,23 @@ class CoreDrummonds(Core):
         self.base_chart_of_accounts_name = 'drummonds'
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
-        self.initialise_chart_of_accounts()
+        for coa in (self.coa, self.fy_coa):
+            self.initialise_chart_of_accounts(coa)
+        self.setup_core_chart_of_accounts()  # This is just to abstract all the details
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
 
-    def initialise_chart_of_accounts(self):
+    def initialise_chart_of_accounts(self, coa):
+        """This is a generic setup for all chart of accounts that belong to Drummonds."""
+        coa.company_name = 'Drummonds.net Limited'
+        coa.company_number = '05759862'
+
+    def setup_core_chart_of_accounts(self):
         coa = self.coa
         coa.constants = {
             'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
             'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss
         }
-        coa.company_name = 'Drummonds.net Limited'
-        coa.company_number = '05759862'
         coa.calc_pnl = 4300  # This is virtual nominal code as it is the balance of the P&L items for use in
         # balance sheet reports
         coa.sales = [5000, 5100]
