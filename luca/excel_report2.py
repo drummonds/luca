@@ -48,7 +48,7 @@ class ExcelManagementReport2():
         self.line_number += 1
 
     def write_fy_row(self, ws, entries, label, note ='', cell_format={}):
-        cell_format = self.xlb.wb.add_format({**self.base_format_dictionary, **{'bold': True}, **{'align': 'left'}})
+        cell_format = self.workbook.add_format({**self.base_format_dictionary, **{'bold': True}, **{'align': 'left'}})
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
         ws.write(cell_location, label, self.left_fmt)
         cell_location = xl_rowcol_to_cell(self.line_number, 2)
