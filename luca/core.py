@@ -22,6 +22,21 @@ DRUMMONDS_TO_FY_SUMMARY = {
     91: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     }
 
+DRUMMONDS_TO_FY_DETAIL = {
+    100: (100, ),  # Tangible fixed assets
+    110: (),  # Debtors
+    120: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
+    200: (2000, ),  # Creditors: Amounts falling due within one year
+    210: (),  # Creditors: Amounts falling due after more than one year
+    300: (4200, 4300),  # Profit and Loss Account
+    310: (4100, ),  # Called up share capital
+    500: (5000, 5100),  # Turnover
+    600: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
+    800: (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
+         8008, 8009, 8010, 8011, 8012, 8013, 8014, 8017, 8018, 8019, 8020, 8100, 8900),
+    # Administrative Expenses
+    910: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
+    }
 SLF_MA_TO_FY_SUMMARY = {
     10: (10, ),  # 20, 21, 30, 31, 40, 41,),
     11: (1100, ),
@@ -169,9 +184,11 @@ class CoreDrummonds(Core):
         self.base_chart_of_accounts_name = 'drummonds'
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
+            self.fy_detail_coa = coa_s.get_chart_of_account('FY_Detail_Summary')
         for coa in (self.coa, self.fy_coa):
             self.initialise_chart_of_accounts(coa)
         self.__setup_core_chart_of_accounts()  # This is just to abstract all the details
+        self.__setup_core_detail_chart_of_accounts()
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
 
@@ -203,7 +220,31 @@ class CoreDrummonds(Core):
         coa.owners_equity = [4100, 4200, 4300]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
-        coa.year_coporation_tax = 9510
+        coa.year_corporation_tax = 9510
+
+    def __setup_core_detail_chart_of_accounts(self):
+        coa = self.fy_detail_coa
+        coa.constants = {
+            'period_pnl': 320,  # Period Profit and Loss - is a caculated item from trial balance
+            'pnl_nc_start': 490  # Nominal codes greater than this are all profit and loss
+        }
+        coa.calc_pnl = 320  # This is virtual nominal code as it is the balance of the P&L items for use in
+        # balance sheet reports
+        coa.sales = [500]
+        coa.material_costs_name = 'Cost of Sales'
+        coa.material_costs = [600]
+        coa.variable_costs = []
+        coa.fixed_production_costs = []
+        coa.admin_costs = [800]
+        coa.selling_costs = []
+        coa.fixed_asset = [100]
+        coa.current_asset = [120]
+        coa.short_term_liabilities = [200]
+        coa.long_term_liabilities = [210]
+        coa.owners_equity = [300, 310, 320]
+        coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
+        coa.tax_control_account = 910  # This is a balancing account for tax that is carried forward
+        coa.year_coporation_tax = 910
 
 
 class CoreSlumberfleece(Core):
