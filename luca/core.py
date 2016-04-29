@@ -181,7 +181,7 @@ class CoreDrummonds(Core):
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
         self.initialise_chart_of_accounts()
         self.converter = TrialBalanceConversion(self.coa)
-        self.converter.add_conversion(self, DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
+        self.converter.add_conversion(DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
 
     def initialise_chart_of_accounts(self):
         coa = self.coa
