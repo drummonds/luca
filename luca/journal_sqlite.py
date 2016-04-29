@@ -6,7 +6,7 @@ import math
 import pandas as pd
 import sqlite3
 
-from .utils import LucaError
+from .utils import LucaError, p
 from .journal_entry import JournalEntry
 
 
@@ -88,11 +88,13 @@ class LoadDatabase():
             for nominal_code, value in trial_balance.to_series().iteritems():
                 if value == '-' or math.isnan(value):  # Not sure this check is necessary any longer
                     value = p(0)
-                assert type(nominal_code) == type(1),\
-                    'Trying to insert code {} into database {} for period {} with value {}'.\
-                    format(nominal_code, coa.name, period, value)
-                sql = "INSERT INTO trial_balance (period, code, balance) VALUES ('{}', {}, {})".\
+                try:
+                    sql = "INSERT INTO trial_balance (period, code, balance) VALUES ('{}', {}, {})".\
                         format(period, nominal_code, value)
-                self.cursor.execute(sql)
+                    self.cursor.execute(sql)
+                except:  # Todo make more specific
+                    print('Trying to insert code {} into database {} for period {} with value {}'. \
+                        format(nominal_code, coa.name, period, value))
+
         else:
             raise LoadDatabaseError('{} already is in managegment report database'.format(period))
