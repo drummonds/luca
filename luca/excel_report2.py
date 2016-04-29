@@ -10,12 +10,13 @@ from .utils import p
 
 class ExcelReportPage:
 
-    def __init__(self, report_data):
+    def __init__(self, report_data, sheetname_prefix = ''):
         self.rep = report_data  ## report_data
+        self.sheetname_prefix = sheetname_prefix
 
     @property
     def sheetname(self):
-        return 'Blank'
+        return '{}Blank'.format(self.sheetname_prefix)
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet

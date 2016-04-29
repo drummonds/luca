@@ -96,7 +96,7 @@ class FYPnLPage(ExcelReportPage):
 
     @property
     def sheetname(self):
-        return 'FY P&L '+ self.rep.datestring
+        return '{}FY P&L '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet
@@ -143,7 +143,7 @@ class FYNotes(ExcelReportPage):
 
     @property
     def sheetname(self):
-        return 'Notes ' + self.rep.datestring
+        return '{}Notes '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet
