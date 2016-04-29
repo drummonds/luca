@@ -96,4 +96,4 @@ class LoadDatabase():
                     self.cursor.execute("INSERT INTO trial_balance (period, code, balance) VALUES ('{}', {}, {})".\
                         format(period, nominal_code, value))
         else:
-            raise LoadDatabaseError('{} already is in managegment report database'.format(period))
+            raise LoadDatabaseError('{} already is in management report database'.format(period))
