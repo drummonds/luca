@@ -133,9 +133,7 @@ class FYPnLPage(ExcelReportPage):
         corporation_tax = xlb.sum(coa.year_corporation_tax)
         xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities', cell_format={'bottom': '1'})
         profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
-        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', xlb.left_fmt,
-                         cell_format={'bottom': '6'})
-
+        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', cell_format={'bottom': '6'})
         ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
         xlb.line_number = 39
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT')
