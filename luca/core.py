@@ -109,9 +109,9 @@ class Core:
         self.dbname = file_name  # Default database name
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
-        self.setup_core_chart_of_accounts()
+        self.__setup_core_chart_of_accounts()
 
-    def setup_core_chart_of_accounts(self):
+    def __setup_core_chart_of_accounts(self):
         coa = self.fy_coa
         coa.constants = {
             'period_pnl': 32,  # Period Profit and Loss - is a caculated item from trial balance
@@ -171,7 +171,7 @@ class CoreDrummonds(Core):
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
         for coa in (self.coa, self.fy_coa):
             self.initialise_chart_of_accounts(coa)
-        self.setup_core_chart_of_accounts()  # This is just to abstract all the details
+        self.__setup_core_chart_of_accounts()  # This is just to abstract all the details
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
 
@@ -180,7 +180,7 @@ class CoreDrummonds(Core):
         coa.company_name = 'Drummonds.net Limited'
         coa.company_number = '05759862'
 
-    def setup_core_chart_of_accounts(self):
+    def __setup_core_chart_of_accounts(self):
         coa = self.coa
         coa.constants = {
             'period_pnl': 4200,  # Period Profit and Loss - is a caculated item from trial balance
@@ -215,12 +215,12 @@ class CoreSlumberfleece(Core):
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
             self.sage_coa = coa_s.get_chart_of_account('SAGE')
-        self.initialise_chart_of_accounts()
+        self.__setup_core_chart_of_accounts()
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(SLF_MA_TO_FY_SUMMARY, self.coa, self.fy_coa)
         self.converter.add_conversion(SAGE_TO_SLF_MA, self.sage_coa, self.coa)
 
-    def initialise_chart_of_accounts(self):
+    def __setup_core_chart_of_accounts(self):
         coa = self.coa
         coa.company_name = 'Slumberfleece Limited'
         coa.company_number = '123'
