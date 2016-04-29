@@ -1,5 +1,6 @@
 """This is the core of the code that I am using for practicaly purpposes.
 It is however system specific."""
+import pandas as pd
 import sqlite3
 
 from .coa_sqlite import chart_of_accounts_from_db
@@ -110,7 +111,7 @@ class Core:
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
 
     def copy_trial_balance(self, period, old_prefix, new_prefix):
-        """This is a datatabase level cooy"""
+        """This is a datatabase level copy"""
         conn = sqlite3.connect(self.dbname)
         try:
             cursor = conn.cursor()
@@ -124,6 +125,17 @@ class Core:
         finally:
             conn.close()
 
+    def periods(self):
+        """Returns a list of all the names of the trial balance periods that have been stored."""
+        conn = sqlite3.connect(self.dbname)
+        try:
+            sql = 'SELECT DISTINCT period FROM trial_balance ORDER BY period'
+            df = pd.read_sql(sql, conn)
+        finally:
+            conn.close()
+        result = list(df['period'])
+        result.sort()
+        return result
 
 class CoreDrummonds(Core):
 
