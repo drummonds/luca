@@ -75,7 +75,7 @@ class FYDirectorsReport(ExcelReportPage):
             ws.write(location, text, xlb.title_fmt)
         for location, text in [
             ('A4', 'The director presents his report and the unaudited financial statements for the year ended {}.'.format(rep.full_datestring)),
-            ('A7', 'The direcotr who held office during the year was as follows:'),
+            ('A7', 'The director who held office during the year was as follows:'),
             ('A8', 'Dr Humphrey Drummond'),
             ('A11', 'This report has been prepared in accordance with the smal companies regime under the Companies Act 2006.'),
             ('A14', 'Approved by the board on the 30 April 2016 and signed on its behalf by.'),
@@ -122,21 +122,75 @@ class FYPnLPage(ExcelReportPage):
         cost_of_sales = xlb.sum(coa.material_costs)
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales', cell_format={'bottom': 1}, row_height=22)
         gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
-        xlb.write_fy_row(ws, gross_profit, 'Gross profit')
+        xlb.write_fy_row(ws, gross_profit, 'Gross profit', row_height=22)
         admin_expenses = xlb.sum(coa.variable_costs
                                  + coa.fixed_production_costs
                                  + coa.admin_costs,  sign = -1)
         xlb.write_fy_row(ws, admin_expenses, 'Administrative expenses', cell_format={'bottom': 1}, row_height=22)
         operating_profit = [x[0]+x[1] for x in zip(gross_profit, admin_expenses)]
-        xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit', cell_format={'bottom': 1}, row_height=22)
-        xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation')
+        xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit', note='2',
+                         cell_format={'bottom': 1}, row_height=22)
+        xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation', row_height=22)
         corporation_tax = xlb.sum(coa.year_corporation_tax)
-        xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities',
+        xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities', note='3',
                          cell_format={'bottom': '1'}, row_height=22)
         profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
-        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', cell_format={'bottom': 6},
-                         row_height = 22)
+        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
+                         cell_format={'bottom': 6}, row_height = 22)
         ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
+        xlb.line_number = 39
+        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True)
+
+
+class FYDetailPnLPage(ExcelReportPage):
+
+    @property
+    def sheetname(self):
+        return '{}FY Detail P&L '.format(self.sheetname_prefix) + self.rep.datestring
+
+    def format_page(self, excel_base, worksheet):
+
+        def header(title):
+            #
+            pass
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        # Nominal code info columns
+        for range, width in [('B:B', 80),  # Description
+                             ('C:D', 20)]: # Cols
+            ws.set_column(range, width)
+        xlb.col_list=(2, 3, )  # Two column report
+        xlb.write_merged_header(ws, coa.company_name, cols='B:E')
+        xlb.write_merged_header(ws, 'Profit and Loss Account for the Year Ended {}'.format(rep.full_datestring),
+                                cols='B:E')
+        xlb.write_row(ws, rep.datestrings)
+        xlb.write_row(ws, ['£']*2)
+        xlb.line_number = 5
+        turnover = xlb.sum(coa.sales, sign = -1)
+        xlb.write_fy_row(ws, turnover, 'Turnover', row_height=22)
+        cost_of_sales = xlb.sum(coa.material_costs)
+        xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales', cell_format={'bottom': 1}, row_height=22)
+        gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
+        xlb.write_fy_row(ws, gross_profit, 'Gross profit', row_height=22)
+        admin_expenses = xlb.sum(coa.variable_costs
+                                 + coa.fixed_production_costs
+                                 + coa.admin_costs,  sign = -1)
+        xlb.write_fy_row(ws, admin_expenses, 'Administrative expenses', cell_format={'bottom': 1}, row_height=22)
+        operating_profit = [x[0]+x[1] for x in zip(gross_profit, admin_expenses)]
+        xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit', note='2',
+                         cell_format={'bottom': 1}, row_height=22)
+        xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation', row_height=22)
+        corporation_tax = xlb.sum(coa.year_corporation_tax)
+        xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities', note='3',
+                         cell_format={'bottom': '1'}, row_height=22)
+        profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
+        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
+                         cell_format={'bottom': 6}, row_height = 22)
+        ws.write('C38', 'This page does not form part of the statutory financial statements.', xlb.fmt)
         xlb.line_number = 39
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True)
 

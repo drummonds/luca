@@ -191,6 +191,7 @@ class CoreDrummonds(Core):
         self.__setup_core_detail_chart_of_accounts()
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(DRUMMONDS_TO_FY_SUMMARY, self.coa, self.fy_coa)
+        self.converter.add_conversion(DRUMMONDS_TO_FY_DETAIL, self.coa, self.fy_detail_coa)
 
     def initialise_chart_of_accounts(self, coa):
         """This is a generic setup for all chart of accounts that belong to Drummonds."""
