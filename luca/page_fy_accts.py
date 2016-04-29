@@ -153,15 +153,15 @@ class FYDetailPnLPage(ExcelReportPage):
         def write_block(acct_list, title, sign=1):
             block_sum = [p(0)] * 4
             fmt = xlb.workbook.add_format(
-                {**self.base_format_dictionary,  **{'align': 'right'}})
+                {**xlb.base_format_dictionary,  **{'align': 'right'}})
             fmt_title = xlb.workbook.add_format(
-                {**self.base_format_dictionary,  **{'align': 'left', 'font_size': 11}})
+                {**xlb.base_format_dictionary,  **{'align': 'left', 'font_size': 11}})
             fmt_left = xlb.workbook.add_format(
-                {**self.base_format_dictionary,  **{'align': 'left'}})
+                {**xlb.base_format_dictionary,  **{'align': 'left'}})
             fmt_underline = xlb.workbook.add_format(
-                {**self.base_format_dictionary,  **{'align': 'right', 'bottom': 1}})
+                {**xlb.base_format_dictionary,  **{'align': 'right', 'bottom': 1}})
             fmt_double_underline = xlb.workbook.add_format(
-                {**self.base_format_dictionary,  **{'align': 'right', 'bottom': 6}})
+                {**xlb.base_format_dictionary,  **{'align': 'right', 'bottom': 6}})
             # Do the title
             cell_location = xl_rowcol_to_cell(self.line_number, 1)
             ws.write(cell_location, title, fmt_title)
