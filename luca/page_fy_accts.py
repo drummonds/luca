@@ -150,9 +150,51 @@ class FYDetailPnLPage(ExcelReportPage):
 
     def format_page(self, excel_base, worksheet):
 
-        def header(title):
-            #
-            pass
+        def write_block(acct_list, title, sign=1):
+            block_sum = [p(0)] * 4
+            fmt = xlb.workbook.add_format(
+                {**self.base_format_dictionary,  **{'align': 'right'}})
+            fmt_title = xlb.workbook.add_format(
+                {**self.base_format_dictionary,  **{'align': 'left', 'font_size': 11}})
+            fmt_left = xlb.workbook.add_format(
+                {**self.base_format_dictionary,  **{'align': 'left'}})
+            fmt_underline = xlb.workbook.add_format(
+                {**self.base_format_dictionary,  **{'align': 'right', 'bottom': 1}})
+            fmt_double_underline = xlb.workbook.add_format(
+                {**self.base_format_dictionary,  **{'align': 'right', 'bottom': 6}})
+            # Do the title
+            cell_location = xl_rowcol_to_cell(self.line_number, 1)
+            ws.write(cell_location, title, fmt_title)
+            xlb.line_number += 1
+            # The acct_list is the simple list of account nominal codes that are to be included in this block
+            for nc in acct_list:
+                # If there no row then ignore error
+                try:
+                    name = self.rep.chart_of_accounts[nc]
+                    cell_location = xl_rowcol_to_cell(self.line_number, 0)
+                    ws.write(cell_location, nc, self.nc_fmt)
+                    cell_location = xl_rowcol_to_cell(self.line_number, 1)
+                    ws.write(cell_location, name, fmt_left)
+                    for i, col in enumerate(xlb.col_list):
+                        tb = rep.trial_balances[i]
+                        cell_location = xl_rowcol_to_cell(self.line_number, col)
+                        value = self.get_value(tb, nc, sign)
+                        ws.write(cell_location, value, fmt)
+                        block_sum[i] += p(value)
+                    self.line_number += 1
+                except KeyError:
+                    # This is where there is no data in the name
+                    print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
+                    pass
+            # Add a sub total line if required
+            if len(acct_list) != 1:
+                cell_location = xl_rowcol_to_cell(self.line_number, 1)
+                ws.write(cell_location, title, self.bold_left_fmt)
+                for i, c in enumerate(self.col_list):
+                    cell_location = xl_rowcol_to_cell(self.line_number, c)
+                    ws.write(cell_location, block_sum[i], fmt_double_underline)
+                self.line_number += 1
+            self.line_number += 1  # Blank line seperator
 
         ws = worksheet
         xlb = excel_base
@@ -170,29 +212,17 @@ class FYDetailPnLPage(ExcelReportPage):
         xlb.write_row(ws, rep.datestrings)
         xlb.write_row(ws, ['£']*2)
         xlb.line_number = 5
-        turnover = xlb.sum(coa.sales, sign = -1)
-        xlb.write_fy_row(ws, turnover, 'Turnover', row_height=22)
-        cost_of_sales = xlb.sum(coa.material_costs)
-        xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales', cell_format={'bottom': 1}, row_height=22)
-        gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
-        xlb.write_fy_row(ws, gross_profit, 'Gross profit', row_height=22)
-        admin_expenses = xlb.sum(coa.variable_costs
-                                 + coa.fixed_production_costs
-                                 + coa.admin_costs,  sign = -1)
-        xlb.write_fy_row(ws, admin_expenses, 'Administrative expenses', cell_format={'bottom': 1}, row_height=22)
-        operating_profit = [x[0]+x[1] for x in zip(gross_profit, admin_expenses)]
-        xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit', note='2',
-                         cell_format={'bottom': 1}, row_height=22)
-        xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation', row_height=22)
-        corporation_tax = xlb.sum(coa.year_corporation_tax)
-        xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities', note='3',
-                         cell_format={'bottom': '1'}, row_height=22)
-        profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
-        xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
-                         cell_format={'bottom': 6}, row_height = 22)
-        ws.write('C38', 'This page does not form part of the statutory financial statements.', xlb.fmt)
+        profit = [p(0)] * 4
+        write_block(coa.sales, 'Turnover')
+        write_block(coa.material_costs, 'Cost of Sale')
+        write_block(coa.establishment_costs, 'Establishment Costs')
+        write_block(coa.variable_costs + coa.fixed_production_costs + coa.admin_costs,
+                    'General administrative expenses')
+        write_block(coa.finance_charges, 'Finance Charges')
+        write_block(coa.depreciation_costs, 'Depreciation of office equipment')
+        ws.write('B38', 'This page does not form part of the statutory financial statements.', xlb.fmt)
         xlb.line_number = 39
-        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True)
+        xlb.format_print_area(ws, 'DETAILED PROFIT & LOSS ACCOUNT', hide_gridlines = True)
 
 
 class FYNotes(ExcelReportPage):
