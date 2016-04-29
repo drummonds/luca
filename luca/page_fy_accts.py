@@ -163,38 +163,34 @@ class FYDetailPnLPage(ExcelReportPage):
             fmt_double_underline = xlb.workbook.add_format(
                 {**xlb.base_format_dictionary,  **{'align': 'right', 'bottom': 6}})
             # Do the title
-            cell_location = xl_rowcol_to_cell(self.line_number, 1)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
             ws.write(cell_location, title, fmt_title)
             xlb.line_number += 1
             # The acct_list is the simple list of account nominal codes that are to be included in this block
             for nc in acct_list:
                 # If there no row then ignore error
                 try:
-                    name = self.rep.chart_of_accounts[nc]
-                    cell_location = xl_rowcol_to_cell(self.line_number, 0)
-                    ws.write(cell_location, nc, self.nc_fmt)
-                    cell_location = xl_rowcol_to_cell(self.line_number, 1)
+                    name = rep.chart_of_accounts[nc]
+                    cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
                     ws.write(cell_location, name, fmt_left)
                     for i, col in enumerate(xlb.col_list):
                         tb = rep.trial_balances[i]
-                        cell_location = xl_rowcol_to_cell(self.line_number, col)
-                        value = self.get_value(tb, nc, sign)
+                        cell_location = xl_rowcol_to_cell(xlb.line_number, col)
+                        value = xlb.get_value(tb, nc, sign)
                         ws.write(cell_location, value, fmt)
                         block_sum[i] += p(value)
-                    self.line_number += 1
+                        xlb.line_number += 1
                 except KeyError:
                     # This is where there is no data in the name
                     print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
                     pass
             # Add a sub total line if required
             if len(acct_list) != 1:
-                cell_location = xl_rowcol_to_cell(self.line_number, 1)
-                ws.write(cell_location, title, self.bold_left_fmt)
-                for i, c in enumerate(self.col_list):
-                    cell_location = xl_rowcol_to_cell(self.line_number, c)
+                for i, c in enumerate(xlb.col_list):
+                    cell_location = xl_rowcol_to_cell(xlb.line_number, c)
                     ws.write(cell_location, block_sum[i], fmt_double_underline)
-                self.line_number += 1
-            self.line_number += 1  # Blank line seperator
+                    xlb.line_number += 1
+            xlb.line_number += 1  # Blank line seperator
 
         ws = worksheet
         xlb = excel_base
