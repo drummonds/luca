@@ -6,19 +6,19 @@ from .coa_sqlite import chart_of_accounts_from_db
 from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
-    10, (100, ),  # Tangible fixed assets
-    11, (),  # Debtors
-    12, (1200, 1205, 1250, 2200),  # Cash at bank and in hand
-    20, (2000),  # Creditors: Amounts falling due within one year
-    21, (),  # Creditors: Amounts falling due after more than one year
-    30, (4200, 4300),  # Profit and Loss Account
-    31, (4100),  # Called up share capital
+    10: (100, ),  # Tangible fixed assets
+    11: (),  # Debtors
+    12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
+    20: (2000),  # Creditors: Amounts falling due within one year
+    21: (),  # Creditors: Amounts falling due after more than one year
+    30: (4200, 4300),  # Profit and Loss Account
+    31: (4100),  # Called up share capital
     50: (5000, 5100),  # Turnover
-    60, (6000, 6100, 6200),  # Cost of sales
-    80, (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007,
+    60: (6000, 6100, 6200),  # Cost of sales
+    80: (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007,
          8008, 8009, 8010, 8011, 8012, 8013, 8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100,
          8900),  # Administrative Expenses
-    91, (9500, 9510),  # Tax on(loss)/profit on ordinary acitivies
+    91: (9500, 9510),  # Tax on(loss)/profit on ordinary acitivies
     }
 
 SLF_MA_TO_FY_SUMMARY = {
