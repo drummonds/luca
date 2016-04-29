@@ -185,7 +185,7 @@ class CoreDrummonds(Core):
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
             self.fy_detail_coa = coa_s.get_chart_of_account('FY_Detail_Summary')
-        for coa in (self.coa, self.fy_coa):
+        for coa in (self.coa, self.fy_coa, self.fy_detail_coa):
             self.initialise_chart_of_accounts(coa)
         self.__setup_core_chart_of_accounts()  # This is just to abstract all the details
         self.__setup_core_detail_chart_of_accounts()
