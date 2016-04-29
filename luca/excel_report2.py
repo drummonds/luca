@@ -219,6 +219,7 @@ class ExcelManagementReport2():
                'num_format': '_(* #,##0_);_(* (#,##0);_(* "-"_);_(@_)'}
         self.base_format_dictionary = fmt
         self.fmt = wb.add_format(fmt)
+        self.title_fmt = wb.add_format({**fmt, **{'bold': True, 'font_size': 14}})
         self.nc_fmt = wb.add_format({**fmt, **{'num_format': '0'}})
         self.left_fmt = wb.add_format({**fmt, **{'align': 'left'}})
         self.bold_fmt = wb.add_format({**fmt, **{'bold': True}})
