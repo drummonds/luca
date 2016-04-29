@@ -19,3 +19,5 @@ class TestChartOfAccounts(unittest.TestCase):
             coa = coa_s.get_chart_of_account(chart_of_accounts_name)
         print(coa.names)
         assert 'Bank Current Account' in coa.names
+        print(coa.nominal_codes)
+        assert 1200 in coa.nominal_codes

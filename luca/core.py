@@ -91,7 +91,7 @@ SAGE_TO_SLF_MA = {
     1103: (1103, 1110, 1120,),
     1115: (1104, 1115, 1117,),
     1200: (1200, 1205, 1240, 1250, 1260, 1262, 1263, 9998, 9999,),
-    1202: (1207, 1210, 1212, 1252,),
+    1202: (1202, 1207, 1210, 1212, 1252,),
     1203: (1203, 1220,),
     1204: (1204, 1230, 1232,),
     2100: (2100, 2220,),
@@ -190,6 +190,8 @@ class CoreSlumberfleece(Core):
         self.base_chart_of_accounts_name = 'SLF-MA'
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
+            self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
+            self.sage_coa = coa_s.get_chart_of_account('SAGE')
         self.initialise_chart_of_accounts()
         self.converter = TrialBalanceConversion(self.coa)
         self.converter.add_conversion(SLF_MA_TO_FY_SUMMARY, self.coa, self.fy_coa)

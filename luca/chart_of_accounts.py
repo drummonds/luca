@@ -103,6 +103,12 @@ class ChartOfAccounts:
         n.sort()
         return n
 
+    @property
+    def nominal_codes(self):
+        nc = [nc for nc in self.dict.keys()]
+        nc.sort()
+        return nc
+
     def assert_valid_name(self):
         """Assert that the name of the chart of accounts is a valid one and supported.  This is more a temporary
         functon when only a small subset of chart of accounts are supported."""
