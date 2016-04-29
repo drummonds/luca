@@ -62,15 +62,18 @@ class ExcelManagementReport2():
         """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
         # TODO move this code into the TrialBalance data
 
-        if int(nominal_code) == tb.chart_of_accounts.calc_pnl:
+        try:
+            if int(nominal_code) == tb.chart_of_accounts.calc_pnl:
                 value=tb.profit_and_loss  * sign
-        else:
-            try:
-                value = tb[nominal_code] * sign
-            except (KeyError, IndexError, TypeError):
-                # There is a name value so presumably some data but just none in for this nominal code on this period
-                value = p(0)
-        return value
+            else:
+                try:
+                    value = tb[nominal_code] * sign
+                except (KeyError, IndexError, TypeError):
+                    # There is a name value so presumably some data but just none in for this nominal code on this period
+                    value = p(0)
+            return value
+        except AttributeError:
+            return p(0)
 
     def all_values_zero(self, nominal_code, sign):
         all_zero = True
