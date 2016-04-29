@@ -11,4 +11,4 @@ from .journal_sqlite import JournalSqlite, journal_from_db, LoadDatabaseError, L
 from .coa_sqlite import chart_of_accounts_from_db
 from .page_mangement_accounts import ManagementPnLPage, ManagementBSPage
 from .page_fy_accts import FYCoverPage, FYPnLPage
-from .core import Core, CoreDrummond, CoreSlumberfleece
+from .core import Core, CoreDrummonds, CoreSlumberfleece

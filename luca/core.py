@@ -172,10 +172,10 @@ class Core:
             conn.close()
 
 
-class CoreDrummond(Core):
+class CoreDrummonds(Core):
 
     def __init__(self, file_name = 'historic_trial_balances.db'):
-        super(CoreDrummond, self).__init__(file_name = file_name)
+        super(CoreDrummonds, self).__init__(file_name = file_name)
         self.base_chart_of_accounts_name = 'drummonds'
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.coa = coa_s.get_chart_of_account(self.base_chart_of_accounts_name)
