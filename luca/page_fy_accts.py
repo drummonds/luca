@@ -209,7 +209,7 @@ class FYDetailPnLPage(ExcelReportPage):
         xlb.write_row(ws, ['£']*2)
         xlb.line_number = 5
         profit = [p(0)] * 4
-        write_block(coa.sales, 'Turnover')
+        write_block(coa.sales, 'Turnover', sign=-1)
         write_block(coa.material_costs, 'Cost of Sale')
         write_block(coa.employment_costs, 'Employment Costs')
         write_block(coa.establishment_costs, 'Establishment Costs')
@@ -233,6 +233,81 @@ class FYNotes(ExcelReportPage):
         return '{}Notes '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
+
+        def title(text):
+            # Merge whole row
+            ws.merge_range('A{0}:E{}'.format(xlb.line_number), text, xlb.title_fmt)
+            xlb.line_number +=1
+
+        def note_title(text):
+            self.note_number += 1
+            ws.write('A{}'.format(xlb.line_number), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
+            xlb.line_number += 2
+
+        def sub_title(text):
+            xlb.line_number +=1
+            ws.write('A{}'.format(xlb.line_number), text, xlb.bold_left_fmt)
+            xlb.line_number +=1
+
+        def note(text):
+            ws.merge_range('A{0}:E{}'.format(xlb.line), text, xlb.para_fmt)
+            xlb.line_number +=1
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        self.note_number = 0
+        # Nominal code info columns
+        for range, width in [('A:E', 20)]:
+            ws.set_column(range, width)
+        title(coa.company_name)
+        xlb.line_number +=1
+        title('Notes to the Financial Statements for the Year Ended {}'.format(rep.full_datestring))
+        xlb.line_number +=2
+        note_title('Accounting Policies')
+        sub_title('Basis of Preperation')
+        note("The financial statements have been prepared under the historical cost convention and in " +
+            "accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
+        sub_title('Turnover')
+        note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods " +
+            "and services to customers.")
+        sub_title('Depreciation')
+        note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any " +
+            "estimated residual value, over their expected useful econominc life as follows:")
+        sub_title('Financial Instruments')
+        note("Financial instruments are classified and acounted for, according to the substance of the contractual " +
+             "arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument " +
+             "is any contract that evidences a residual interest in the assets of the company after deducting all " +
+             "of its liabilities.  Where shares are issued, any component that creates a financial liability of the " +
+             "company is presented as a liability in the balance sheet.  The corresponding dividens relating to the " +
+             "liability component are charged as interest expense in the profit and loss account.")
+        note_title('Operating (loss)/profit')
+        note_title('Taxation')
+        note_title('Tangible Fixed Assets')
+        note_title('Debtors')
+        note_title('Creditors: Amount falling due within one year')
+        note_title('Creditors: Amount falling due after more than one year')
+        note_title('Share Capital')
+        note_title('Dividends')
+        note_title('Reserves')
+        note_title('Control')
+        note("The company is controlled by the director who owns 100% of the called up share capital.")
+        xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,
+                              show_footer=False, show_header=False)
+
+
+class PlaceHolder(ExcelReportPage):
+    """This is page which is a place holder for one to be printined"""
+    place_holder_number = 1
+
+    @property
+    def sheetname(self):
+        return '#{}'.format(PlaceHolder.place_holder_number)
+
+    def format_page(self, excel_base, worksheet):
+        PlaceHolder.place_holder_number += 1
         ws = worksheet
         xlb = excel_base
         xlb.rep = self.rep
@@ -242,20 +317,10 @@ class FYNotes(ExcelReportPage):
         for range, width in [('A:A', 100)]:
             ws.set_column(range, width)
         for location, text in [
-            ('A1', coa.company_name),
-            ('A3', 'Notes to the Financial Statements for the Year Ended {}'.format(rep.full_datestring)),
+            ('A1', 'Place Holder'),
+            ('A3', 'Page Intentionlly Blank'),
             ]:
             ws.write(location, text, xlb.title_fmt)
-        for location, text in [
-            ('A9', """The financial statements have been prepared under the historical cost convention and in accordance
-            with the Financial Report Standard for Smaller Entities (Effective April 2008)"""),
-            ]:
-            ws.write(location, text, xlb.left_fmt)
-        for location, text in [
-            ('A6', 'Accounting Policies'),
-            ('A8', 'Basis of Preperation'),
-            ]:
-            ws.write(location, text, xlb.bold_left_fmt)
-        xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True)
-
+        xlb.format_print_area(ws, 'Place Holder', hide_gridlines=True,
+                              show_footer=False, show_header=False)
 

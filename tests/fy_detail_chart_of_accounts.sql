@@ -4,6 +4,7 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_S
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 610, 'Sub Contract Cost', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 700, 'Establishment costs', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 750, 'Directors Remuneration', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 760, 'Staff training', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 800, 'Sundry Expenses', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 810, 'Telephone and fax', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 815, 'Office expenses', 'Expense');

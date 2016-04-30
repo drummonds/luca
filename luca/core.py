@@ -33,14 +33,14 @@ DRUMMONDS_TO_FY_DETAIL = {
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
     610: (6100, 6200), # Subcontract cost
-    700: (8300, 8001), # Home office costs
+    700: (8300), # Home office costs
     750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
     760: (8012, ),  # Staff training
     800: (7500, 8001, 8002, 8003, 8008, 8011, 8018),  # Sundry expense TODO check 8002 computer hardware capex
-    810: (8005, 8006), #
+    810: (8005, 8006), # # Telephone and fax
     815: (8007, ), #
     820: (7001, 7002, 8009, 8013, 8017,   ), #
-    825: (8014, 8017, 8020), # Prining postage and subsistence
+    825: (8001, 8014, 8017, 8020), # Prining postage and subsistence
     830: (8000, ), #
     835: (8100, 8900), #
     840: (8010, 8019 ), # Travel and sussitence
@@ -247,7 +247,7 @@ class CoreDrummonds(Core):
         coa.material_costs = [600, 610]
         coa.variable_costs = []
         coa.fixed_production_costs = []
-        coa.admin_costs = [800, 805, 810, 815, 820, 825, 830, 835, 840]
+        coa.admin_costs = [805, 810, 815, 820, 825, 800, 830, 835, 840]
         coa.selling_costs = []
         coa.fixed_asset = [100]
         coa.current_asset = [120]
