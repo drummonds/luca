@@ -3,7 +3,14 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_S
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 600, 'Purchases', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 610, 'Sub Contract Cost', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 700, 'Establishment costs', 'Expense');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 800, 'Administrative Expenses', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 800, 'Sundry Expenses', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 810, 'Telephone and fax', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 815, 'Office expenses', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 820, 'Computer software and maintenance costs', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 825, 'Printing, postage and stationery', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 830, 'Accountancy Fees', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 835, 'Legal and professional fees', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 840, 'Travel and subsistence', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 910, 'Tax on(loss)/profit on ordinary acitivies', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 100, 'Tangible fixed assets', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 110, 'Debtors', 'Asset');

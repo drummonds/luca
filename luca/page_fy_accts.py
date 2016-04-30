@@ -189,7 +189,7 @@ class FYDetailPnLPage(ExcelReportPage):
                 for i, c in enumerate(xlb.col_list):
                     cell_location = xl_rowcol_to_cell(xlb.line_number, c)
                     ws.write(cell_location, block_sum[i], fmt_double_underline)
-                    xlb.line_number += 1
+                xlb.line_number += 1
             xlb.line_number += 1  # Blank line seperator
 
         ws = worksheet
