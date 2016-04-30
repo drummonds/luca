@@ -211,6 +211,7 @@ class FYDetailPnLPage(ExcelReportPage):
         profit = [p(0)] * 4
         write_block(coa.sales, 'Turnover')
         write_block(coa.material_costs, 'Cost of Sale')
+        write_block(coa.employment_costs, 'Employment Costs')
         write_block(coa.establishment_costs, 'Establishment Costs')
         write_block(coa.variable_costs + coa.fixed_production_costs + coa.admin_costs,
                     'General administrative expenses')

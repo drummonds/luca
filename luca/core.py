@@ -25,7 +25,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
 DRUMMONDS_TO_FY_DETAIL = {
     100: (100, ),  # Tangible fixed assets
     110: (),  # Debtors
-    120: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
+    120: (1200, 1205, 7205, 1250, 2200),  # Cash at bank and in hand TODO Check 7205 smart user payment
     200: (2000, ),  # Creditors: Amounts falling due within one year
     210: (),  # Creditors: Amounts falling due after more than one year
     300: (4200, 4300),  # Profit and Loss Account
@@ -33,9 +33,18 @@ DRUMMONDS_TO_FY_DETAIL = {
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
     610: (6100, 6200), # Subcontract cost
-    700: (8300, ), # Home office costs
-    800: (7000, 7001, 7002, 7100, 7205, 7300, 7500, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
-         8008, 8009, 8010, 8011, 8012, 8013, 8014, 8017, 8018, 8019, 8020, 8100, 8900),
+    700: (8300, 8001), # Home office costs
+    750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
+    760: (8012, ),  # Staff training
+    800: (7500, 8001, 8002, 8003, 8008, 8011, 8018),  # Sundry expense TODO check 8002 computer hardware capex
+    810: (8005, 8006), #
+    815: (8007, ), #
+    820: (7001, 7002, 8009, 8013, 8017,   ), #
+    825: (8017, 8020), # Prining postage and subsistence
+    830: (8000, ), #
+    835: (8100, 8900), #
+    840: (8010, 8019 ), # Travel and sussitence
+    890: (7000, ),  # Bank charges
     # Administrative Expenses
     910: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     }
@@ -243,7 +252,8 @@ class CoreDrummonds(Core):
         coa.fixed_asset = [100]
         coa.current_asset = [120]
         coa.establishment_costs = [700]
-        coa.finance_charges = []
+        coa.employment_costs = [750]
+        coa.finance_charges = [890]
         coa.depreciation_costs = []
         coa.short_term_liabilities = [200]
         coa.long_term_liabilities = [210]
