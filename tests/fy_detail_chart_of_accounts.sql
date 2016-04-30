@@ -1,6 +1,8 @@
 DELETE FROM chart_of_accounts WHERE chart='FY_Detail_Summary'
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 500, 'Turnover', 'Income');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 600, 'Cost of sales', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 500, 'Sales, UK', 'Income');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 600, 'Purchases', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 610, 'Sub Contract Cost', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 700, 'Establishment costs', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 800, 'Administrative Expenses', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 910, 'Tax on(loss)/profit on ordinary acitivies', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 100, 'Tangible fixed assets', 'Asset');
