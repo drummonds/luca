@@ -273,6 +273,7 @@ class ExcelManagementReport2():
         self.writer = pd.ExcelWriter(fn, engine='xlsxwriter')
         # Get the xlsxwriter objects from the dataframe writer object.
         self.workbook  = self.writer.book
+        self.page_number=0
 
     def close(self):
         self.writer.save()
@@ -281,4 +282,5 @@ class ExcelManagementReport2():
         worksheet = self.workbook.add_worksheet(new_page.sheetname)
         self.add_standard_formats()
         self.line_number=0
+        self.page_number+=1
         new_page.format_page(self, worksheet)

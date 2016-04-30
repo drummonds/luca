@@ -171,7 +171,7 @@ class FYDetailPnLPage(ExcelReportPage):
                 # If there no row then ignore error
                 try:
                     name = rep.chart_of_accounts[nc]
-                    cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
+                    cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
                     ws.write(cell_location, name, fmt_left)
                     for i, col in enumerate(xlb.col_list):
                         tb = rep.trial_balances[i]
@@ -179,7 +179,7 @@ class FYDetailPnLPage(ExcelReportPage):
                         value = xlb.get_value(tb, nc, sign)
                         ws.write(cell_location, value, fmt)
                         block_sum[i] += p(value)
-                        xlb.line_number += 1
+                    xlb.line_number += 1
                 except KeyError:
                     # This is where there is no data in the name
                     print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
@@ -218,7 +218,11 @@ class FYDetailPnLPage(ExcelReportPage):
         write_block(coa.depreciation_costs, 'Depreciation of office equipment')
         ws.write('B38', 'This page does not form part of the statutory financial statements.', xlb.fmt)
         xlb.line_number = 39
-        xlb.format_print_area(ws, 'DETAILED PROFIT & LOSS ACCOUNT', hide_gridlines = True)
+        xlb.format_print_area(ws, 'DETAILED PROFIT & LOSS ACCOUNT', hide_gridlines = True,
+                              show_footer=False, show_header=False)
+        ws.set_footer('This page does not form part of the statutory financial statements.\n' +
+                      'Page {}'.format(xlb.page_number))
+
 
 
 class FYNotes(ExcelReportPage):

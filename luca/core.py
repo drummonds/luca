@@ -235,14 +235,14 @@ class CoreDrummonds(Core):
         # balance sheet reports
         coa.sales = [500]
         coa.material_costs_name = 'Cost of Sales'
-        coa.material_costs = [600]
+        coa.material_costs = [600, 610]
         coa.variable_costs = []
         coa.fixed_production_costs = []
         coa.admin_costs = [800]
         coa.selling_costs = []
         coa.fixed_asset = [100]
         coa.current_asset = [120]
-        coa.establishment_costs = []
+        coa.establishment_costs = [700]
         coa.finance_charges = []
         coa.depreciation_costs = []
         coa.short_term_liabilities = [200]
