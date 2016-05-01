@@ -5,6 +5,7 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_S
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 700, 'Establishment costs', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 750, 'Directors Remuneration', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 760, 'Staff training', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 770, 'Office Equipment Depreciation', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 800, 'Sundry Expenses', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 810, 'Telephone and fax', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 815, 'Office expenses', 'Expense');
@@ -17,6 +18,8 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_S
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 910, 'Tax on(loss)/profit on ordinary acitivies', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 100, 'Tangible fixed assets', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 110, 'Debtors', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 102, 'Office Equipment Cost', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 103, 'Office Equipment Depreciation', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 120, 'Cash at bank and in hand', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 200, 'Creditors: Amounts falling due within one year', 'Liability');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 210, 'Creditors: Amounts falling due after more than one year', 'Liability');

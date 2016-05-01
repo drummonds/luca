@@ -36,31 +36,6 @@ class FYCoverPage(ExcelReportPage):
         ws.set_footer('Page {}'.format(xlb.page_number))
 
 
-class FYCoverPage(ExcelReportPage):
-
-    @property
-    def sheetname(self):
-        return 'Cover '+ self.rep.datestring
-
-    def format_page(self, excel_base, worksheet):
-        ws = worksheet
-        xlb = excel_base
-        xlb.rep = self.rep
-        rep = self.rep
-        coa = rep.coa
-        # Nominal code info columns
-        for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
-            ws.set_column(range, width)
-        ws.write('G1', 'Registration number: {}'.format(coa.company_number), xlb.bold_left_italic_fmt)
-        ws.write('C10', '{}'.format(coa.company_name), xlb.bold_fmt)
-        ws.write('C11', 'Annual Report and Unaudited Financial Statements', xlb.fmt)
-        ws.write('C12', 'for the Year Ended {}'.format(rep.full_datestring), xlb.fmt)
-        xlb.line_number = 12
-        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True,
-                              show_footer = False, show_header = False)
-        ws.set_footer('Page {}'.format(xlb.page_number))
-
-
 class FYDirectorsReport(ExcelReportPage):
 
     @property
@@ -161,12 +136,15 @@ class FYBSPage(ExcelReportPage):
 
     def format_page(self, excel_base, worksheet):
 
+        def header(title):
+            xlb.write_merged_header(ws, title, cols='B:E', underline=0)
+
         def sub_title(text):
-            ws.write('B{0}'.format(xlb.line_number), text, xlb.bold_left_fmt)
+            ws.write('B{0}'.format(xlb.line_number+1), text, xlb.bold_left_fmt)
             xlb.line_number += 1
 
         def note(text):
-            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.para_fmt)
+            ws.merge_range('A{0}:E{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
             xlb.line_number +=1
 
         def write_row(data, title, note = '', bottom = 0):
@@ -183,13 +161,13 @@ class FYBSPage(ExcelReportPage):
                              ('D:E', 12),]:  # Dates
             ws.set_column(range, width)
         xlb.col_list=(3, 4, )  # Two column report
-        xlb.write_merged_header(ws, coa.company_name, cols='B:E')
-        xlb.write_merged_header(ws, '(Registration number: {})'.format(coa.company_number), cols='B:E')
-        xlb.write_merged_header(ws, 'Balance sheet at {}'.format(rep.full_datestring),
-                                cols='B:E')
-        xlb.write_row(ws, rep.datestrings)
+        header(coa.company_name)
+        header('(Registration number: {})'.format(coa.company_number))
+        header('Balance sheet at {}'.format(rep.full_datestring))
+        xlb.line_number += 1
         cell_location = xl_rowcol_to_cell(xlb.line_number, 3)
         ws.write(cell_location, 'Note', xlb.bold_fmt)
+        xlb.write_row(ws, rep.datestrings)
         xlb.write_row(ws, ['£']*2)
         xlb.line_number += 1
         #**********************
@@ -302,8 +280,6 @@ class FYDetailPnLPage(ExcelReportPage):
                     'General administrative expenses')
         write_block(coa.finance_charges, 'Finance Charges')
         write_block(coa.depreciation_costs, 'Depreciation of office equipment')
-        ws.write('B38', 'This page does not form part of the statutory financial statements.', xlb.fmt)
-        xlb.line_number = 39
         xlb.format_print_area(ws, 'DETAILED PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer=False, show_header=False)
         ws.set_footer('This page does not form part of the statutory financial statements.\n' +
@@ -338,12 +314,29 @@ class FYNotes(ExcelReportPage):
             ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.para_fmt)
             xlb.line_number +=1
 
+        def row_title(a, b):
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0])
+            ws.write(cell_location, a, xlb.fmt)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[1])
+            ws.write(cell_location, b, xlb.fmt)
+
+        def row(title, a, b, bottom = 0):
+            cell_fmt = self.workbook.add_format({**self.base_format_dictionary, **{'bottom': bottom, 'align': 'right'}})
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
+            ws.write(cell_location, title, xlb.fmt)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0])
+            ws.write(cell_location, a, cell_fmt)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[1])
+            ws.write(cell_location, b, cell_fmt)
+
+
         ws = worksheet
         xlb = excel_base
         xlb.rep = self.rep
         rep = self.rep
         coa = rep.coa
         self.note_number = 0
+        xlb.col_list=(3, 4, )  # Two column report
         # Nominal code info columns
         for range, width in [('A:E', 20)]:
             ws.set_column(range, width)
@@ -371,6 +364,30 @@ class FYNotes(ExcelReportPage):
         note_title('Operating (loss)/profit')
         note_title('Taxation')
         note_title('Tangible Fixed Assets')
+        row_title('Office Euipment', 'Total')
+        row_title('£', '£')
+        sub_title('Cost or Valuation')
+        # Todo Generalise to a list of nominal codes
+        prev_cost = rep.list_get_cost(rep.trial_balances[3], coa.office_equipment_cost)
+        this_cost = rep.list_get_cost(rep.trial_balances[2], coa.office_equipment_cost)
+        additions = this_cost - prev_cost  # Todo not sure this is a general solution
+        row('At {}'.format(rep.full_year_start_string), prev_cost, prev_cost)
+        row('Additions', additions, additions, bottom=1)
+        row('At {}'.format(rep.full_datestring), this_cost, this_cost, bottom=1)
+        sub_title('Depreciation')
+        prev_depreciation = rep.list_get_depreciation(rep.trial_balances[3], coa.office_equipment_depreciation)
+        this_depreciation = rep.list_get_depreciation(rep.trial_balances[2], coa.office_equipment_depreciation)
+        charge = this_depreciation - prev_depreciation  # Todo not sure this is a general solution
+                                          # Should check that this is equal to depreciation expense
+        row('At {}'.format(rep.full_year_start_string), prev_depreciation, prev_depreciation)
+        row('Additions', charge, charge, bottom=1)
+        row('At {}'.format(rep.full_datestring), this_depreciation, this_depreciation, bottom=1)
+        sub_title('Net book value')
+        this_book_value = this_cost - this_depreciation
+        prev_book_value = prev_cost - prev_depreciation
+        row('At {}'.format(rep.full_datestring), this_book_value, this_book_value, bottom=6)
+        row('At {}'.format(rep.full_year_start_string), prev_book_value, prev_book_value, bottom=6)
+
         note_title('Debtors')
         note_title('Creditors: Amount falling due within one year')
         note_title('Creditors: Amount falling due after more than one year')

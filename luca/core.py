@@ -16,7 +16,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     31: (4100, ),  # Called up share capital
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
-    80: (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
+    80: (7000, 7001, 7002, 7100, 7205, 7300, 7700, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
          8008, 8009, 8010, 8011, 8012, 8013, 8014, 8017, 8018, 8019, 8020, 8100, 8300, 8900),
     # Administrative Expenses
     91: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
@@ -24,6 +24,8 @@ DRUMMONDS_TO_FY_SUMMARY = {
 
 DRUMMONDS_TO_FY_DETAIL = {
     100: (100, ),  # Tangible fixed assets
+    102: (102, ),  # Office Equipment cost
+    103: (103, ),  # Office Equipment depreciation
     110: (),  # Debtors
     120: (1200, 1205, 7205, 1250, 2200),  # Cash at bank and in hand TODO Check 7205 smart user payment
     200: (2000, ),  # Creditors: Amounts falling due within one year
@@ -36,6 +38,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     700: (8300, ), # Home office costs
     750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
     760: (8012, ),  # Staff training
+    770: (7700, ),  # Office equipment depreciation
     800: (7500, 8001, 8002, 8003, 8008, 8011, 8018),  # Sundry expense TODO check 8002 computer hardware capex
     810: (8005, 8006), # # Telephone and fax
     815: (8007, ), #
@@ -225,6 +228,7 @@ class CoreDrummonds(Core):
         coa.material_costs = [6000, 6100, 6200]
         coa.variable_costs = [7000]
         coa.fixed_production_costs = [7001, 7002, 7100, 7205, 7300]
+        coa.depreciation_costs = [7700]
         coa.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
         coa.selling_costs = []
@@ -254,13 +258,15 @@ class CoreDrummonds(Core):
         coa.admin_costs = [805, 810, 815, 820, 825, 800, 830, 835, 840]
         coa.selling_costs = []
         coa.fixed_assets = [100]
+        coa.office_equipment_cost = [102]
+        coa.office_equipment_depreciation = [103]
         coa.debtors = [110]
         coa.cash_at_bank = [120]
         coa.current_asset = [11, 120]
         coa.establishment_costs = [700]
         coa.employment_costs = [750]
         coa.finance_charges = [890]
-        coa.depreciation_costs = []
+        coa.depreciation_costs = [770]
         coa.short_term_liabilities = [200]
         coa.long_term_liabilities = [210]
         coa.owners_equity = [300, 310, 320]

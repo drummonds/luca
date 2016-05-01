@@ -49,7 +49,6 @@ class ExcelManagementReport2():
         self.line_number += 1
 
     def write_fy_row(self, ws, entries, label, note = '', cell_format={}, row_height=None):
-        cell_fmt = self.workbook.add_format({**self.base_format_dictionary,  **cell_format})
         if row_height:
             ws.set_row(self.line_number, row_height)
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
@@ -79,6 +78,12 @@ class ExcelManagementReport2():
             return value
         except AttributeError:
             return p(0)
+
+    def list_get_value(self, tb, nominal_code_list, sign):
+        sum = 0
+        for nc in nominal_code_list:
+            sum += get_value(tb, nc, sign)
+        return sum
 
     def all_values_zero(self, nominal_code, sign):
         all_zero = True
@@ -225,7 +230,7 @@ class ExcelManagementReport2():
         self.base_format_dictionary = fmt
         self.fmt = wb.add_format(fmt)
         self.title_fmt = wb.add_format({**fmt, **{'bold': True, 'font_size': 14}})
-        self.para_fmt = wb.add_format(fmt)
+        self.para_fmt = wb.add_format({**fmt, **{'align': 'justify'}})
         self.para_fmt.set_text_wrap()
         self.nc_fmt = wb.add_format({**fmt, **{'num_format': '0'}})
         self.left_fmt = wb.add_format({**fmt, **{'align': 'left'}})
@@ -251,12 +256,12 @@ class ExcelManagementReport2():
             ws.hide_gridlines(0)
         ws.fit_to_pages(1, 1)  # Fit to one page
 
-    def write_merged_header(self, ws, text, cols = 'B:E'):
+    def write_merged_header(self, ws, text, cols = 'B:E', underline = 1):
         m = search('(.*):(.*)', cols)
         col_start = m.group(1)
         col_end = m.group(2)
         # Add titles
-        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
+        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': underline, 'bold': True}})
         self.line_number += 1
         ws.merge_range('{0}{1}:{2}{1}'.format(col_start, self.line_number, col_end), text, fmt)
 

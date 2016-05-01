@@ -25,7 +25,11 @@ TODO the duration of the period should also come from the database"""
         if prior_period_date == None:
             self.prior_period_date = period_date - relativedelta(years=1)
         else:
-            self.prior_period_date - prior_period_date
+            self.prior_period_date = prior_period_date
+        if year_start_date == None:
+            self.year_start_date = prior_period_date + relativedelta(days=1)
+        else:
+            self.year_start_date = year_start_date
         self.year_start_date = year_start_date
         self._coa = coa
         self.period_names = [period_1, period_1_prior, period_2, period_2_prior]
@@ -65,6 +69,10 @@ TODO the duration of the period should also come from the database"""
             return self.year_start_date.strftime('%b{}%y'.format(seperator))
         else:
             return 'NoDate'
+
+    @property
+    def full_year_start_string(self):
+        return self.year_start_date.strftime('%d %B %Y')
 
     @property
     def coa(self):
