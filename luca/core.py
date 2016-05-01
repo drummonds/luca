@@ -33,7 +33,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
     610: (6100, 6200), # Subcontract cost
-    700: (8300), # Home office costs
+    700: (8300, ), # Home office costs
     750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
     760: (8012, ),  # Staff training
     800: (7500, 8001, 8002, 8003, 8008, 8011, 8018),  # Sundry expense TODO check 8002 computer hardware capex
