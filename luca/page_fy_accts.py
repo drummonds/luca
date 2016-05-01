@@ -250,7 +250,7 @@ class FYNotes(ExcelReportPage):
             xlb.line_number +=1
 
         def note(text):
-            ws.merge_range('A{0}:E{0}'.format(xlb.line), text, xlb.para_fmt)
+            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.para_fmt)
             xlb.line_number +=1
 
         ws = worksheet
