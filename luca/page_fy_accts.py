@@ -184,7 +184,7 @@ class FYBSPage(ExcelReportPage):
             ws.set_column(range, width)
         xlb.col_list=(3, 4, )  # Two column report
         xlb.write_merged_header(ws, coa.company_name, cols='B:E')
-        xlb.write_merged_header(ws, '(Registration number: {})'.coa.company_number, cols='B:E')
+        xlb.write_merged_header(ws, '(Registration number: {})'.format(coa.company_number), cols='B:E')
         xlb.write_merged_header(ws, 'Balance sheet at {}'.format(rep.full_datestring),
                                 cols='B:E')
         xlb.write_row(ws, rep.datestrings)
