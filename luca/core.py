@@ -154,6 +154,7 @@ class Core:
         coa.selling_costs = []
         coa.fixed_assets = [10]
         coa.debtors = [11]
+        coa.cash_at_bank = [12]
         coa.current_asset = [12]
         coa.short_term_liabilities = [20]
         coa.long_term_liabilities = [21]
@@ -227,7 +228,8 @@ class CoreDrummonds(Core):
         coa.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
         coa.selling_costs = []
-        coa.fixed_assets = [100]
+        coa.fixed_assets = [10]
+        coa.cash_at_bank = [1200, 1205, 1250]
         coa.current_asset = [1200, 1205, 1250, 2200]
         coa.short_term_liabilities = [2000]
         coa.long_term_liabilities = []
