@@ -157,7 +157,7 @@ class FYBSPage(ExcelReportPage):
 
     @property
     def sheetname(self):
-        return '{}FY P&L '.format(self.sheetname_prefix) + self.rep.datestring
+        return '{}FY BS '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
 
@@ -206,8 +206,6 @@ class FYBSPage(ExcelReportPage):
         write_row(current_assets, '', bottom = 1)
         #**********************
         sub_title('Capital and reserves')
-        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
-                              show_footer = False, show_header = False)
         #**********************
         note('These accounts have been prepared in accordance with the provisions applicable to companies subject ' +
              'to the small companies regime and in accordance with teh Financial Reporting Standard for Smaller Entities ' +
@@ -223,6 +221,8 @@ class FYBSPage(ExcelReportPage):
         xlb.line_number +=3
         note('Dr Humphrey Drummond')
         note('Director')
+        xlb.format_print_area(ws, 'Balance Sheet', hide_gridlines=True,
+                              show_footer=False, show_header=False)
         ws.set_footer('The notes on pages 6 to 8 form an integral part fo these financial statements statements.\n' +
                       'Page {}'.format(xlb.page_number))
 
