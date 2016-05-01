@@ -7,7 +7,7 @@ from .coa_sqlite import chart_of_accounts_from_db
 from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
-    10: (100, ),  # Tangible fixed assets
+    10: (100, 102, 103, ),  # Tangible fixed assets
     11: (),  # Debtors
     12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
     20: (2000, ),  # Creditors: Amounts falling due within one year
