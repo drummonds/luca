@@ -188,6 +188,7 @@ class Core:
         result.sort()
         return result
 
+
 class CoreDrummonds(Core):
 
     def __init__(self, file_name = 'historic_trial_balances.db'):
@@ -249,7 +250,7 @@ class CoreDrummonds(Core):
         coa.fixed_production_costs = []
         coa.admin_costs = [805, 810, 815, 820, 825, 800, 830, 835, 840]
         coa.selling_costs = []
-        coa.fixed_asset = [100]
+        coa.fixed_assets = [100]
         coa.debtors = [11]
         coa.cash_at_bank = [12]
         coa.current_asset = [11, 120]
