@@ -20,14 +20,20 @@ class FYCoverPage(ExcelReportPage):
         xlb.rep = self.rep
         rep = self.rep
         coa = rep.coa
+        reg_fmt = self.workbook.add_format({**self.base_format_dictionary,  **{
+            'bold' : True, 'italic' : True, 'align': 'right'}})
+        title_fmt = self.workbook.add_format({**self.base_format_dictionary,  **{
+            'bold' : True, 'font_size' : 18, 'align': 'center'}})
         # Nominal code info columns
         for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
             ws.set_column(range, width)
-        ws.write('G1', 'Registration number: {}'.format(coa.company_number), xlb.bold_left_italic_fmt)
-        ws.write('C10', '{}'.format(coa.company_name), xlb.bold_fmt)
+        ws.write('G1', 'Registration number: {}'.format(coa.company_number), reg_fmt)
+        ws.write('C10', '{}'.format(coa.company_name), title_fmt)
         ws.write('C11', 'Annual Report and Unaudited Financial Statements', xlb.fmt)
         ws.write('C12', 'for the Year Ended {}'.format(rep.full_datestring), xlb.fmt)
-        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True)
+        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True,
+                              show_footer = False, show_header = False)
+        ws.set_footer('Page {}'.format(xlb.page_number))
 
 
 class FYCoverPage(ExcelReportPage):
@@ -50,7 +56,9 @@ class FYCoverPage(ExcelReportPage):
         ws.write('C11', 'Annual Report and Unaudited Financial Statements', xlb.fmt)
         ws.write('C12', 'for the Year Ended {}'.format(rep.full_datestring), xlb.fmt)
         xlb.line_number = 12
-        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True)
+        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True,
+                              show_footer = False, show_header = False)
+        ws.set_footer('Page {}'.format(xlb.page_number))
 
 
 class FYDirectorsReport(ExcelReportPage):
@@ -71,7 +79,7 @@ class FYDirectorsReport(ExcelReportPage):
         for location, text in [
             ('A1', coa.company_name),
             ('A3', 'Director'' Report for the Year Ended {}'.format(rep.full_datestring)),
-            ]:
+        ]:
             ws.write(location, text, xlb.title_fmt)
         for location, text in [
             ('A4', 'The director presents his report and the unaudited financial statements for the year ended {}.'.format(rep.full_datestring)),
@@ -82,12 +90,12 @@ class FYDirectorsReport(ExcelReportPage):
             ('A20', '...............................................................'),
             ('A21', 'Dr Humphrey Drummond'),
             ('A22', 'Director'),
-            ]:
+        ]:
             ws.write(location, text, xlb.left_fmt)
         for location, text in [
             ('A6', 'Director of the Company'),
             ('A10', 'Small Company Provision'),
-            ]:
+        ]:
             ws.write(location, text, xlb.bold_left_fmt)
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True)
 
@@ -139,7 +147,84 @@ class FYPnLPage(ExcelReportPage):
                          cell_format={'bottom': 6}, row_height = 22)
         ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
         xlb.line_number = 39
-        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True)
+        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
+                              show_footer = False, show_header = False)
+        ws.set_footer('The notes on pages 6 to 8 form an integral part fo these financial statements statements.\n' +
+                      'Page {}'.format(xlb.page_number))
+
+
+class FYBSPage(ExcelReportPage):
+
+    @property
+    def sheetname(self):
+        return '{}FY P&L '.format(self.sheetname_prefix) + self.rep.datestring
+
+    def format_page(self, excel_base, worksheet):
+
+        def sub_title(text):
+            ws.write('B{0}'.format(xlb.line_number), text, xlb.bold_left_fmt)
+            xlb.line_number += 1
+
+        def note(text):
+            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.para_fmt)
+            xlb.line_number +=1
+
+        def write_row(data, title, note = '', bottom = 0):
+            xlb.write_fy_row(ws, data, title, cell_format={'bottom': bottom}, row_height=15)
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        # Nominal code info columns
+        for range, width in [('B:B', 40),  # Description
+                             ('C:C', 10),  # Note
+                             ('D:E', 12),]:  # Dates
+            ws.set_column(range, width)
+        xlb.col_list=(3, 4, )  # Two column report
+        xlb.write_merged_header(ws, coa.company_name, cols='B:E')
+        xlb.write_merged_header(ws, '(Registration number: {})'.coa.company_number, cols='B:E')
+        xlb.write_merged_header(ws, 'Balance sheet at {}'.format(rep.full_datestring),
+                                cols='B:E')
+        xlb.write_row(ws, rep.datestrings)
+        cell_location = xl_rowcol_to_cell(xlb.line_number, 3)
+        ws.write(cell_location, 'Note', xlb.bold_fmt)
+        xlb.write_row(ws, ['£']*2)
+        xlb.line_number += 1
+        #**********************
+        sub_title('Fixed assets')
+        fixed_assets = xlb.sum(coa.fixed_assets)
+        write_row(fixed_assets, 'Tangible fixed assets', note = 4, bottom = 1)
+        #**********************
+        sub_title('Current assets')
+        debtors= xlb.sum(coa.debtors)
+        write_row(debtors, 'Debtors', note = 5)
+        cash_at_bank = xlb.sum(coa.cash_at_bank)
+        write_row(cash_at_bank, 'Cash at bank and in hand', bottom = 1)
+        current_assets = [x[0]-x[1] for x in zip(debtors, cash_at_bank)]
+        write_row(current_assets, '', bottom = 1)
+        #**********************
+        sub_title('Capital and reserves')
+        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
+                              show_footer = False, show_header = False)
+        #**********************
+        note('These accounts have been prepared in accordance with the provisions applicable to companies subject ' +
+             'to the small companies regime and in accordance with teh Financial Reporting Standard for Smaller Entities ' +
+             '(effective 2008).')
+        note('For the year ending {} the company was entitle to exemption under '.format(rep.full_datestring) +
+             'section 477 of the Companies Act 2006 relating to small companies.')
+        note('The members have not required the company to obatin an audit in accordance with section 476 of the ' +
+             'Companies Act 2006.')
+        note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ' +
+             'respect to accounting records and the preperation of accounts.')
+        xlb.line_number +=3
+        note('Approved by the director on ().')
+        xlb.line_number +=3
+        note('Dr Humphrey Drummond')
+        note('Director')
+        ws.set_footer('The notes on pages 6 to 8 form an integral part fo these financial statements statements.\n' +
+                      'Page {}'.format(xlb.page_number))
 
 
 class FYDetailPnLPage(ExcelReportPage):
@@ -268,16 +353,16 @@ class FYNotes(ExcelReportPage):
         xlb.line_number +=2
         note_title('Accounting Policies')
         sub_title('Basis of Preperation')
-        note("The financial statements have been prepared under the historical cost convention and in " +
-            "accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
+        note("'The financial statements have been prepared under the historical cost convention and in " +
+             "accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
         sub_title('Turnover')
-        note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods " +
-            "and services to customers.")
+        note("'Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods " +
+             "and services to customers.")
         sub_title('Depreciation')
-        note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any " +
-            "estimated residual value, over their expected useful econominc life as follows:")
+        note("'Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any " +
+             "estimated residual value, over their expected useful econominc life as follows:")
         sub_title('Financial Instruments')
-        note("Financial instruments are classified and acounted for, according to the substance of the contractual " +
+        note("'Financial instruments are classified and acounted for, according to the substance of the contractual " +
              "arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument " +
              "is any contract that evidences a residual interest in the assets of the company after deducting all " +
              "of its liabilities.  Where shares are issued, any component that creates a financial liability of the " +
@@ -317,10 +402,11 @@ class PlaceHolder(ExcelReportPage):
         for range, width in [('A:A', 100)]:
             ws.set_column(range, width)
         for location, text in [
-            ('A1', 'Place Holder'),
-            ('A3', 'Page Intentionlly Blank'),
-            ]:
+            ('A1', 'Place holder'),
+            ('A3', 'Page Intentionally Blank'),
+        ]:
             ws.write(location, text, xlb.title_fmt)
         xlb.format_print_area(ws, 'Place Holder', hide_gridlines=True,
                               show_footer=False, show_header=False)
+        ws.set_footer('Page {}'.format(xlb.page_number))
 

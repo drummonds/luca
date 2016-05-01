@@ -220,7 +220,7 @@ class ExcelManagementReport2():
     def add_standard_formats(self):
         wb = self.workbook  # Done for each workbook
         # Total formatting
-        fmt = {'align': 'center', 'font_name': 'Arial', 'font_size': 10,
+        fmt = {'align': 'center', 'font_name': 'Calibri', 'font_size': 10,
                'num_format': '_(* #,##0_);_(* (#,##0);_(* "-"_);_(@_)'}
         self.base_format_dictionary = fmt
         self.fmt = wb.add_format(fmt)

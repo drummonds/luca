@@ -10,7 +10,7 @@ from .trial_balance_conversion import TrialBalanceConversion
 from .journal_sqlite import JournalSqlite, journal_from_db, LoadDatabaseError, LoadDatabase
 from .coa_sqlite import chart_of_accounts_from_db
 from .page_mangement_accounts import ManagementPnLPage, ManagementBSPage
-from .page_fy_accts import FYCoverPage, FYPnLPage, FYDirectorsReport, FYNotes, FYDetailPnLPage
+from .page_fy_accts import FYCoverPage, FYPnLPage, FYBSPage, FYDirectorsReport, FYNotes, FYDetailPnLPage
 from .page_fy_accts import PlaceHolder
 from .core import Core, CoreDrummonds, CoreSlumberfleece
 from .metadata import version
