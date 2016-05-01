@@ -236,21 +236,21 @@ class FYNotes(ExcelReportPage):
 
         def title(text):
             # Merge whole row
-            ws.merge_range('A{0}:E{}'.format(xlb.line_number), text, xlb.title_fmt)
+            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.title_fmt)
             xlb.line_number +=1
 
         def note_title(text):
             self.note_number += 1
-            ws.write('A{}'.format(xlb.line_number), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
+            ws.write('A{0}'.format(xlb.line_number), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
             xlb.line_number += 2
 
         def sub_title(text):
             xlb.line_number +=1
-            ws.write('A{}'.format(xlb.line_number), text, xlb.bold_left_fmt)
+            ws.write('A{0}'.format(xlb.line_number), text, xlb.bold_left_fmt)
             xlb.line_number +=1
 
         def note(text):
-            ws.merge_range('A{0}:E{}'.format(xlb.line), text, xlb.para_fmt)
+            ws.merge_range('A{0}:E{0}'.format(xlb.line), text, xlb.para_fmt)
             xlb.line_number +=1
 
         ws = worksheet
