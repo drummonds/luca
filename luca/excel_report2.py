@@ -63,7 +63,7 @@ class ExcelManagementReport2():
             ws.write(cell_location, entries[i], cell_fmt)
         self.line_number += 1
 
-    def get_value(self, tb, nominal_code, sign):
+    def get_value(self, tb, nominal_code, sign = 1):
         """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
         # TODO move this code into the TrialBalance data
 
@@ -80,10 +80,10 @@ class ExcelManagementReport2():
         except AttributeError:
             return p(0)
 
-    def list_get_value(self, tb, nominal_code_list, sign):
+    def list_get_value(self, tb, nominal_code_list, sign = 1):
         sum = 0
         for nc in nominal_code_list:
-            sum += get_value(tb, nc, sign)
+            sum += self.get_value(tb, nc, sign)
         return sum
 
     def all_values_zero(self, nominal_code, sign):
