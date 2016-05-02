@@ -368,15 +368,15 @@ class FYNotes(ExcelReportPage):
         row_title('£', '£')
         sub_title('Cost or Valuation')
         # Todo Generalise to a list of nominal codes
-        prev_cost = rep.list_get_value(rep.trial_balances[3], coa.office_equipment_cost)
-        this_cost = rep.list_get_value(rep.trial_balances[2], coa.office_equipment_cost)
+        prev_cost = xlb.list_get_value(rep.trial_balances[3], coa.office_equipment_cost)
+        this_cost = xlb.list_get_value(rep.trial_balances[2], coa.office_equipment_cost)
         additions = this_cost - prev_cost  # Todo not sure this is a general solution
         row('At {}'.format(rep.full_year_start_string), prev_cost, prev_cost)
         row('Additions', additions, additions, bottom=1)
         row('At {}'.format(rep.full_datestring), this_cost, this_cost, bottom=1)
         sub_title('Depreciation')
-        prev_depreciation = rep.list_get_value(rep.trial_balances[3], coa.office_equipment_depreciation)
-        this_depreciation = rep.list_get_value(rep.trial_balances[2], coa.office_equipment_depreciation)
+        prev_depreciation = xlb.list_get_value(rep.trial_balances[3], coa.office_equipment_depreciation)
+        this_depreciation = xlb.list_get_value(rep.trial_balances[2], coa.office_equipment_depreciation)
         charge = this_depreciation - prev_depreciation  # Todo not sure this is a general solution
                                           # Should check that this is equal to depreciation expense
         row('At {}'.format(rep.full_year_start_string), prev_depreciation, prev_depreciation)
