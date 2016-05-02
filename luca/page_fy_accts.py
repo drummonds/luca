@@ -20,9 +20,9 @@ class FYCoverPage(ExcelReportPage):
         xlb.rep = self.rep
         rep = self.rep
         coa = rep.coa
-        reg_fmt = self.workbook.add_format({**self.base_format_dictionary,  **{
+        reg_fmt = xlb.workbook.add_format({**self.base_format_dictionary,  **{
             'bold' : True, 'italic' : True, 'align': 'right'}})
-        title_fmt = self.workbook.add_format({**self.base_format_dictionary,  **{
+        title_fmt = xlb.workbook.add_format({**self.base_format_dictionary,  **{
             'bold' : True, 'font_size' : 18, 'align': 'center'}})
         # Nominal code info columns
         for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
@@ -321,7 +321,7 @@ class FYNotes(ExcelReportPage):
             ws.write(cell_location, b, xlb.fmt)
 
         def row(title, a, b, bottom = 0):
-            cell_fmt = self.workbook.add_format({**self.base_format_dictionary, **{'bottom': bottom, 'align': 'right'}})
+            cell_fmt = xlb.workbook.add_format({**self.base_format_dictionary, **{'bottom': bottom, 'align': 'right'}})
             cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
             ws.write(cell_location, title, xlb.fmt)
             cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0])
