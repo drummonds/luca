@@ -87,5 +87,5 @@ TODO the duration of the period should also come from the database"""
     def company_name(self):
         try:
             return self.coa.company_name
-        except AtributeError:
+        except AttributeError:
             return ''
