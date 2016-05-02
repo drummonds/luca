@@ -49,6 +49,7 @@ class ExcelManagementReport2():
         self.line_number += 1
 
     def write_fy_row(self, ws, entries, label, note = '', cell_format={}, row_height=None):
+        cell_fmt = self.workbook.add_format({**self.base_format_dictionary, **cell_format})
         if row_height:
             ws.set_row(self.line_number, row_height)
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
