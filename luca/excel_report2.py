@@ -81,7 +81,7 @@ class ExcelManagementReport2():
             return p(0)
 
     def list_get_value(self, tb, nominal_code_list, sign = 1):
-        sum = 0
+        sum = p(0)
         for nc in nominal_code_list:
             sum += self.get_value(tb, nc, sign)
         return sum
