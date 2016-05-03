@@ -31,7 +31,6 @@ TODO the duration of the period should also come from the database"""
             self.year_start_date = self.prior_period_date + relativedelta(days=1)
         else:
             self.year_start_date = year_start_date
-        self.year_start_date = year_start_date
         self._coa = coa
         self.period_names = [period_1, period_1_prior, period_2, period_2_prior]
         # Get data from historic trial balance database and store as TrialBalances
