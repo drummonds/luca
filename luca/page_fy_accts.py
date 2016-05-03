@@ -389,7 +389,7 @@ class FYNotes(ExcelReportPage):
         prev_book_value = prev_cost - prev_depreciation
         row('At {}'.format(rep.full_datestring), this_book_value, this_book_value, bottom=6)
         row('At {}'.format(rep.full_year_start_string), prev_book_value, prev_book_value, bottom=6)
-        note('>>Rep period date {}'.format(rep.period_date), prev_book_value, prev_book_value, bottom=6)
+        note('>>Rep period date {}'.format(rep.period_date))
         #*********************************************************
         note_title('Debtors')
         #*********************************************************
