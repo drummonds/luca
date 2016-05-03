@@ -96,7 +96,10 @@ class JournalEntry:
         return self.dict[item]
 
     def __setitem__(self, nominal_code, item):
-        if nominal_code in self.dict:
+        if nominal_code in self.dict:  # Self.dict is all the codes that are present.  This is slightly slacker
+            # than allowing only codes in the chart of accounts.  Inferring chart of accounts
+            self.dict[nominal_code] = item
+        elif nominal_code in self.chart_of_accounts.dict:  # These are codes that could be presents
             self.dict[nominal_code] = item
         else:
             raise LucaError('Setting nominal code {} but not in chart of accounts {}'.format(
