@@ -319,6 +319,7 @@ class FYNotes(ExcelReportPage):
             ws.write(cell_location, a, xlb.fmt)
             cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[1])
             ws.write(cell_location, b, xlb.fmt)
+            xlb.line_number += 1
 
         def row(title, a, b, bottom = 0):
             cell_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary, **{'bottom': bottom, 'align': 'right'}})
@@ -328,7 +329,7 @@ class FYNotes(ExcelReportPage):
             ws.write(cell_location, a, cell_fmt)
             cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[1])
             ws.write(cell_location, b, cell_fmt)
-
+            xlb.line_number += 1
 
         ws = worksheet
         xlb = excel_base
@@ -364,19 +365,20 @@ class FYNotes(ExcelReportPage):
         note_title('Operating (loss)/profit')
         note_title('Taxation')
         note_title('Tangible Fixed Assets')
+        #*********************************************************
         row_title('Office Euipment', 'Total')
         row_title('£', '£')
         sub_title('Cost or Valuation')
         # Todo Generalise to a list of nominal codes
-        prev_cost = xlb.list_get_value(rep.trial_balances[3], coa.office_equipment_cost)
-        this_cost = xlb.list_get_value(rep.trial_balances[2], coa.office_equipment_cost)
+        prev_cost = xlb.list_get_value(rep.trial_balances[1], coa.office_equipment_cost)
+        this_cost = xlb.list_get_value(rep.trial_balances[0], coa.office_equipment_cost)
         additions = this_cost - prev_cost  # Todo not sure this is a general solution
         row('At {}'.format(rep.full_year_start_string), prev_cost, prev_cost)
         row('Additions', additions, additions, bottom=1)
         row('At {}'.format(rep.full_datestring), this_cost, this_cost, bottom=1)
         sub_title('Depreciation')
-        prev_depreciation = xlb.list_get_value(rep.trial_balances[3], coa.office_equipment_depreciation)
-        this_depreciation = xlb.list_get_value(rep.trial_balances[2], coa.office_equipment_depreciation)
+        prev_depreciation = xlb.list_get_value(rep.trial_balances[1], coa.office_equipment_depreciation)
+        this_depreciation = xlb.list_get_value(rep.trial_balances[0], coa.office_equipment_depreciation)
         charge = this_depreciation - prev_depreciation  # Todo not sure this is a general solution
                                           # Should check that this is equal to depreciation expense
         row('At {}'.format(rep.full_year_start_string), prev_depreciation, prev_depreciation)
@@ -387,13 +389,20 @@ class FYNotes(ExcelReportPage):
         prev_book_value = prev_cost - prev_depreciation
         row('At {}'.format(rep.full_datestring), this_book_value, this_book_value, bottom=6)
         row('At {}'.format(rep.full_year_start_string), prev_book_value, prev_book_value, bottom=6)
-
+        note('>>Rep period date {}'.format(rep.period_date))
+        #*********************************************************
         note_title('Debtors')
+        #*********************************************************
         note_title('Creditors: Amount falling due within one year')
+        #*********************************************************
         note_title('Creditors: Amount falling due after more than one year')
+        #*********************************************************
         note_title('Share Capital')
+        #*********************************************************
         note_title('Dividends')
+        #*********************************************************
         note_title('Reserves')
+        #*********************************************************
         note_title('Control')
         note("The company is controlled by the director who owns 100% of the called up share capital.")
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,

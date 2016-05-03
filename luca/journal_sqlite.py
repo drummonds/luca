@@ -97,4 +97,4 @@ class LoadDatabase():
                         format(nominal_code, coa.name, period, value))
 
         else:
-            raise LoadDatabaseError('{} already is in managegment report database'.format(period))
+            raise LoadDatabaseError('{} already is in management report database'.format(period))
