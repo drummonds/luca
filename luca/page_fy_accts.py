@@ -353,15 +353,15 @@ class FYNotes(ExcelReportPage):
         note("'Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods " +
              "and services to customers.")
         sub_title('Depreciation')
-        note("'Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any " +
-             "estimated residual value, over their expected useful econominc life as follows:")
+        note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any ")
+        note("estimated residual value, over their expected useful econominc life as follows:")
         sub_title('Financial Instruments')
-        note("'Financial instruments are classified and acounted for, according to the substance of the contractual " +
-             "arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument " +
-             "is any contract that evidences a residual interest in the assets of the company after deducting all " +
-             "of its liabilities.  Where shares are issued, any component that creates a financial liability of the " +
-             "company is presented as a liability in the balance sheet.  The corresponding dividens relating to the " +
-             "liability component are charged as interest expense in the profit and loss account.")
+        note("Financial instruments are classified and acounted for, according to the substance of the contractual ")
+        note("arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument ")
+        note("is any contract that evidences a residual interest in the assets of the company after deducting all ")
+        note("of its liabilities.  Where shares are issued, any component that creates a financial liability of the ")
+        note("company is presented as a liability in the balance sheet.  The corresponding dividens relating to the ")
+        note("liability component are charged as interest expense in the profit and loss account.")
         note_title('Operating (loss)/profit')
         note_title('Taxation')
         note_title('Tangible Fixed Assets')
@@ -377,8 +377,8 @@ class FYNotes(ExcelReportPage):
         row('Additions', additions, additions, bottom=1)
         row('At {}'.format(rep.full_datestring), this_cost, this_cost, bottom=1)
         sub_title('Depreciation')
-        prev_depreciation = xlb.list_get_value(rep.trial_balances[1], coa.office_equipment_depreciation)
-        this_depreciation = xlb.list_get_value(rep.trial_balances[0], coa.office_equipment_depreciation)
+        prev_depreciation = xlb.list_get_value(rep.trial_balances[1], coa.office_equipment_depreciation, sign=-1)
+        this_depreciation = xlb.list_get_value(rep.trial_balances[0], coa.office_equipment_depreciation, sign=-1)
         charge = this_depreciation - prev_depreciation  # Todo not sure this is a general solution
                                           # Should check that this is equal to depreciation expense
         row('At {}'.format(rep.full_year_start_string), prev_depreciation, prev_depreciation)

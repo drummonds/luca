@@ -231,7 +231,7 @@ class ExcelManagementReport2():
         self.base_format_dictionary = fmt
         self.fmt = wb.add_format(fmt)
         self.title_fmt = wb.add_format({**fmt, **{'bold': True, 'font_size': 14}})
-        self.para_fmt = wb.add_format({**fmt, **{'align': 'justify'}})
+        self.para_fmt = wb.add_format({**fmt, **{'align': 'left', 'num_format': 'General'}})
         self.para_fmt.set_text_wrap()
         self.nc_fmt = wb.add_format({**fmt, **{'num_format': '0'}})
         self.left_fmt = wb.add_format({**fmt, **{'align': 'left'}})
