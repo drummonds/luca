@@ -1,4 +1,5 @@
 import calendar
+import datetime as dt
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 import sqlite3
@@ -25,7 +26,11 @@ TODO the duration of the period should also come from the database"""
         if prior_period_date == None:
             self.prior_period_date = period_date - relativedelta(years=1)
         else:
-            self.prior_period_date - prior_period_date
+            self.prior_period_date = prior_period_date
+        if year_start_date == None:
+            self.year_start_date = self.prior_period_date + relativedelta(days=1)
+        else:
+            self.year_start_date = year_start_date
         self.year_start_date = year_start_date
         self._coa = coa
         self.period_names = [period_1, period_1_prior, period_2, period_2_prior]
@@ -67,6 +72,10 @@ TODO the duration of the period should also come from the database"""
             return 'NoDate'
 
     @property
+    def full_year_start_string(self):
+        return self.year_start_date.strftime('%d %B %Y')
+
+    @property
     def coa(self):
         return self._coa
 
@@ -78,5 +87,5 @@ TODO the duration of the period should also come from the database"""
     def company_name(self):
         try:
             return self.coa.company_name
-        except AtributeError:
+        except AttributeError:
             return ''

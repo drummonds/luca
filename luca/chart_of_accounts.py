@@ -10,7 +10,7 @@ class ChartOfAccountsError(Exception):
 
 
 def _allowed_chart_of_account(name):
-    allowed_coa = ('SLF-MA', 'drummonds')
+    allowed_coa = ('SLF-MA', 'drummonds', 'FY_Summary', 'FY_Detail_Summary')  # Todo move to core
     assert name in allowed_coa, 'Only works for {} chart of accounts- you tried {}'.format(
         allowed_coa, name)
 
@@ -36,6 +36,9 @@ class ChartOfAccounts:
             self.variable_costs = [7000]
             self.fixed_production_costs = [7200]
             self.admin_costs = [8100, 8200]
+            self.establishment_costs = []
+            self.finance_charges = []
+            self.depreciation_costs = []
             self.selling_costs = [6100]
             self.fixed_asset = [10]
             self.current_asset = [1200]

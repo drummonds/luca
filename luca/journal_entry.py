@@ -14,6 +14,7 @@ class JournalItem:
     """This is simply a nominal code and an amount"""
     pass
 
+
 class JournalEntry:
     """JournalEntry is a complete set of journal items.  It should add up to zero.  It can be as simple as representing
     a purchase invoice or it can be as complex as a trial balance from which you can derive a balance sheet and
@@ -23,7 +24,7 @@ class JournalEntry:
 
     def __init__(self, chart_of_accounts):
         self.chart_of_accounts = chart_of_accounts
-        self.dict = {}
+        self.dict = {}  # Dictionary for JournalEntry of nominal_code: value
 
     def __len__(self):
         return len(self.dict)
@@ -48,9 +49,7 @@ class JournalEntry:
 
         assert self.chart_of_accounts.name == b.chart_of_accounts.name, 'Chart of accounts must be the same {}, {}'.\
             format(self.chart_of_accounts.name, b.chart_of_accounts.name)
-        # TODO should really check that chart of accounts is correct
-        # Create union of nominal codes
-        nc_list = list(set(self.chart_of_accounts.names) | set(b.chart_of_accounts.names))
+        nc_list = list(set(self.nominal_codes) | set(b.nominal_codes))
         # For each nominal code add from both
         nc_list.sort()
         new = copy(self)
@@ -102,6 +101,13 @@ class JournalEntry:
         else:
             raise LucaError('Setting nominal code {} but not in chart of accounts {}'.format(
                 nominal_code, self.chart_of_accounts.name))
+
+    @property
+    def nominal_codes(self):
+        nc = [nc for nc in self.dict.keys()]
+        nc.sort()
+        return nc
+
 
 
 class TrialBalance(JournalEntry):

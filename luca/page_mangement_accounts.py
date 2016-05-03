@@ -12,7 +12,7 @@ class ManagementPnLPage(ExcelReportPage):
 
     @property
     def sheetname(self):
-        return 'P&L '+ self.rep.datestring
+        return '{}P&L '.format(self.sheetname_prefix)+ self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet
@@ -53,7 +53,7 @@ class ManagementBSPage(ExcelReportPage):
 
     @property
     def sheetname(self):
-        return 'BS '+ self.rep.datestring
+        return '{}BS '.format(self.sheetname_prefix)+ self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet

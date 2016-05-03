@@ -10,12 +10,13 @@ from .utils import p
 
 class ExcelReportPage:
 
-    def __init__(self, report_data):
+    def __init__(self, report_data, sheetname_prefix = ''):
         self.rep = report_data  ## report_data
+        self.sheetname_prefix = sheetname_prefix
 
     @property
     def sheetname(self):
-        return 'Blank'
+        return '{}Blank'.format(self.sheetname_prefix)
 
     def format_page(self, excel_base, worksheet):
         ws = worksheet
@@ -47,30 +48,43 @@ class ExcelManagementReport2():
             ws.write(cell_location, entries[i], self.bold_fmt)
         self.line_number += 1
 
-    def write_fy_row(self, ws, entries, label, note =''):
+    def write_fy_row(self, ws, entries, label, note = '', cell_format={}, row_height=None):
+        cell_fmt = self.workbook.add_format({**self.base_format_dictionary, **cell_format})
+        if row_height:
+            ws.set_row(self.line_number, row_height)
         cell_location = xl_rowcol_to_cell(self.line_number, 1)
         ws.write(cell_location, label, self.left_fmt)
-
+        cell_location = xl_rowcol_to_cell(self.line_number, 2)
+        ws.write(cell_location, note, self.fmt)
         # Add titles
         for i, column in enumerate(self.col_list):
             # Determine where we will place the formula
             cell_location = xl_rowcol_to_cell(self.line_number, column)
-            ws.write(cell_location, entries[i], self.bold_fmt)
+            ws.write(cell_location, entries[i], cell_fmt)
         self.line_number += 1
 
-    def get_value(self, tb, nominal_code, sign):
+    def get_value(self, tb, nominal_code, sign = 1):
         """This gets a reporting value.  EG Liabilities and Assets will be both shown as positive numbers"""
         # TODO move this code into the TrialBalance data
 
-        if int(nominal_code) == tb.chart_of_accounts.calc_pnl:
+        try:
+            if int(nominal_code) == tb.chart_of_accounts.calc_pnl:
                 value=tb.profit_and_loss  * sign
-        else:
-            try:
-                value = tb[nominal_code] * sign
-            except (KeyError, IndexError, TypeError):
-                # There is a name value so presumably some data but just none in for this nominal code on this period
-                value = p(0)
-        return value
+            else:
+                try:
+                    value = tb[nominal_code] * sign
+                except (KeyError, IndexError, TypeError):
+                    # There is a name value so presumably some data but just none in for this nominal code on this period
+                    value = p(0)
+            return value
+        except AttributeError:
+            return p(0)
+
+    def list_get_value(self, tb, nominal_code_list, sign = 1):
+        sum = 0
+        for nc in nominal_code_list:
+            sum += self.get_value(tb, nc, sign)
+        return sum
 
     def all_values_zero(self, nominal_code, sign):
         all_zero = True
@@ -212,10 +226,13 @@ class ExcelManagementReport2():
     def add_standard_formats(self):
         wb = self.workbook  # Done for each workbook
         # Total formatting
-        fmt = {'align': 'center', 'font_name': 'Arial', 'font_size': 10,
+        fmt = {'align': 'center', 'font_name': 'Calibri', 'font_size': 10,
                'num_format': '_(* #,##0_);_(* (#,##0);_(* "-"_);_(@_)'}
         self.base_format_dictionary = fmt
         self.fmt = wb.add_format(fmt)
+        self.title_fmt = wb.add_format({**fmt, **{'bold': True, 'font_size': 14}})
+        self.para_fmt = wb.add_format({**fmt, **{'align': 'justify'}})
+        self.para_fmt.set_text_wrap()
         self.nc_fmt = wb.add_format({**fmt, **{'num_format': '0'}})
         self.left_fmt = wb.add_format({**fmt, **{'align': 'left'}})
         self.bold_fmt = wb.add_format({**fmt, **{'bold': True}})
@@ -240,12 +257,12 @@ class ExcelManagementReport2():
             ws.hide_gridlines(0)
         ws.fit_to_pages(1, 1)  # Fit to one page
 
-    def write_merged_header(self, ws, text, cols = 'B:E'):
+    def write_merged_header(self, ws, text, cols = 'B:E', underline = 1):
         m = search('(.*):(.*)', cols)
         col_start = m.group(1)
         col_end = m.group(2)
         # Add titles
-        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': 1, 'bold': True}})
+        fmt = self.workbook.add_format({**self.base_format_dictionary, **{'underline': underline, 'bold': True}})
         self.line_number += 1
         ws.merge_range('{0}{1}:{2}{1}'.format(col_start, self.line_number, col_end), text, fmt)
 
@@ -264,6 +281,7 @@ class ExcelManagementReport2():
         self.writer = pd.ExcelWriter(fn, engine='xlsxwriter')
         # Get the xlsxwriter objects from the dataframe writer object.
         self.workbook  = self.writer.book
+        self.page_number=0
 
     def close(self):
         self.writer.save()
@@ -272,4 +290,5 @@ class ExcelManagementReport2():
         worksheet = self.workbook.add_worksheet(new_page.sheetname)
         self.add_standard_formats()
         self.line_number=0
+        self.page_number+=1
         new_page.format_page(self, worksheet)

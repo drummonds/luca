@@ -45,17 +45,19 @@ class TrialBalanceConversion():
             'Make sure that in conversion all codes to are in the chart of accounts for {}'.format(coa_to.name)
         self.conversion[coa_from.name+'_to_'+coa_to.name] = conversion
 
-    def convert_trial_balance(self, source_trial_balance):
+    def convert_trial_balance(self, source_trial_balance, destination_coa = None):
+        if destination_coa == None:
+            destination_coa = self.coa_to
         # This will fail if the from and to are not predefined.
         conversion_name = '{}_to_{}'.format(
             source_trial_balance.chart_of_accounts.name,  # Converting from this COA
-            self.coa_to.name)
+            destination_coa.name)
         conversion_table = self.conversion[conversion_name]  # converting to this COA
         index = []
         for key, value in conversion_table.items():
             index.append(key)
         index.sort()
-        new = TrialBalance(self.coa_to, source_trial_balance.period_start, source_trial_balance.period_end)
+        new = TrialBalance(destination_coa, source_trial_balance.period_start, source_trial_balance.period_end)
         # TODO more checking to make sure all old data is used
         for destination_nc in new.chart_of_accounts.nominal_codes:
             result = p(0)

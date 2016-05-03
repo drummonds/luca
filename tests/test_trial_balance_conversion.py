@@ -7,7 +7,7 @@ from luca import TrialBalance
 from luca import CoreSlumberfleece
 
 
-class TestTTB(unittest.TestCase):
+class TestTrialBalanceConversion(unittest.TestCase):
 
     def test_convert_trial_balance(self):
         # Data to convert from

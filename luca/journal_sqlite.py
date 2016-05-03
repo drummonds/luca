@@ -6,7 +6,7 @@ import math
 import pandas as pd
 import sqlite3
 
-from .utils import LucaError
+from .utils import LucaError, p
 from .journal_entry import JournalEntry
 
 
@@ -75,25 +75,26 @@ class LoadDatabase():
             format(coa)
         return  pd.read_sql(sql, self.conn, index_col='Code')
 
-
-    def load_tb_to_database(self, trial_balance, period, overwrite = False, coa_name = 'SLF_MA'):
-        """Assume the data is of the correct chart of accounts.  The period is a tag that describes the data.
-        this is manually built although there should be a 1:1 relationship with the data in Journal"""
-        # TODO build the Period label from the data in the transaction data
+    def load_tb_to_database(self, trial_balance, period, overwrite = False):
+        """The chart of accounts in trial_balance defines how the name is to be laoded.
+         The period is a tag that describes the data."""
+        # TODO build the Period label suffix from the data in the transaction data
         trial_balance.chart_of_accounts.assert_valid_name()
         if self.empty(period) or overwrite:
             if overwrite:
                     self.cursor.execute("DELETE FROM trial_balance WHERE period = '{}'".format(period))
-            coa=self.get_coa(coa_name)
+            coa=trial_balance.chart_of_accounts
             # TODO would be better if checked that the COA is accurate before posting the data
             for nominal_code, value in trial_balance.to_series().iteritems():
                 if value == '-' or math.isnan(value):  # Not sure this check is necessary any longer
                     value = p(0)
-                process_normally = not( ((nominal_code=='5001') and (value == p(0)))  # leave out end of year
-                                      or (nominal_code == '2126'))  # adjustments unless needed.  Leave out YTD
-                    # carried forwad P&L which is done from the trial balance
-                if process_normally:
-                    self.cursor.execute("INSERT INTO trial_balance (period, code, balance) VALUES ('{}', {}, {})".\
-                        format(period, nominal_code, value))
+                try:
+                    sql = "INSERT INTO trial_balance (period, code, balance) VALUES ('{}', {}, {})".\
+                        format(period, nominal_code, value)
+                    self.cursor.execute(sql)
+                except:  # Todo make more specific
+                    print('Trying to insert code {} into database {} for period {} with value {}'. \
+                        format(nominal_code, coa.name, period, value))
+
         else:
             raise LoadDatabaseError('{} already is in management report database'.format(period))
