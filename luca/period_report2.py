@@ -73,7 +73,10 @@ TODO the duration of the period should also come from the database"""
 
     @property
     def full_year_start_string(self):
-        return self.year_start_date.strftime('%d %B %Y')
+        if self.year_start_date:
+            return self.year_start_date.strftime('%d %B %Y')
+        else:
+            return 'NoDate'
 
     @property
     def coa(self):
