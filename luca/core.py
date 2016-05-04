@@ -162,6 +162,8 @@ class Core:
         coa.short_term_liabilities = [20]
         coa.long_term_liabilities = [21]
         coa.owners_equity = [30, 31, 32]
+        coa.called_up_capital = [30]
+        coa.profit_and_loss_account = [31, 32]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 91  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [91]
