@@ -112,6 +112,10 @@ class JournalEntry:
         return nc
 
 
+    @property
+    def coa(self):  #  Aid as often used as an abrevation
+        return self.chart_of_accounts
+
 
 class TrialBalance(JournalEntry):
     """Every TrialBalance is or should be a valid JournalEntry."""
