@@ -44,7 +44,9 @@ class ChartOfAccounts:
             self.current_asset = [1200]
             self.short_term_liabilities = [2100]
             self.long_term_liabilities = [2103]
-            self.owners_equity = [2125]
+            self.owners_equity = [2125, 2126]
+            self.called_up_capital = [2125]
+            self.profit_and_loss_account = [2126]
             self.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
         else:
             self.constants = {}

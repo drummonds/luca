@@ -175,25 +175,47 @@ class FYBSPage(ExcelReportPage):
         fixed_assets = xlb.sum(coa.fixed_assets)
         write_row(fixed_assets, 'Tangible fixed assets', note = 4, bottom = 1)
         #**********************
+        xlb.line_number += 1
         sub_title('Current assets')
         debtors= xlb.sum(coa.debtors)
         write_row(debtors, 'Debtors', note = 5)
         cash_at_bank = xlb.sum(coa.cash_at_bank)
         write_row(cash_at_bank, 'Cash at bank and in hand', bottom = 1)
-        current_assets = [x[0]-x[1] for x in zip(debtors, cash_at_bank)]
+        current_assets = [x[0]+x[1] for x in zip(debtors, cash_at_bank)]
         write_row(current_assets, '', bottom = 1)
+        creditors_short_term = xlb.sum(coa.short_term_liabilities)
+        write_row(creditors_short_term, 'Creditors: Amounts falliing due within one year', note = 6, bottom = 1)
+        net_current_assets = [x[0]+x[1] for x in zip(current_assets, creditors_short_term)]
+        write_row(net_current_assets, 'Net current assets', bottom = 1)
+        total_assets= [x[0]+x[1] for x in zip(fixed_assets, net_current_assets)]
+        write_row(total_assets, 'Total assets less liabilities')
+        creditors_long_term= xlb.sum(coa.long_term_liabilities)
+        write_row(creditors_long_term, 'Creditors: Amounts falliing due after more than one year', note =7, bottom = 1)
+        net_assets= [x[0]+x[1] for x in zip(total_assets, creditors_long_term)]
+        write_row(net_assets, 'Net Assets', bottom = 6)
         #**********************
+        xlb.line_number += 1
         sub_title('Capital and reserves')
+        called_up_share_capital = xlb.sum(coa.called_up_capital)
+        write_row(called_up_share_capital, 'Called up share capital', note = 8)
+        profit_and_loss_account = xlb.sum(coa.profit_and_loss_account)
+        write_row(profit_and_loss_account, 'Creditors: Amounts falliing due after more than one year',
+                  note = 10, bottom = 1)
+        shareholders_funds = [x[0]+x[1] for x in zip(called_up_share_capital, profit_and_loss_account)]
+        write_row(shareholders_funds, 'Shareholders'' funds', bottom = 6)
         #**********************
-        note('These accounts have been prepared in accordance with the provisions applicable to companies subject ' +
-             'to the small companies regime and in accordance with teh Financial Reporting Standard for Smaller Entities ' +
-             '(effective 2008).')
-        note('For the year ending {} the company was entitle to exemption under '.format(rep.full_datestring) +
-             'section 477 of the Companies Act 2006 relating to small companies.')
-        note('The members have not required the company to obatin an audit in accordance with section 476 of the ' +
-             'Companies Act 2006.')
-        note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ' +
-             'respect to accounting records and the preperation of accounts.')
+        xlb.line_number += 2
+        note('These accounts have been prepared in accordance with the provisions applicable to companies subject ')
+        note('to the small companies regime and in accordance with the Financial Reporting Standard for Smaller Entities ')
+        note('(effective 2008).')
+        xlb.line_number += 1
+        note('For the year ending {} the company was entitle to exemption under '.format(rep.full_datestring))
+        note('section 477 of the Companies Act 2006 relating to small companies.')
+        xlb.line_number += 1
+        note('The members have not required the company to obatin an audit in accordance with section 476 of the ')
+        note('Companies Act 2006.')
+        xlb.line_number += 1
+        note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ' +Actua'respect to accounting records and the preperation of accounts.')
         xlb.line_number +=3
         note('Approved by the director on ().')
         xlb.line_number +=3
@@ -301,17 +323,19 @@ class FYNotes(ExcelReportPage):
             xlb.line_number +=1
 
         def note_title(text):
-            self.note_number += 1
-            ws.write('A{0}'.format(xlb.line_number), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
-            xlb.line_number += 2
+            self.note_number += 2
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
+            ws.write(cell_location, '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
+            xlb.line_number += 1
 
         def sub_title(text):
             xlb.line_number +=1
-            ws.write('A{0}'.format(xlb.line_number), text, xlb.bold_left_fmt)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
+            ws.write(cell_location, text, xlb.bold_left_fmt)
             xlb.line_number +=1
 
         def note(text):
-            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.para_fmt)
+            ws.merge_range('A{0}:E{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
             xlb.line_number +=1
 
         def row_title(a, b):
@@ -366,7 +390,7 @@ class FYNotes(ExcelReportPage):
         note_title('Taxation')
         note_title('Tangible Fixed Assets')
         #*********************************************************
-        row_title('Office Euipment', 'Total')
+        row_title('Office Equipment', 'Total')
         row_title('£', '£')
         sub_title('Cost or Valuation')
         # Todo Generalise to a list of nominal codes
@@ -389,7 +413,6 @@ class FYNotes(ExcelReportPage):
         prev_book_value = prev_cost - prev_depreciation
         row('At {}'.format(rep.full_datestring), this_book_value, this_book_value, bottom=6)
         row('At {}'.format(rep.full_year_start_string), prev_book_value, prev_book_value, bottom=6)
-        note('>>Rep period date {}'.format(rep.period_date))
         #*********************************************************
         note_title('Debtors')
         #*********************************************************
