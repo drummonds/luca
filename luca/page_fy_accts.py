@@ -215,7 +215,8 @@ class FYBSPage(ExcelReportPage):
         note('The members have not required the company to obatin an audit in accordance with section 476 of the ')
         note('Companies Act 2006.')
         xlb.line_number += 1
-        note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ' +Actua'respect to accounting records and the preperation of accounts.')
+        note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ')
+        note('respect to accounting records and the preperation of accounts.')
         xlb.line_number +=3
         note('Approved by the director on ().')
         xlb.line_number +=3
