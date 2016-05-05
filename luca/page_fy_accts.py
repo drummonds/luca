@@ -8,6 +8,49 @@ from .excel_report2 import ExcelReportPage
 from .utils import p
 
 
+def _write_block(ws, xlb, rep, acct_list, title, sign=1):
+    block_sum = [p(0)] * 4
+    fmt = xlb.workbook.add_format(
+        {**xlb.base_format_dictionary, **{'align': 'right'}})
+    fmt_title = xlb.workbook.add_format(
+        {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
+    fmt_left = xlb.workbook.add_format(
+        {**xlb.base_format_dictionary, **{'align': 'left'}})
+    fmt_underline = xlb.workbook.add_format(
+        {**xlb.base_format_dictionary, **{'align': 'right', 'bottom': 1}})
+    fmt_double_underline = xlb.workbook.add_format(
+        {**xlb.base_format_dictionary, **{'align': 'right', 'bottom': 6}})
+    # Do the title
+    cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
+    ws.write(cell_location, title, fmt_title)
+    xlb.line_number += 1
+    # The acct_list is the simple list of account nominal codes that are to be included in this block
+    for nc in acct_list:
+        # If there no row then ignore error
+        try:
+            name = rep.chart_of_accounts[nc]
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
+            ws.write(cell_location, name, fmt_left)
+            for i, col in enumerate(xlb.col_list):
+                tb = rep.trial_balances[i]
+                cell_location = xl_rowcol_to_cell(xlb.line_number, col)
+                value = xlb.get_value(tb, nc, sign)
+                ws.write(cell_location, value, fmt)
+                block_sum[i] += p(value)
+            xlb.line_number += 1
+        except KeyError:
+            # This is where there is no data in the name
+            print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
+            pass
+    # Add a sub total line if required
+    if len(acct_list) != 1:
+        for i, c in enumerate(xlb.col_list):
+            cell_location = xl_rowcol_to_cell(xlb.line_number, c)
+            ws.write(cell_location, block_sum[i], fmt_double_underline)
+        xlb.line_number += 1
+    xlb.line_number += 1  # Blank line seperator
+
+
 class FYCoverPage(ExcelReportPage):
 
     @property
@@ -235,49 +278,8 @@ class FYDetailPnLPage(ExcelReportPage):
         return '{}FY Detail P&L '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
-
         def write_block(acct_list, title, sign=1):
-            block_sum = [p(0)] * 4
-            fmt = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary,  **{'align': 'right'}})
-            fmt_title = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary,  **{'align': 'left', 'font_size': 11}})
-            fmt_left = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary,  **{'align': 'left'}})
-            fmt_underline = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary,  **{'align': 'right', 'bottom': 1}})
-            fmt_double_underline = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary,  **{'align': 'right', 'bottom': 6}})
-            # Do the title
-            cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
-            ws.write(cell_location, title, fmt_title)
-            xlb.line_number += 1
-            # The acct_list is the simple list of account nominal codes that are to be included in this block
-            for nc in acct_list:
-                # If there no row then ignore error
-                try:
-                    name = rep.chart_of_accounts[nc]
-                    cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
-                    ws.write(cell_location, name, fmt_left)
-                    for i, col in enumerate(xlb.col_list):
-                        tb = rep.trial_balances[i]
-                        cell_location = xl_rowcol_to_cell(xlb.line_number, col)
-                        value = xlb.get_value(tb, nc, sign)
-                        ws.write(cell_location, value, fmt)
-                        block_sum[i] += p(value)
-                    xlb.line_number += 1
-                except KeyError:
-                    # This is where there is no data in the name
-                    print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
-                    pass
-            # Add a sub total line if required
-            if len(acct_list) != 1:
-                for i, c in enumerate(xlb.col_list):
-                    cell_location = xl_rowcol_to_cell(xlb.line_number, c)
-                    ws.write(cell_location, block_sum[i], fmt_double_underline)
-                xlb.line_number += 1
-            xlb.line_number += 1  # Blank line seperator
-
+            _write_block(ws, xlb, rep, acct_list, title, sign=sign)
         ws = worksheet
         xlb = excel_base
         xlb.rep = self.rep
@@ -317,6 +319,8 @@ class FYNotes(ExcelReportPage):
         return '{}Notes '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
+        def write_block(acct_list, title, sign=1):
+            _write_block(ws, xlb, rep, acct_list, title, sign=sign)
 
         def title(text):
             # Merge whole row
@@ -389,6 +393,11 @@ class FYNotes(ExcelReportPage):
         note("company is presented as a liability in the balance sheet.  The corresponding dividens relating to the ")
         note("liability component are charged as interest expense in the profit and loss account.")
         note_title('Operating (loss)/profit')
+        note('Operating (loss)/profit is stated after charging:')
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
+        write_block(coa.depreciation_costs, 'Depreciation of tangible fixed assets')
         note_title('Taxation')
         note_title('Tangible Fixed Assets')
         #*********************************************************
@@ -427,8 +436,11 @@ class FYNotes(ExcelReportPage):
         note_title('Dividends')
         #*********************************************************
         note_title('Reserves')
+        row_title('Profit and loss Account', 'Total')
+        row_title('£', '£')
         #*********************************************************
         note_title('Control')
+        xlb.notes += 1
         note("The company is controlled by the director who owns 100% of the called up share capital.")
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,
                               show_footer=False, show_header=False)

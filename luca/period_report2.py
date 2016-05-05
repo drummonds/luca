@@ -78,6 +78,17 @@ TODO the duration of the period should also come from the database"""
             return 'NoDate'
 
     @property
+    def year(self):
+        return self.period_date.strftime('%Y')
+
+    @property
+    def prior_year(self):
+        if self.prior_period_date:
+            return self.prior_period_date.strftime('%Y')
+        else:
+            return 'NoYear'
+
+    @property
     def coa(self):
         return self._coa
 
