@@ -102,9 +102,9 @@ class FYPnLPage(ExcelReportPage):
         xlb.line_number = 5
         turnover = xlb.sum(coa.sales, sign = -1)
         xlb.write_fy_row(ws, turnover, 'Turnover', row_height=22)
-        cost_of_sales = xlb.sum(coa.material_costs)
+        cost_of_sales = xlb.sum(coa.material_costs, sign = -1)
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales', cell_format={'bottom': 1}, row_height=22)
-        gross_profit = [x[0]-x[1] for x in zip(turnover, cost_of_sales)]
+        gross_profit = [x[0]+x[1] for x in zip(turnover, cost_of_sales)]
         xlb.write_fy_row(ws, gross_profit, 'Gross profit', row_height=22)
         admin_expenses = xlb.sum(coa.variable_costs
                                  + coa.fixed_production_costs
@@ -197,9 +197,9 @@ class FYBSPage(ExcelReportPage):
         xlb.line_number += 1
         sub_title('Capital and reserves')
         xlb.line_number += 1
-        called_up_share_capital = xlb.sum(coa.called_up_capital)
+        called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
         write_row(called_up_share_capital, 'Called up share capital', note = 8)
-        profit_and_loss_account = xlb.sum(coa.profit_and_loss_account)
+        profit_and_loss_account = xlb.sum(coa.profit_and_loss_account, sign = -1)
         write_row(profit_and_loss_account, 'Profit and loss account', note = 10, bottom = 1)
         shareholders_funds = [x[0]+x[1] for x in zip(called_up_share_capital, profit_and_loss_account)]
         write_row(shareholders_funds, 'Shareholders'' funds', bottom = 6)
