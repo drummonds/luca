@@ -8,7 +8,7 @@ from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
     10: (100, 102, 103, ),  # Tangible fixed assets
-    11: (2000),  # Debtors
+    11: (2000, ),  # Debtors
     12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
     20: (2000, ),  # Creditors: Amounts falling due within one year
     21: (),  # Creditors: Amounts falling due after more than one year
@@ -46,7 +46,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     825: (8001, 8014, 8017, 8020), # Prining postage and subsistence
     830: (8000, ), #
     835: (8100, 8900), #
-    840: (8010, 8019 ), # Travel and sussitence
+    840: (8010, 8019), # Travel and sussitence
     890: (7000, ),  # Bank charges
     # Administrative Expenses
     910: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
@@ -70,7 +70,7 @@ SAGE_TO_SLF_MA = {
     10: (10, 20, 21, 30, 31, 40, 41,),
     1001: (1001, 1004, 1254, 1256, 7906,),
     1100: (1100, 1101,),
-    1102: (1102,),
+    1102: (1102, ),
     1103: (1103, 1110, 1120,),
     1115: (1104, 1115, 1117,),
     1200: (1200, 1205, 1240, 1250, 1260, 1262, 1263, 9998, 9999,),
@@ -80,11 +80,11 @@ SAGE_TO_SLF_MA = {
     2100: (2100, 2220,),
     2103: (2103, 2101,),
     2104: (2104, 2102,),
-    2105: (2105,),
+    2105: (2105, ),
     2106: (2106, 2320,),
     2107: (2107, 2210, 2211,),
     2108: (2200, 2201, 2202, 2204,),
-    2109: (2109,),
+    2109: (2109, ),
     2110: (2110, 2108,),
     2120: (2120, 3000,),
     2125: (2125, 3210,),
