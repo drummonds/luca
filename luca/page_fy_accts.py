@@ -196,10 +196,9 @@ class FYBSPage(ExcelReportPage):
         #**********************
         xlb.line_number += 1
         sub_title('Capital and reserves')
-        xlb.line_number += 2
+        xlb.line_number += 1
         called_up_share_capital = xlb.sum(coa.called_up_capital)
         write_row(called_up_share_capital, 'Called up share capital', note = 8)
-        xlb.line_number += 2
         profit_and_loss_account = xlb.sum(coa.profit_and_loss_account)
         write_row(profit_and_loss_account, 'Profit and loss account', note = 10, bottom = 1)
         shareholders_funds = [x[0]+x[1] for x in zip(called_up_share_capital, profit_and_loss_account)]
@@ -325,7 +324,8 @@ class FYNotes(ExcelReportPage):
             xlb.line_number +=1
 
         def note_title(text):
-            self.note_number += 2
+            self.note_number += 1
+            xlb.line_number += 1
             cell_location = xl_rowcol_to_cell(xlb.line_number, 0)
             ws.write(cell_location, '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
             xlb.line_number += 1

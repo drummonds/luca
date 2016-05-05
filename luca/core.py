@@ -8,7 +8,7 @@ from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
     10: (100, 102, 103, ),  # Tangible fixed assets
-    11: (),  # Debtors
+    11: (2000),  # Debtors
     12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
     20: (2000, ),  # Creditors: Amounts falling due within one year
     21: (),  # Creditors: Amounts falling due after more than one year
@@ -162,8 +162,8 @@ class Core:
         coa.short_term_liabilities = [20]
         coa.long_term_liabilities = [21]
         coa.owners_equity = [30, 31, 32]
-        coa.called_up_capital = [30]
-        coa.profit_and_loss_account = [31, 32]
+        coa.called_up_capital = [31]
+        coa.profit_and_loss_account = [30, 32]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 91  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [91]
@@ -237,7 +237,8 @@ class CoreDrummonds(Core):
         coa.fixed_assets = [10]
         coa.cash_at_bank = [1200, 1205, 1250]
         coa.current_asset = [1200, 1205, 1250, 2200]
-        coa.short_term_liabilities = [2000]
+        coa.debtors = [2000]
+        coa.short_term_liabilities = []
         coa.long_term_liabilities = []
         coa.owners_equity = [4100, 4200, 4300]
         coa.called_up_capital = [4100]
