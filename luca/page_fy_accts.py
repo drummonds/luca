@@ -44,17 +44,21 @@ def _write_block(ws, xlb, rep, acct_list, title, sign=1, sum_for_one_entry = Fal
         ws.write(cell_location, title, fmt_title)
         xlb.line_number += 1
         # The acct_list is the simple list of account nominal codes that are to be included in this block
-        for nc in acct_list:
+        for j, nc in enumerate(acct_list):
             # If there no row then ignore error
             try:
                 name = rep.chart_of_accounts[nc]
                 cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
                 ws.write(cell_location, name, fmt_left)
+                if (j+1) == len(acct_list):  # Last entry
+                    cell_fmt = fmt_underline
+                else:
+                    cell_fmt = fmt
                 for i, col in enumerate(xlb.col_list):
                     tb = rep.trial_balances[i]
                     cell_location = xl_rowcol_to_cell(xlb.line_number, col)
                     value = xlb.get_value(tb, nc, sign)
-                    ws.write(cell_location, value, fmt)
+                    ws.write(cell_location, value, cell_fmt)
                 xlb.line_number += 1
             except KeyError:
                 # This is where there is no data in the name
@@ -327,7 +331,7 @@ class FYDetailPnLPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
 
         def write_block(acct_list, title, sign=1, sum_for_one_entry = False):
-            _write_block(ws, xlb, rep, acct_list, title, sign=sign)
+            _write_block(ws, xlb, rep, acct_list, title, sign=sign, sum_for_one_entry=sum_for_one_entry)
 
         ws = worksheet
         xlb = excel_base
