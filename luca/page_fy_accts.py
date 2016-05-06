@@ -50,8 +50,10 @@ def _write_block(ws, xlb, rep, acct_list, title, sign=1, sum_for_one_entry = Fal
                 name = rep.chart_of_accounts[nc]
                 cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
                 ws.write(cell_location, name, fmt_left)
-                if (j+1) == len(acct_list):  # Last entry
+                if (j+1) == len(acct_list) and (len(acct_list) > 1):  # Last entry
                     cell_fmt = fmt_underline
+                elif (j + 1) == len(acct_list) and (len(acct_list) == 1):  # Last entry
+                        cell_fmt = fmt_double_underline
                 else:
                     cell_fmt = fmt
                 for i, col in enumerate(xlb.col_list):
@@ -71,7 +73,6 @@ def _write_block(ws, xlb, rep, acct_list, title, sign=1, sum_for_one_entry = Fal
                 ws.write(cell_location, block_sum[i], fmt_double_underline)
             xlb.line_number += 1
         xlb.line_number += 1  # Blank line seperator
-
 
 def _write_block_sum(ws, xlb, rep, acct_list, title, sign=1):
     block_sum = [p(0)] * 4
@@ -339,10 +340,15 @@ class FYDetailPnLPage(ExcelReportPage):
         rep = self.rep
         coa = rep.coa
         # Nominal code info columns
-        for range, width in [('B:B', 80),  # Description
-                             ('C:D', 20)]: # Cols
+        for range, width in [('A:A', 1),  # Margin
+                             ('B:B', 49),  # Description
+                             ('C:C', 15),  # Cols
+                             ('D:D', 1),  # Spacer
+                             ('E:E', 15),  # Cols
+                             ('F:F', 1),  # Margin
+                             ]:
             ws.set_column(range, width)
-        xlb.col_list=(2, 3, )  # Two column report
+        xlb.col_list=(2, 4, )  # Two column report
         xlb.write_merged_header(ws, coa.company_name, cols='B:E')
         xlb.write_merged_header(ws, 'Profit and Loss Account for the Year Ended {}'.format(rep.full_datestring),
                                 cols='B:E')
@@ -383,7 +389,7 @@ class FYNotes(ExcelReportPage):
 
         def title(text):
             # Merge whole row
-            ws.merge_range('A{0}:E{0}'.format(xlb.line_number), text, xlb.title_fmt)
+            ws.merge_range('A{0}:F{0}'.format(xlb.line_number), text, xlb.title_fmt)
             xlb.line_number +=1
 
         def note_title(text):

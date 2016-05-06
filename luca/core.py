@@ -41,9 +41,9 @@ DRUMMONDS_TO_FY_DETAIL = {
     770: (7700, ),  # Office equipment depreciation
     800: (7500, 8001, 8003, 8008, 8011, 8018, 8021),  # Sundry expense TODO check 8002 computer hardware capex
     810: (8005, 8006),  # Telephone and fax
-    815: (8007, ), #
-    820: (7001, 7002, 8002, 8009, 8013, 8017,   ),  #
-    825: (8001, 8014, 8017, 8020),  # Prining postage and subsistence
+    815: (7001, 8007, ), # Office Expense
+    820: (7002, 8002, 8009, 8013, 8017, ),  # Computer software and maintenance costs
+    825: (8001, 8014, 8017, 8020),  # Printing postage and stationery
     830: (8000, ),  #
     835: (8100, 8900),  #
     840: (8010, 8019),  # Travel and sussitence
