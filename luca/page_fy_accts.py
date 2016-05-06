@@ -503,10 +503,10 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 2
         ws.write(col(0), 'Ordinary Shares of £1 each', xlb.fmt)
         called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
-        ws.write(col(1), called_up_share_capital[0], xlb.cell_fmt)
-        ws.write(col(2), called_up_share_capital[0], xlb.cell_fmt)
-        ws.write(col(3), called_up_share_capital[1], xlb.cell_fmt)
-        ws.write(col(4), called_up_share_capital[1], xlb.cell_fmt)
+        ws.write(col(1), called_up_share_capital[0], cell_fmt)
+        ws.write(col(2), called_up_share_capital[0], cell_fmt)
+        ws.write(col(3), called_up_share_capital[1], cell_fmt)
+        ws.write(col(4), called_up_share_capital[1], cell_fmt)
         xlb.line_number += 1
         #*********************************************************
         note_title('Dividends')
