@@ -397,7 +397,7 @@ class FYNotes(ExcelReportPage):
         self.note_number = 0
         xlb.col_list=(3, 4, )  # Two column report
         # Nominal code info columns
-        for range, width in [('A:E', 20)]:
+        for range, width in [('A:A', 24), ('B:E', 15)]:
             ws.set_column(range, width)
         title(coa.company_name)
         xlb.line_number +=1
@@ -523,10 +523,10 @@ class FYNotes(ExcelReportPage):
         row_title('£', '£')
         prev_pnl = xlb.list_get_value(rep.trial_balances[1], coa.profit_and_loss_account)
         this_pnl = xlb.list_get_value(rep.trial_balances[0], coa.profit_and_loss_account)
-        additions = this_cost - prev_cost  # Todo not sure this is a general solution
-        row('At {}'.format(rep.full_year_start_string), prev_cost, prev_cost)
-        row('Profit/(loss) for the year', additions, additions, bottom=1)
-        row('At {}'.format(rep.full_datestring), this_cost, this_cost, bottom=1)
+        years_pnl = this_pnl  - prev_pnl  # Todo not sure this is a general solution
+        row('At {}'.format(rep.full_year_start_string), prev_pnl, prev_pnl)
+        row('Profit/(loss) for the year', years_pnl, years_pnl, bottom=1)
+        row('At {}'.format(rep.full_datestring), this_pnl, this_pnl, bottom=1)
         #*********************************************************
         note_title('Control')
         xlb.line_number += 1
