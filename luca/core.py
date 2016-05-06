@@ -17,7 +17,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
     80: (7000, 7001, 7002, 7100, 7205, 7300, 7700, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
-         8008, 8009, 8010, 8011, 8012, 8013, 8014, 8017, 8018, 8019, 8020, 8100, 8300, 8900),
+         8008, 8009, 8010, 8011, 8012, 8013, 8014, 8017, 8018, 8019, 8020, 8021, 8100, 8300, 8900),
     # Administrative Expenses
     91: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     }
@@ -39,14 +39,14 @@ DRUMMONDS_TO_FY_DETAIL = {
     750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
     760: (8012, ),  # Staff training
     770: (7700, ),  # Office equipment depreciation
-    800: (7500, 8001, 8002, 8003, 8008, 8011, 8018),  # Sundry expense TODO check 8002 computer hardware capex
-    810: (8005, 8006), # # Telephone and fax
+    800: (7500, 8001, 8002, 8003, 8008, 8011, 8018, 8021),  # Sundry expense TODO check 8002 computer hardware capex
+    810: (8005, 8006),  # Telephone and fax
     815: (8007, ), #
-    820: (7001, 7002, 8009, 8013, 8017,   ), #
-    825: (8001, 8014, 8017, 8020), # Prining postage and subsistence
-    830: (8000, ), #
-    835: (8100, 8900), #
-    840: (8010, 8019), # Travel and sussitence
+    820: (7001, 7002, 8009, 8013, 8017,   ),  #
+    825: (8001, 8014, 8017, 8020),  # Prining postage and subsistence
+    830: (8000, ),  #
+    835: (8100, 8900),  #
+    840: (8010, 8019),  # Travel and sussitence
     890: (7000, ),  # Bank charges
     # Administrative Expenses
     910: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities

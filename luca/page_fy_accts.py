@@ -26,13 +26,13 @@ def _calc_block_sum(xlb, rep, acct_list, sign=1):
             pass
     return block_sum, has_data
 
-def _write_block(ws, xlb, rep, acct_list, title, sign=1):
+def _write_block(ws, xlb, rep, acct_list, title, sign=1, sum_for_one_entry = False):
     block_sum, has_data = _calc_block_sum(xlb, rep, acct_list, sign)
     if has_data:
         fmt = xlb.workbook.add_format(
             {**xlb.base_format_dictionary, **{'align': 'right'}})
         fmt_title = xlb.workbook.add_format(
-            {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
+            {**xlb.base_format_dictionary, **{'align': 'left', 'bold': True, 'font_size': 11}})
         fmt_left = xlb.workbook.add_format(
             {**xlb.base_format_dictionary, **{'align': 'left'}})
         fmt_underline = xlb.workbook.add_format(
@@ -55,14 +55,13 @@ def _write_block(ws, xlb, rep, acct_list, title, sign=1):
                     cell_location = xl_rowcol_to_cell(xlb.line_number, col)
                     value = xlb.get_value(tb, nc, sign)
                     ws.write(cell_location, value, fmt)
-                    block_sum[i] += p(value)
                 xlb.line_number += 1
             except KeyError:
                 # This is where there is no data in the name
                 print("Missing data for account {}. Error {}".format(nc, sys.exc_info()))
                 pass
         # Add a sub total line if required
-        if len(acct_list) != 1:
+        if (len(acct_list) != 1) or (sum_for_one_entry):
             for i, c in enumerate(xlb.col_list):
                 cell_location = xl_rowcol_to_cell(xlb.line_number, c)
                 ws.write(cell_location, block_sum[i], fmt_double_underline)
@@ -326,8 +325,10 @@ class FYDetailPnLPage(ExcelReportPage):
         return '{}FY Detail P&L '.format(self.sheetname_prefix) + self.rep.datestring
 
     def format_page(self, excel_base, worksheet):
-        def write_block(acct_list, title, sign=1):
+
+        def write_block(acct_list, title, sign=1, sum_for_one_entry = False):
             _write_block(ws, xlb, rep, acct_list, title, sign=sign)
+
         ws = worksheet
         xlb = excel_base
         xlb.rep = self.rep
@@ -345,7 +346,7 @@ class FYDetailPnLPage(ExcelReportPage):
         xlb.write_row(ws, ['£']*2)
         xlb.line_number = 5
         profit = [p(0)] * 4
-        write_block(coa.sales, 'Turnover', sign=-1)
+        write_block(coa.sales, 'Turnover', sign=-1, sum_for_one_entry = True)
         write_block(coa.material_costs, 'Cost of Sale')
         write_block(coa.employment_costs, 'Employment Costs')
         write_block(coa.establishment_costs, 'Establishment Costs')
