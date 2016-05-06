@@ -394,11 +394,19 @@ class FYNotes(ExcelReportPage):
         note("liability component are charged as interest expense in the profit and loss account.")
         note_title('Operating (loss)/profit')
         note('Operating (loss)/profit is stated after charging:')
+        xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
         xlb.line_number += 1
         write_block(coa.depreciation_costs, 'Depreciation of tangible fixed assets')
         note_title('Taxation')
+        xlb.line_number += 1
+        sub_title('Tax on (loss)/profit on ordinary activities')
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
+        sub_title('Current tax')
+        xlb.line_number += 1
         note_title('Tangible Fixed Assets')
         #*********************************************************
         row_title('Office Equipment', 'Total')
@@ -426,21 +434,41 @@ class FYNotes(ExcelReportPage):
         row('At {}'.format(rep.full_year_start_string), prev_book_value, prev_book_value, bottom=6)
         #*********************************************************
         note_title('Debtors')
+        xlb.line_number += 1
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
         #*********************************************************
         note_title('Creditors: Amount falling due within one year')
+        xlb.line_number += 1
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
         #*********************************************************
         note_title('Creditors: Amount falling due after more than one year')
+        xlb.line_number += 1
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
         #*********************************************************
         note_title('Share Capital')
+        xlb.line_number += 1
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
         #*********************************************************
         note_title('Dividends')
+        xlb.line_number += 1
+        row_title(rep.year, rep.prior_year)
+        row_title('£', '£')
+        xlb.line_number += 1
         #*********************************************************
         note_title('Reserves')
         row_title('Profit and loss Account', 'Total')
         row_title('£', '£')
         #*********************************************************
         note_title('Control')
-        xlb.notes += 1
+        xlb.line_number += 1
         note("The company is controlled by the director who owns 100% of the called up share capital.")
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,
                               show_footer=False, show_header=False)
