@@ -39,6 +39,7 @@ class ChartOfAccounts:
             self.establishment_costs = []
             self.finance_charges = []
             self.depreciation_costs = []
+            self.dividends = []
             self.selling_costs = [6100]
             self.fixed_asset = [10]
             self.current_asset = [1200]

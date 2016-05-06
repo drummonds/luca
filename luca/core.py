@@ -162,6 +162,7 @@ class Core:
         coa.short_term_liabilities = [20]
         coa.long_term_liabilities = [21]
         coa.owners_equity = [30, 31, 32]
+        coa.dividends = []
         coa.called_up_capital = [31]
         coa.profit_and_loss_account = [30, 32]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
@@ -243,6 +244,7 @@ class CoreDrummonds(Core):
         coa.owners_equity = [4100, 4200, 4300]
         coa.called_up_capital = [4100]
         coa.profit_and_loss_account = [4200, 4300]
+        coa.dividends = []
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [9510]
@@ -276,6 +278,7 @@ class CoreDrummonds(Core):
         coa.long_term_liabilities = [210]
         coa.owners_equity = [300, 310, 320]
         coa.called_up_capital = [300]
+        coa.dividends = []
         coa.profit_and_loss_account = [310, 320]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 910  # This is a balancing account for tax that is carried forward
