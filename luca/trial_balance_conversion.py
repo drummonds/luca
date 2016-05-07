@@ -19,7 +19,7 @@ class TrialBalanceConversion():
         list_nc_to = []
         for nc_to, nc_from_list in conversion.items():
             list_nc_to = list_nc_to + [nc_to]
-            list_nc_from = list_nc_from + nc_from_list
+            list_nc_from = list_nc_from + list(nc_from_list)
         set_nc_from = set(list_nc_from)
         assert len(set_nc_from) == len(list_nc_from), 'Set from is duplicated for conversion from {} to {}'.\
             format(coa_from.name, coa_to.name)
