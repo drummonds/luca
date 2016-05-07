@@ -76,16 +76,13 @@ def _write_block(ws, xlb, rep, acct_list, title, sign=1, sum_for_one_entry = Fal
 
 def _write_block_sum(ws, xlb, rep, acct_list, title, sign=1):
     block_sum = [p(0)] * 4
-    fmt = xlb.workbook.add_format(
-        {**xlb.base_format_dictionary, **{'align': 'right'}})
     fmt_title = xlb.workbook.add_format(
         {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
-    fmt_left = xlb.workbook.add_format(
-        {**xlb.base_format_dictionary, **{'align': 'left'}})
-    fmt_underline = xlb.workbook.add_format(
-        {**xlb.base_format_dictionary, **{'align': 'right', 'bottom': 1}})
     fmt_double_underline = xlb.workbook.add_format(
         {**xlb.base_format_dictionary, **{'align': 'right', 'bottom': 6}})
+    # Do the title
+    cell_location = xl_rowcol_to_cell(xlb.line_number, 1)
+    ws.write(cell_location, title, fmt_title)
     # The acct_list is the simple list of account nominal codes that are to be included in this block
     for nc in acct_list:
         # If there no row then ignore error
@@ -389,7 +386,7 @@ class FYNotes(ExcelReportPage):
 
         def title(text):
             # Merge whole row
-            ws.merge_range('A{0}:F{0}'.format(xlb.line_number), text, xlb.title_fmt)
+            ws.merge_range('A{0}:H{0}'.format(xlb.line_number), text, xlb.title_fmt)
             xlb.line_number +=1
 
         def note_title(text):
@@ -399,7 +396,6 @@ class FYNotes(ExcelReportPage):
             xlb.line_number += 1
 
         def sub_title(text):
-            xlb.line_number +=1
             ws.write(col(0), text, xlb.bold_left_fmt)
             xlb.line_number +=1
 
@@ -425,9 +421,10 @@ class FYNotes(ExcelReportPage):
         rep = self.rep
         coa = rep.coa
         self.note_number = 0
-        xlb.col_list=(3, 4, )  # Two column report
+        xlb.col_list=(5, 7, )  # Two column report
         # Nominal code info columns
-        for range, width in [('A:A', 22), ('B:E', 15)]:
+        for range, width in [('A:A', 23), ('B:B', 14), ('C:C', 1), ('D:D', 14), ('E:E', 1), ('F:F', 14), ('G:G', 1),
+                             ('H:H', 14)]:
             ws.set_column(range, width)
         title(coa.company_name)
         xlb.line_number +=1
@@ -455,16 +452,15 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         write_block_sum(coa.depreciation_costs, 'Depreciation of tangible fixed assets')
+        #*********************************************************
         note_title('Taxation')
         xlb.line_number += 1
         sub_title('Tax on (loss)/profit on ordinary activities')
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         sub_title('Current tax')
-        write_block_sum(coa.year_corporation_tax, 'Corporation tax (credit)/ charge')
+        write_block_sum(coa.year_corporation_tax, 'Corporation tax (credit)/ charge', sign=-1)
         xlb.line_number += 1
         note_title('Tangible Fixed Assets')
         #*********************************************************
@@ -496,7 +492,6 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         write_block_sum(coa.debtors, 'Other debtors')
         xlb.line_number += 1
         #*********************************************************
@@ -504,7 +499,6 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         write_block_sum(coa.short_term_liabilities, 'Corporation tax')
         xlb.line_number += 1
         #*********************************************************
@@ -512,7 +506,6 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         write_block_sum(coa.short_term_liabilities, 'Other creditors')
         xlb.line_number += 1
         #*********************************************************
@@ -520,30 +513,26 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         sub_title('Allotted, called up and fully paid shares')
         cell_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary, **{'bottom': 6, 'align': 'right'}})
-        ws.write(col(1), rep.year, xlb.bold_fmt)
-        ws.write(col(3), rep.prior_year, xlb.bold_fmt)
-        xlb.line_number += 1
-        ws.write(col(1), rep.year, xlb.bold_fmt)
-        ws.write(col(3), rep.prior_year, xlb.bold_fmt)
+        ws.write(col(2), rep.year, xlb.bold_fmt)
+        ws.write(col(6), rep.prior_year, xlb.bold_fmt)
         xlb.line_number += 1
         ws.write(col(1), 'No.', xlb.bold_fmt)
-        ws.write(col(2), '£', xlb.bold_fmt)
-        ws.write(col(3), 'No.', xlb.bold_fmt)
-        ws.write(col(4), '£', xlb.bold_fmt)
+        ws.write(col(3), '£', xlb.bold_fmt)
+        ws.write(col(5), 'No.', xlb.bold_fmt)
+        ws.write(col(7), '£', xlb.bold_fmt)
         xlb.line_number += 2
         ws.write(col(0), 'Ordinary Shares of £1 each', xlb.left_fmt)
         called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
         ws.write(col(1), called_up_share_capital[0], cell_fmt)
-        ws.write(col(2), called_up_share_capital[0], cell_fmt)
-        ws.write(col(3), called_up_share_capital[1], cell_fmt)
-        ws.write(col(4), called_up_share_capital[1], cell_fmt)
+        ws.write(col(3), called_up_share_capital[0], cell_fmt)
+        ws.write(col(5), called_up_share_capital[1], cell_fmt)
+        ws.write(col(7), called_up_share_capital[1], cell_fmt)
         xlb.line_number += 1
         #*********************************************************
         note_title('Dividends')
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        xlb.line_number += 1
         sub_title('Dividends paid')
         write_block_sum(coa.dividends, 'Current year interim dividend paid')
         xlb.line_number += 1
