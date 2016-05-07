@@ -15,12 +15,17 @@ class TrialBalanceConversion():
     def add_conversion(self, conversion, coa_from, coa_to):
         """Check that it is complete and add the conversion. All of the input COA must be converted to all of
         the output coa.  Any part that is not used must be netted off"""
-        set_nc_from = set()
-        set_nc_to = set()
+        list_nc_from = []
+        list_nc_to = []
         for nc_to, nc_from_list in conversion.items():
-            set_nc_to = set_nc_to | set([nc_to])
-            set_nc_from = set_nc_from | set(nc_from_list)
-
+            list_nc_to = list_nc_to + [nc_to]
+            list_nc_from = list_nc_from + nc_from_list
+        set_nc_from = set(list_nc_from)
+        assert len(set_nc_from) == len(list_nc_from), 'Set from is duplicated for conversion from {} to {}'.\
+            format(coa_from.name, coa_to.name)
+        set_nc_to = set(list_nc_to)
+        assert len(set_nc_to) == len(list_nc_to), 'Set to is duplicated for conversion from {} to {}'.\
+            format(coa_from.name, coa_to.name)
         from_nc_not_accounted_for = set_nc_from ^ coa_from.nc_set()
         if from_nc_not_accounted_for != set():
             print("From nominal codes mismatch {}".format(from_nc_not_accounted_for))
