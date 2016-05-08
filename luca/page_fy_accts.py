@@ -320,6 +320,74 @@ class FYBSPage(ExcelReportPage):
                       'Page {}'.format(xlb.page_number))
 
 
+class FYDetailPnLPageSummary(ExcelReportPage):
+
+    @property
+    def sheetname(self):
+        return '{}FY Detail P&L Summary'.format(self.sheetname_prefix) + self.rep.datestring
+
+    def format_page(self, excel_base, worksheet):
+        def col(at_col):
+            return xl_rowcol_to_cell(xlb.line_number, at_col)
+
+        def icol(index):  # Indexed column, index into data table
+            return col(xlb.col_list[index])
+
+        def write_block_sum(acct_list, title, sign=1):
+            _write_block_sum(ws, xlb, rep, acct_list, title, sign=sign)
+
+        def title(text):
+            # Merge whole row
+            ws.merge_range('A{0}:H{0}'.format(xlb.line_number), text, xlb.title_fmt)
+            xlb.line_number += 1
+
+        def note_title(text):
+            self.note_number += 1
+            xlb.line_number += 1
+            ws.write(col(0), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
+            xlb.line_number += 1
+
+        def sub_title(text):
+            ws.write(col(0), text, xlb.bold_left_fmt)
+            xlb.line_number +=1
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        self.note_number = 0
+        xlb.col_list=(1, 3, 5, 7, )  # Two column report
+        # Nominal code info columns
+        for range, width in [('A:A', 23), ('B:B', 14), ('C:C', 1), ('D:D', 14), ('E:E', 1), ('F:F', 14), ('G:G', 1),
+                             ('H:H', 14)]:
+            ws.set_column(range, width)
+        title(coa.company_name)
+        xlb.line_number +=1
+        title('Detailed Profit and Loss Account for the Year Ended {}'.format(rep.full_datestring))
+        cell_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary, **{'align': 'right'}})
+        ws.write(col(2), rep.year, xlb.bold_fmt)
+        ws.write(col(6), rep.prior_year, xlb.bold_fmt)
+        xlb.line_number += 1
+        ws.write(col(1), '£', xlb.bold_fmt)
+        ws.write(col(3), '£', xlb.bold_fmt)
+        ws.write(col(5), '£', xlb.bold_fmt)
+        ws.write(col(7), '£', xlb.bold_fmt)
+        xlb.line_number += 1
+        write_block_sum(coa.sales, 'Turnover (analysed below)', sign=-1)
+        write_block_sum(coa.material_costs, 'Cost of sales (analysed below)')
+        write_block_sum(coa.profit_and_loss_account, 'Gross Profit', sign=-1)
+        write_block_sum(coa.sales, 'Gross profit (%)', sign=-1)
+        sub_title('Administrative expenses')
+        write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1)
+        sub_title('General administrative expenses')
+        write_block_sum(coa.admin_costs, '(analysed below)', sign=-1)
+        write_block_sum(coa.finance_charges, 'Finance costs (analysed below)', sign=-1)
+        write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1)
+        xlb.line_number += 1
+        write_block_sum(coa.depreciation_costs, '(Loss)/profit on ordinary activities before taxation', sign=-1)
+
+
 class FYDetailPnLPage(ExcelReportPage):
 
     @property
@@ -552,6 +620,83 @@ class FYNotes(ExcelReportPage):
         note("The company is controlled by the director who owns 100% of the called up share capital.")
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,
                               show_footer=False, show_header=False)
+
+
+class FYCT600_Calcs(ExcelReportPage):
+
+    @property
+    def sheetname(self):
+        return 'Tax Calcs '.format(self.sheetname_prefix) + self.rep.datestring
+
+    def format_page(self, excel_base, worksheet):
+        def col(at_col):
+            return xl_rowcol_to_cell(xlb.line_number, at_col)
+
+        def title(text):
+            # Merge whole row
+            ws.merge_range('A{0}:B{0}'.format(xlb.line_number), text, xlb.title_fmt)
+            xlb.line_number += 1
+
+        def write_item(number, title, param, sign=1):
+            ws.write(col(0), '{} : {}'.format(number,title), xlb.bold_left_fmt)
+            if isinstance(param, list):
+                block_sum, has_data = _calc_block_sum(xlb, rep, account_list, sign)
+                if has_data:
+                    value = block_sum[0]
+                else:
+                    value = p(0)
+                ws.write(col(1), value, xlb.fmt)
+            else:
+                ws.write(col(1), '{}'.format(param), xlb.fmt)
+            xlb.line_number += 1
+
+        def write(title, value):
+            ws.write(col(0), title, xlb.bold_left_fmt)
+            ws.write(col(1), value, xlb.fmt)
+            xlb.line_number += 1
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        self.note_number = 0
+        xlb.col_list=(1, )  # Two column report
+        # Nominal code info columns
+        for range, width in [('A:A', 50), ('B:B', 30),]:
+            ws.set_column(range, width)
+        title(coa.company_name)
+        xlb.line_number +=1
+        title('TAX calculations for CT600 Account for the Year Ended {}'.format(rep.full_datestring))
+        write('Company name', coa.company_name)
+        write('Company number', coa.company_number)
+        write('Tax reference', coa.tax_reference)
+        write('Return for period from:', rep.full_year_start_string)
+        write('Return for period to:', rep.full_datestring)
+        xlb.line_number += 1
+        write_item(1, 'Total Turnover', coa.sales)
+        write_item(3, 'Trading and professional profits', coa.profit_and_loss_account)
+        write_item(4, 'Trading losses brought forward claimed against profits', 'Todo')  # Todo Incorporate from somewhere
+        write_item(5, 'Net trading and professional profits', coa.profit_and_loss_account)
+        write_item(21, 'Total Turnover', coa.profit_and_loss_account)
+        write_item(37, 'Profits chargeable to corporation tax', coa.profit_and_loss_account)
+        write_item(42, 'Claiming staring rate or small companies rate on any part of the profits', 'X')
+        write_item(43, 'Financial Year', rep.prior_year)
+        write_item(44, 'Amount of profit', coa.profit_and_loss_account)
+        write_item(45, 'Rate of tax', '20%')
+        write_item(46, 'Tax in year', coa.year_corporation_tax)
+        write_item(63, 'Corporation tax', coa.year_corporation_tax)
+        write_item(65, 'Corporation tax net of marginal relief', coa.year_corporation_tax)
+        write_item(70, 'Corporation tax chargeable', coa.year_corporation_tax)
+        write_item(86, 'Tax Payable - self assessment of tax payable', coa.year_corporation_tax)
+        write_item(90, 'Tax already paid', 'Todo')
+        write_item(91, 'Tax outstanding', coa.year_corporation_tax)
+        write_item(172, 'Anual investment allowance', 'Todo')
+        write_item(107, 'Machinery and plant main pool', coa.office_equipment_depreciation)
+
+
+
+
 
 
 class PlaceHolder(ExcelReportPage):

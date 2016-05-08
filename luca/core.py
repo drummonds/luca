@@ -220,6 +220,7 @@ class CoreDrummonds(Core):
 
     def __setup_core_chart_of_accounts(self):
         coa = self.coa
+        coa.tax_reference = '846 85030 18478'
         coa.constants = {
             'period_pnl': 4300,  # Period Profit and Loss - is a calculated item from trial balance
             'pnl_nc_start': 4999  # Nominal codes greater than this are all profit and loss

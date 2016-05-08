@@ -11,6 +11,6 @@ from .journal_sqlite import JournalSqlite, journal_from_db, LoadDatabaseError, L
 from .coa_sqlite import chart_of_accounts_from_db
 from .page_mangement_accounts import ManagementPnLPage, ManagementBSPage
 from .page_fy_accts import FYCoverPage, FYPnLPage, FYBSPage, FYDirectorsReport, FYNotes, FYDetailPnLPage
-from .page_fy_accts import PlaceHolder
+from .page_fy_accts import PlaceHolder, FYDetailPnLPageSummary, FYCT600_Calcs
 from .core import Core, CoreDrummonds, CoreSlumberfleece
 from .metadata import version

@@ -7,7 +7,7 @@ Information describing the project.
 package = 'luca'
 project = "Python Trial Balance Accounting"
 project_no_spaces = project.replace(' ', '')
-version = '0.0.147'
+version = '0.0.148'
 description = 'A pythonic interface Accounting Journal Entries and .'
 authors = ['drummonds']
 authors_string = ', '.join(authors)
