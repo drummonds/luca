@@ -286,8 +286,10 @@ class ExcelManagementReport2():
     def close(self):
         self.writer.save()
 
-    def add(self, new_page):
+    def add(self, new_page, tab_color=None):
         worksheet = self.workbook.add_worksheet(new_page.sheetname)
+        if tab_color:
+            worksheet.set_tab_color(tab_color)
         self.add_standard_formats()
         self.line_number = 0
         self.page_number += 1
