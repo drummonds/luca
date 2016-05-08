@@ -154,7 +154,7 @@ class FYDirectorsReport(ExcelReportPage):
             ('A7', 'The director who held office during the year was as follows:'),
             ('A8', 'Dr Humphrey Drummond'),
             ('A11', 'This report has been prepared in accordance with the smal companies regime under the Companies Act 2006.'),
-            ('A14', 'Approved by the board on the 30 April 2016 and signed on its behalf by.'),
+            ('A14', 'Approved by the board on the {} and signed on its behalf by.'.format(rep.report_date_full_string)),
             ('A20', '...............................................................'),
             ('A21', 'Dr Humphrey Drummond'),
             ('A22', 'Director'),
@@ -213,11 +213,9 @@ class FYPnLPage(ExcelReportPage):
         profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
         xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
                          cell_format={'bottom': 6}, row_height = 22)
-        ws.write('C38', 'The notes on pages 6 to 8 form an integral part of these financial statemeents.', xlb.fmt)
-        xlb.line_number = 39
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer = False, show_header = False)
-        ws.set_footer('The notes on pages 6 to 8 form an integral part fo these financial statements statements.\n' +
+        ws.set_footer('The notes on pages 5 to 7 form an integral part fo these financial statements statements.\n' +
                       'Page {}'.format(xlb.page_number))
 
 
@@ -311,13 +309,13 @@ class FYBSPage(ExcelReportPage):
         note('The director acknowledges his reponsibilities for complying with the requirements of the Act with ')
         note('respect to accounting records and the preperation of accounts.')
         xlb.line_number +=3
-        note('Approved by the director on ().')
+        note('Approved by the director on {}.'.format(rep.report_date_full_string))
         xlb.line_number +=3
         note('Dr Humphrey Drummond')
         note('Director')
         xlb.format_print_area(ws, 'Balance Sheet', hide_gridlines=True,
                               show_footer=False, show_header=False)
-        ws.set_footer('The notes on pages 6 to 8 form an integral part fo these financial statements statements.\n' +
+        ws.set_footer('The notes on pages 5 to 7 form an integral part fo these financial statements statements.\n' +
                       'Page {}'.format(xlb.page_number))
 
 
@@ -387,6 +385,10 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1)
         xlb.line_number += 1
         write_block_sum(coa.depreciation_costs, '(Loss)/profit on ordinary activities before taxation', sign=-1)
+        xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
+                              show_footer=False, show_header=False)
+        ws.set_footer('This page does not form part of the statutory financial statements.\n' +
+                  'Page {}'.format(xlb.page_number))
 
 
 class FYDetailPnLPage(ExcelReportPage):
@@ -697,6 +699,8 @@ class FYCT600_Calcs(ExcelReportPage):
         xlb.line_number += 1
         write('Internal Version checking','')
         write('Luca software version', '{}'.format(version))
+        ws.set_footer('This page does not form part of the statutory financial statements.\n' +
+                      'Page {}'.format(xlb.page_number))
 
 
 class PlaceHolder(ExcelReportPage):
@@ -725,4 +729,3 @@ class PlaceHolder(ExcelReportPage):
         xlb.format_print_area(ws, 'Place Holder', hide_gridlines=True,
                               show_footer=False, show_header=False)
         ws.set_footer('Page {}'.format(xlb.page_number))
-

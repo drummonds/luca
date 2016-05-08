@@ -21,8 +21,12 @@ TODO remove the coa spec which should come from the database
 TODO the duration of the period should also come from the database"""
 
     def __init__(self, dbname, coa, period_date, period_1, period_1_prior='', period_2='', period_2_prior='',
-                 prior_period_date=None, year_start_date=None):
+                 prior_period_date=None, year_start_date=None, report_date=None):
         self.period_date = period_date
+        if report_date:
+            self.report_date = report_date
+        else:
+            self.report_date = dt.datetime.now()
         if prior_period_date == None:
             self.prior_period_date = period_date - relativedelta(years=1)
         else:
@@ -87,6 +91,10 @@ TODO the duration of the period should also come from the database"""
             return self.prior_period_date.strftime('%Y')
         else:
             return 'NoYear'
+
+    @property
+    def report_date_full_string(self):
+        return self.report_date.strftime('%d %B %Y')
 
     @property
     def coa(self):
