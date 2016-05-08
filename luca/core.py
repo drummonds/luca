@@ -237,6 +237,8 @@ class CoreDrummonds(Core):
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
         coa.selling_costs = []
         coa.fixed_assets = [10]
+        coa.office_equipment_cost = [102]
+        coa.office_equipment_depreciation = [103]
         coa.cash_at_bank = [1200, 1205, 1250]
         coa.current_asset = [1200, 1205, 1250, 2200]
         coa.debtors = [2000]
