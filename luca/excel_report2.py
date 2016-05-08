@@ -289,6 +289,6 @@ class ExcelManagementReport2():
     def add(self, new_page):
         worksheet = self.workbook.add_worksheet(new_page.sheetname)
         self.add_standard_formats()
-        self.line_number=0
-        self.page_number+=1
+        self.line_number = 0
+        self.page_number += 1
         new_page.format_page(self, worksheet)

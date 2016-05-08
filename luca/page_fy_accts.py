@@ -6,6 +6,7 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 
 from .excel_report2 import ExcelReportPage
 from .utils import p
+from .metadata import version
 
 
 def _calc_block_sum(xlb, rep, acct_list, sign=1):
@@ -640,7 +641,7 @@ class FYCT600_Calcs(ExcelReportPage):
         def write_item(number, title, param, sign=1):
             ws.write(col(0), '{} : {}'.format(number,title), xlb.bold_left_fmt)
             if isinstance(param, list):
-                block_sum, has_data = _calc_block_sum(xlb, rep, account_list, sign)
+                block_sum, has_data = _calc_block_sum(xlb, rep, param, sign)
                 if has_data:
                     value = block_sum[0]
                 else:
@@ -693,10 +694,9 @@ class FYCT600_Calcs(ExcelReportPage):
         write_item(91, 'Tax outstanding', coa.year_corporation_tax)
         write_item(172, 'Anual investment allowance', 'Todo')
         write_item(107, 'Machinery and plant main pool', coa.office_equipment_depreciation)
-
-
-
-
+        xlb.line_number += 1
+        write('Internal Version checking','')
+        write('Luca software version', '{}'.format(version))
 
 
 class PlaceHolder(ExcelReportPage):
