@@ -228,18 +228,18 @@ class FYBSPage(ExcelReportPage):
     def format_page(self, excel_base, worksheet):
 
         def header(title):
-            xlb.write_merged_header(ws, title, cols='B:E', underline=0)
+            xlb.write_merged_header(ws, title, cols='A:F', underline=0)
 
         def sub_title(text):
             ws.write('B{0}'.format(xlb.line_number+1), text, xlb.bold_left_fmt)
             xlb.line_number += 1
 
         def note(text):
-            ws.merge_range('A{0}:E{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
+            ws.merge_range('B{0}:F{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
             xlb.line_number +=1
 
         def write_row(data, title, note = '', bottom = 0):
-            xlb.write_fy_row(ws, data, title, cell_format={'bottom': bottom}, row_height=15)
+            xlb.write_fy_row(ws, data, title, cell_format={'bottom': bottom}, row_height=15, note=note)
 
         ws = worksheet
         xlb = excel_base
@@ -247,11 +247,16 @@ class FYBSPage(ExcelReportPage):
         rep = self.rep
         coa = rep.coa
         # Nominal code info columns
-        for range, width in [('B:B', 40),  # Description
+        for range, width in [('A:A', 1),  # Margin
+                             ('B:B', 44.5),  # Description
                              ('C:C', 10),  # Note
-                             ('D:E', 12),]:  # Dates
+                             ('D:D', 12),
+                             ('E:E', 0.5),
+                             ('F:F', 12),
+
+                             ]:  # Dates
             ws.set_column(range, width)
-        xlb.col_list=(3, 4, )  # Two column report
+        xlb.col_list=(3, 5, )  # Two column report
         header(coa.company_name)
         header('(Registration number: {})'.format(coa.company_number))
         header('Balance sheet at {}'.format(rep.full_datestring))
@@ -264,24 +269,25 @@ class FYBSPage(ExcelReportPage):
         #**********************
         sub_title('Fixed assets')
         fixed_assets = xlb.sum(coa.fixed_assets)
-        write_row(fixed_assets, 'Tangible fixed assets', note = 4, bottom = 1)
+        write_row(fixed_assets, 'Tangible fixed assets', note=4, bottom=1)
         #**********************
         xlb.line_number += 1
         sub_title('Current assets')
         debtors= xlb.sum(coa.debtors)
-        write_row(debtors, 'Debtors', note = 5)
+        write_row(debtors, 'Debtors', note=5)
         cash_at_bank = xlb.sum(coa.cash_at_bank)
-        write_row(cash_at_bank, 'Cash at bank and in hand', bottom = 1)
+        write_row(cash_at_bank, 'Cash at bank and in hand', bottom=1)
         current_assets = [x[0]+x[1] for x in zip(debtors, cash_at_bank)]
-        write_row(current_assets, '', bottom = 1)
+        write_row(current_assets, '', bottom = 1) # Todo
+        xlb.line_number += 1
         creditors_short_term = xlb.sum(coa.short_term_liabilities)
-        write_row(creditors_short_term, 'Creditors: Amounts falliing due within one year', note = 6, bottom = 1)
+        write_row(creditors_short_term, 'Creditors: Amounts falliing due within one year', note=6, bottom=1)
         net_current_assets = [x[0]+x[1] for x in zip(current_assets, creditors_short_term)]
         write_row(net_current_assets, 'Net current assets', bottom = 1)
         total_assets= [x[0]+x[1] for x in zip(fixed_assets, net_current_assets)]
         write_row(total_assets, 'Total assets less liabilities')
         creditors_long_term= xlb.sum(coa.long_term_liabilities)
-        write_row(creditors_long_term, 'Creditors: Amounts falliing due after more than one year', note =7, bottom = 1)
+        write_row(creditors_long_term, 'Creditors: Amounts falliing due after more than one year', note=7, bottom=1)
         net_assets= [x[0]+x[1] for x in zip(total_assets, creditors_long_term)]
         write_row(net_assets, 'Net Assets', bottom = 6)
         #**********************
@@ -436,7 +442,6 @@ class FYDetailPnLPage(ExcelReportPage):
                               show_footer=False, show_header=False)
         ws.set_footer('This page does not form part of the statutory financial statements.\n' +
                       'Page {}'.format(xlb.page_number))
-
 
 
 class FYNotes(ExcelReportPage):

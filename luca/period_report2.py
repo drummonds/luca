@@ -54,7 +54,7 @@ TODO the duration of the period should also come from the database"""
 
     @property
     def full_datestring(self):
-        return self.period_date.strftime('%d %B %Y')
+        return self.period_date.strftime('%d %B %Y').lstrip('0')
 
     @property
     def prev_datestring(self, seperator=' '):
@@ -77,7 +77,7 @@ TODO the duration of the period should also come from the database"""
     @property
     def full_year_start_string(self):
         if self.year_start_date:
-            return self.year_start_date.strftime('%d %B %Y')
+            return self.year_start_date.strftime('%d %B %Y').lstrip('0')
         else:
             return 'NoDate'
 
@@ -94,7 +94,7 @@ TODO the duration of the period should also come from the database"""
 
     @property
     def report_date_full_string(self):
-        return self.report_date.strftime('%d %B %Y')
+        return self.report_date.strftime('%d %B %Y').lstrip('0')
 
     @property
     def coa(self):
