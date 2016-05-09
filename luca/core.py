@@ -9,8 +9,8 @@ from .trial_balance_conversion import TrialBalanceConversion
 DRUMMONDS_TO_FY_SUMMARY = {
     10: (100, 102, 103, ),  # Tangible fixed assets
     11: (1100, ),  # Debtors
-    12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
-    20: (3000, ),  # Creditors: Amounts falling due within one year
+    12: (1200, 1205, 1250),  # Cash at bank and in hand
+    20: (2100, 2200),  # Creditors: Amounts falling due within one year
     21: (3100, ),  # Creditors: Amounts falling due after more than one year
     30: (4200, 4300),  # Profit and Loss Account
     31: (4100, ),  # Called up share capital
@@ -27,8 +27,8 @@ DRUMMONDS_TO_FY_DETAIL = {
     102: (102, ),  # Office Equipment cost
     103: (103, ),  # Office Equipment depreciation
     110: (1100, ),  # Debtors
-    120: (1200, 1205, 7205, 1250, 2200),  # Cash at bank and in hand TODO Check 7205 smart user payment
-    200: (3000, ),  # Creditors: Amounts falling due within one year
+    120: (1200, 1205, 7205, 1250),  # Cash at bank and in hand TODO Check 7205 smart user payment
+    200: (2100, 2200),  # Creditors: Amounts falling due within one year
     210: (3100, ),  # Creditors: Amounts falling due after more than one year
     300: (4200, 4300),  # Profit and Loss Account
     310: (4100, ),  # Called up share capital
@@ -240,9 +240,9 @@ class CoreDrummonds(Core):
         coa.office_equipment_cost = [102]
         coa.office_equipment_depreciation = [103]
         coa.cash_at_bank = [1200, 1205, 1250]
-        coa.current_asset = [1200, 1205, 1250, 2200]
+        coa.current_asset = [1200, 1205, 1250]
         coa.debtors = [1100]
-        coa.short_term_liabilities = [3000]
+        coa.short_term_liabilities = [2100, 2200]
         coa.long_term_liabilities = [3100]
         coa.owners_equity = [4100, 4200, 4300]
         coa.called_up_capital = [4100]
