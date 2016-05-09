@@ -8,7 +8,7 @@ from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
     10: (100, 102, 103, ),  # Tangible fixed assets
-    11: (2000, ),  # Debtors
+    11: (1100, ),  # Debtors
     12: (1200, 1205, 1250, 2200),  # Cash at bank and in hand
     20: (3000, ),  # Creditors: Amounts falling due within one year
     21: (3100, ),  # Creditors: Amounts falling due after more than one year
@@ -26,7 +26,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     100: (100, ),  # Tangible fixed assets
     102: (102, ),  # Office Equipment cost
     103: (103, ),  # Office Equipment depreciation
-    110: (2000, ),  # Debtors
+    110: (1100, ),  # Debtors
     120: (1200, 1205, 7205, 1250, 2200),  # Cash at bank and in hand TODO Check 7205 smart user payment
     200: (3000, ),  # Creditors: Amounts falling due within one year
     210: (3100, ),  # Creditors: Amounts falling due after more than one year
@@ -241,7 +241,7 @@ class CoreDrummonds(Core):
         coa.office_equipment_depreciation = [103]
         coa.cash_at_bank = [1200, 1205, 1250]
         coa.current_asset = [1200, 1205, 1250, 2200]
-        coa.debtors = [2000]
+        coa.debtors = [1100]
         coa.short_term_liabilities = [3000]
         coa.long_term_liabilities = [3100]
         coa.owners_equity = [4100, 4200, 4300]
