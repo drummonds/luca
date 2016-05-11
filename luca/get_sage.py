@@ -61,7 +61,7 @@ aj.DATE > '2000-01-01' AND aj.DELETED_FLAG = 0
         rec = df[(df['DATE'] >= start_date)
                  & (df['DATE'] <= end_date)][['ACCOUNT_REF', 'AMOUNT']]
         pivot = pd.pivot_table(rec, index=["ACCOUNT_REF"], aggfunc=np.sum)
-        sage_coa = ChartOfAccounts('Sage')
+        sage_coa = ChartOfAccounts('SAGE')
         sage_coa.add_dict({x:'' for x in list(pivot.index)})
         tb = TrialBalance(sage_coa, start_date, end_date)
         tb.add_dict(pivot.to_dict()['AMOUNT'])
