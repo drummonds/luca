@@ -25,7 +25,7 @@ class ChartOfAccounts:
             self.company_name = 'Test Co Not Limited'
             self.company_number = '123'
             self.constants = {
-                'period_pnl': 2125,  # Period Profit and Loss - is a caculated item from trial balance
+                'period_pnl': 2125,  # Period Profit and Loss - is a calculated item from trial balance
                 'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
             }
             self.calc_pnl = 2126  # This is virtual nominal code as it is the balance of the P&L items for use in
