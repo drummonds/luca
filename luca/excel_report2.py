@@ -300,6 +300,9 @@ class ExcelManagementReport2():
         if watermark:
             options = {
                 'fill': {'none': True},
+                'font': {'italic': True,
+                         'color': '#CCCCCC',
+                         'size': 40}
             }
-            worksheet.insert_textbox(20, 0, watermark, options)
+            worksheet.insert_textbox(0, 0, watermark, options)
 
