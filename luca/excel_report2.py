@@ -284,7 +284,10 @@ class ExcelManagementReport2():
         self.page_number=0
 
     def close(self):
-        self.writer.save()
+        try:
+            self.writer.save()
+        except AttributeError:   #failed before writer was setup so nothing to save if using try finally block
+            pass
 
     def add(self, new_page, tab_color=None):
         worksheet = self.workbook.add_worksheet(new_page.sheetname)

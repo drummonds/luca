@@ -64,7 +64,7 @@ class SLF_Mgmt_BS(ExcelReportPage):
         # Nominal code info columns
         for range, width in [('A:A', 5.5), ('B:B', 46), ('C:D', 10), ('E:E', 6), ('F:G', 10)]:
             ws.set_column(range, width)
-        xlb.write_merged_header_row(wb, ws, [xlb.rep.datestring, xlb.rep.prev_datestring])
+        xlb.write_merged_header_row(ws, [xlb.rep.datestring, xlb.rep.prev_datestring])
         ws.write('A2', 'From End of Year ({})'.format(xlb.rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['£', '£', '£', '£'])
         zero = [p(0)] * 2
