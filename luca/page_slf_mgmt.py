@@ -6,6 +6,49 @@ from .utils import p
 from .excel_report2 import ExcelReportPage
 
 
+class SLF_Mgmt_Cover(ExcelReportPage):
+    """The aim of this report is to document what the pnl and reports are composed of."""
+
+    @property
+    def sheetname(self):
+        return 'Cover '+ self.rep.datestring
+
+    def format_page(self, excel_base, worksheet):
+        def col(at_col):
+            return xl_rowcol_to_cell(xlb.line_number, at_col)
+
+        def title(message):
+            xlb.write_merged_header(ws, message, cols='A:C', underline=0)
+
+        def sub_title(text):
+            ws.write(col(0), text, xlb.bold_left_fmt)
+            xlb.line_number += 1
+
+        def note(title, text):
+            ws.write(col(1), title, xlb.fmt)
+            ws.write(col(2), text, xlb.fmt)
+            xlb.line_number += 1
+
+        ws = worksheet
+        xlb = excel_base
+        xlb.rep = self.rep
+        rep = self.rep
+        coa = rep.coa
+        reg_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary,  **{
+            'bold' : True, 'italic' : True, 'align': 'right'}})
+        title_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary,  **{
+            'bold' : True, 'font_size' : 18, 'align': 'center'}})
+        # Nominal code info columns
+        for range, width in [('A:A', 10), ('B:B', 15), ('C:C', 55),]:
+            ws.set_column(range, width)
+        title('Cover sheet for Slumberfleece Management accounts')
+        note('Chart of Accounts name', str(coa.name))
+        for title, name in zip(['MTD', 'MTD prior', 'YTD', 'YTD prior'], rep.period_names):
+            note(title, name)
+        note('Registration number', str(coa.company_number))
+        xlb.format_print_area(ws, 'COVER SHEET', hide_gridlines = True)
+
+
 class SLF_Mgmt_PnL(ExcelReportPage):
 
     @property
