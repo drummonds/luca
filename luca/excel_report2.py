@@ -289,7 +289,7 @@ class ExcelManagementReport2():
         except AttributeError:   #failed before writer was setup so nothing to save if using try finally block
             pass
 
-    def add(self, new_page, tab_color=None):
+    def add(self, new_page, tab_color=None, watermark = None):
         worksheet = self.workbook.add_worksheet(new_page.sheetname)
         if tab_color:
             worksheet.set_tab_color(tab_color)
@@ -297,3 +297,9 @@ class ExcelManagementReport2():
         self.line_number = 0
         self.page_number += 1
         new_page.format_page(self, worksheet)
+        if watermark:
+            options = {
+                'fill': {'none': True},
+            }
+            worksheet.insert_textbox(20, 0, watermark, options)
+
