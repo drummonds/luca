@@ -81,16 +81,11 @@ class SLF_Mgmt_BS(ExcelReportPage):
                             'CURRENT ASSETS', indent=-1)
         xlb.write_bs_block(ws, short_term_liabilities, [2100, 2106, 2107, 2108, 2109, 2110],
                             'CREDITORS PAYABLE WITHIN 1 YEAR', sign=-1, indent=-1)
-        for i in range(len(net_current_assets)):
-            net_current_assets[i] = current_assets[i] - short_term_liabilities[i]
+        net_current_assets = [ca - stl for ca, stl in zip(current_assets, short_term_liabilities)]
         xlb.write_bs_sum(ws, net_current_assets, 'NET CURRENT ASSETS', gap=2)
         xlb.write_bs_block(ws, long_term_liabilities, [2103], 'CREDITORS DUE AFTER MORE THAN 1 YEAR',
                             sub_total=True, sign=-1)
-        # print('fixed = {}'.format(fixed_assets))
-        # print('net current {}'.format(net_current_assets))
-        # print('long_term_liabilities = {}'.format(long_term_liabilities))
-        for i in range(len(total_net_assets)):
-            total_net_assets[i] = fixed_assets[i] + net_current_assets[i] - long_term_liabilities[i]
+        total_net_assets = [fa + nca - ltl for nca, ltl in zip(fixed_assets, net_current_assets, long_term_liabilities)]
         xlb.write_bs_sum(ws, total_net_assets, 'TOTAL NET ASSETS', gap = 3)
         # Owners equity side of balance sheet
         xlb.write_bs_block(ws, owners_equity, [2120, 2125, 2126], "SHAREHOLDERS' FUNDS", sign=-1)
