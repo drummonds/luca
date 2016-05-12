@@ -11,6 +11,8 @@ one_pence = Decimal('0.01')
 
 def p(value):
     "Convert `value` to Decimal pence implementing AIS rounding (up) or cents"
+    # TODO think about Decimal(-0.00) == Decmial(0.00) which is true.  Should I try and convert -0 to +0?
+    # I think probably better yes
     try:
         #If user_or_username is a User object
         test =  Decimal(Decimal(float(value)) * Decimal(100)).quantize(one_pence)

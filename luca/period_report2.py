@@ -28,7 +28,7 @@ TODO the duration of the period should also come from the database"""
         else:
             self.report_date = dt.datetime.now()
         if prior_period_date == None:
-            self.prior_period_date = period_date - relativedelta(years=1)
+            self.prior_period_date = self.period_date - relativedelta(years=1)
         else:
             self.prior_period_date = prior_period_date
         if year_start_date == None:

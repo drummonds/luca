@@ -12,5 +12,6 @@ from .coa_sqlite import chart_of_accounts_from_db
 from .page_mangement_accounts import ManagementPnLPage, ManagementBSPage
 from .page_fy_accts import FYCoverPage, FYPnLPage, FYBSPage, FYDirectorsReport, FYNotes, FYDetailPnLPage
 from .page_fy_accts import PlaceHolder, FYDetailPnLPageSummary, FYCT600_Calcs
+from .page_slf_mgmt import SLF_Mgmt_PnL, SLF_Mgmt_BS
 from .core import Core, CoreDrummonds, CoreSlumberfleece
 from .metadata import version

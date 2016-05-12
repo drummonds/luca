@@ -215,7 +215,7 @@ class FYPnLPage(ExcelReportPage):
                          cell_format={'bottom': 6}, row_height = 22)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer = False, show_header = False)
-        ws.set_footer('The notes on pages 5 to 7 form an integral part fo these financial statements statements.\n' +
+        ws.set_footer('The notes on pages 5 to 7 form an integral part of these financial statements statements.\n' +
                       'Page {}'.format(xlb.page_number))
 
 
@@ -321,7 +321,7 @@ class FYBSPage(ExcelReportPage):
         note('Director')
         xlb.format_print_area(ws, 'Balance Sheet', hide_gridlines=True,
                               show_footer=False, show_header=False)
-        ws.set_footer('The notes on pages 5 to 7 form an integral part fo these financial statements statements.\n' +
+        ws.set_footer('The notes on pages 5 to 7 form an integral part of these financial statements statements.\n' +
                       'Page {}'.format(xlb.page_number))
 
 
