@@ -302,7 +302,8 @@ class ExcelManagementReport2():
                 'fill': {'none': True},
                 'font': {'italic': True,
                          'color': '#CCCCCC',
-                         'size': 40}
+                         'size': 40},
+                'line': {'none': True},
             }
             worksheet.insert_textbox(0, 0, watermark, options)
 
