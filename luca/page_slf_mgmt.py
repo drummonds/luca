@@ -67,7 +67,7 @@ class SLF_Mgmt_BS(ExcelReportPage):
         xlb.write_merged_header_row(ws, [xlb.rep.datestring, xlb.rep.prev_datestring])
         ws.write('A2', 'From End of Year ({})'.format(xlb.rep.year_start_string), xlb.bold_left_italic_fmt)
         xlb.write_row(ws, ['£', '£', '£', '£'])
-        zero = [p(0)] * 2
+        zero = [p(0)] * 4
         fixed_assets = zero.copy()
         current_assets = zero.copy()
         short_term_liabilities = zero.copy()
