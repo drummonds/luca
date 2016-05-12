@@ -42,7 +42,7 @@ class SLF_Mgmt_PnL(ExcelReportPage):
         profit_loss = [0, 0, 0, 0]
         for i,e in enumerate(profit_list):
             profit_loss[i]+=e
-        for i,e in enumerate(xlb.expense_list):
+        for i,e in enumerate(expense_list):
             profit_loss[i]-=e
         xlb.write_sum(ws, profit_loss, 'PROFIT/(LOSS)')
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT')
