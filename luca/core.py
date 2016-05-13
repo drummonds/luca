@@ -88,8 +88,8 @@ SAGE_TO_SLF_MA = {
     2109: (2109, ),
     2110: (2110, 2108,),
     2120: (2120, 3000,),
-    2125: (2125, 3210,),
-    2126: (2126, 3200,),
+    2125: (2125, 3200,),
+    2126: (2126, 3210,),
     4000: (4000,),
     4009: (4009,),
     4905: (4905,),
@@ -338,7 +338,7 @@ class CoreSlumberfleece(Core):
             'period_pnl': 2125,  # Period to date Profit and Loss
             'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
         }
-        coa.calc_pnl = 2126  # This is virtual nominal code as it is the balance of the P&L items for use in
+        coa.calc_pnl = 3210  # This is virtual nominal code as it is the balance of the P&L items for use in
         # balance sheet reports
         coa.sales = [4000]
         coa.material_costs_name = 'Total Material Cost'
