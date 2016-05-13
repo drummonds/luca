@@ -129,7 +129,7 @@ def is_period_data_available(dbname, period):
     cursor.execute(sql)
     result = cursor.fetchone()
     conn.close()
-    return result[0]
+    return not (result[0] == 0)
 
 
 
