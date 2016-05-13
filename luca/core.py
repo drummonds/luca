@@ -51,6 +51,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     # Administrative Expenses
     910: (3500, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     }
+
 SLF_MA_TO_FY_SUMMARY = {
     10: (10, ),  # 20, 21, 30, 31, 40, 41,),
     11: (1100, ),
@@ -351,6 +352,6 @@ class CoreSlumberfleece(Core):
         coa.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
         coa.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110]
         coa.long_term_liabilities = [2103]
-        coa.owners_equity = [2120, 2125, 2126]
+        coa.owners_equity = [3000, 3210, 3200]
         coa.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
 
