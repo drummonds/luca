@@ -507,16 +507,16 @@ class FYNotes(ExcelReportPage):
         title('Notes to the Financial Statements for the Year Ended {}'.format(rep.full_datestring))
         note_title('Accounting Policies')
         sub_title('Basis of Preperation')
-        note("The financial statements have been prepared under the historical cost convention and in ")
-        note("accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
+        note("The financial statements have been prepared under the historical cost convention and in accordance with the Financial ")
+        note("Report Standard for Smaller Entities (Effective April 2008).")
         xlb.line_number +=1
         sub_title('Turnover')
-        note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods ")
-        note("and services to customers.")
+        note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods and services to ")
+        note("customers.")
         xlb.line_number +=1
         sub_title('Depreciation')
-        note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any ")
-        note("estimated residual value, over their expected useful econominc life as follows:")
+        note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any estimated residual ")
+        note("value, over their expected useful econominc life as follows:")
         xlb.line_number += 1
         ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Asset class', xlb.bold_left_fmt)
         ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), 'Depreciation method and rate', xlb.bold_left_fmt)
@@ -525,12 +525,12 @@ class FYNotes(ExcelReportPage):
         ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), '25% straight line', xlb.left_fmt)
         xlb.line_number +=1
         sub_title('Financial Instruments')
-        note("Financial instruments are classified and acounted for, according to the substance of the contractual ")
-        note("arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument ")
-        note("is any contract that evidences a residual interest in the assets of the company after deducting all ")
-        note("of its liabilities.  Where shares are issued, any component that creates a financial liability of the ")
-        note("company is presented as a liability in the balance sheet.  The corresponding dividens relating to the ")
-        note("liability component are charged as interest expense in the profit and loss account.")
+        note("Financial instruments are classified and acounted for, according to the substance of the contractual arrangement, ")
+        note("as financial assets, financial liabilities or equity instruments.  An equity instrument is any contract that ")
+        note("evidences a residual interest in the assets of the company after deducting all of its liabilities.  Where shares ")
+        note("are issued, any component that creates a financial liability of the company is presented as a liability in ")
+        note("the balance sheet.  The corresponding dividends relating to the liability component are charged as interest ")
+        note("expense in the profit and loss account.")
         note_title('Operating (loss)/profit')
         note('Operating (loss)/profit is stated after charging:')
         xlb.line_number += 1
@@ -635,7 +635,7 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         note("The company is controlled by the director who owns 100% of the called up share capital.")
         xlb.format_print_area(ws, 'Director''s Report', hide_gridlines=True,
-                              show_footer=False, show_header=False)
+                              show_footer=False, show_header=False, last_col=7)
 
 
 class FYCT600_Calcs(ExcelReportPage):

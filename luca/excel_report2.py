@@ -239,9 +239,9 @@ class ExcelManagementReport2():
         self.bold_left_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True}})
         self.bold_left_italic_fmt = wb.add_format({**fmt, **{'align': 'left', 'bold': True, 'italic': True}})
 
-    def format_print_area(self, ws, title, show_header = True, show_footer = True, hide_gridlines = False):
+    def format_print_area(self, ws, title, show_header = True, show_footer = True, hide_gridlines = False, last_col=6):
         # Format for printing
-        ws.print_area(0, 0, self.line_number, 6)
+        ws.print_area(0, 0, self.line_number, last_col)
         if show_header:
             try:
                 header = '&L{} &C{} &R{}'.format(self.rep.company_name, self.rep.long_datestring, title)
