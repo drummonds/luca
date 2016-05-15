@@ -505,17 +505,25 @@ class FYNotes(ExcelReportPage):
         title(coa.company_name)
         xlb.line_number +=1
         title('Notes to the Financial Statements for the Year Ended {}'.format(rep.full_datestring))
-        xlb.line_number +=2
         note_title('Accounting Policies')
         sub_title('Basis of Preperation')
         note("The financial statements have been prepared under the historical cost convention and in ")
         note("accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
+        xlb.line_number +=1
         sub_title('Turnover')
         note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods ")
         note("and services to customers.")
+        xlb.line_number +=1
         sub_title('Depreciation')
         note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any ")
         note("estimated residual value, over their expected useful econominc life as follows:")
+        xlb.line_number += 1
+        ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Asset class', xlb.bold_left_fmt)
+        ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), 'Depreciation method and rate', xlb.bold_left_fmt)
+        xlb.line_number += 1
+        ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Office Euipment', xlb.left_fmt)
+        ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), '25% straight line', xlb.left_fmt)
+        xlb.line_number +=1
         sub_title('Financial Instruments')
         note("Financial instruments are classified and acounted for, according to the substance of the contractual ")
         note("arrangement, as financial assets, financial liabilities or equity instruments.  An equity instrument ")
