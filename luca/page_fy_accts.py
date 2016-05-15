@@ -476,7 +476,7 @@ class FYNotes(ExcelReportPage):
             xlb.line_number +=1
 
         def note(text):
-            ws.merge_range('A{0}:E{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
+            ws.merge_range('A{0}:H{0}'.format(xlb.line_number+1), text, xlb.para_fmt)
             xlb.line_number +=1
 
         def row_title(a, b):
@@ -508,11 +508,11 @@ class FYNotes(ExcelReportPage):
         xlb.line_number +=2
         note_title('Accounting Policies')
         sub_title('Basis of Preperation')
-        note("'The financial statements have been prepared under the historical cost convention and in " +
-             "accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
+        note("The financial statements have been prepared under the historical cost convention and in ")
+        note("accordance with the Financial Report Standard for Smaller Entities (Effective April 2008).")
         sub_title('Turnover')
-        note("'Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods " +
-             "and services to customers.")
+        note("Turnover represents amounts chargeable, net of value added tax, in respect of the sale of goods ")
+        note("and services to customers.")
         sub_title('Depreciation')
         note("Depreciation is provided on tangle fixed assets so as to write off the cost or valuation, less any ")
         note("estimated residual value, over their expected useful econominc life as follows:")
