@@ -12,7 +12,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     12: (1200, 1205, 1250),  # Cash at bank and in hand
     20: (2100, 2200),  # Creditors: Amounts falling due within one year
     21: (3100, ),  # Creditors: Amounts falling due after more than one year
-    30: (4200, 4300),  # Profit and Loss Account
+    30: (4300, ),  # Profit and Loss Account, 4200 is virtual
     31: (4100, ),  # Called up share capital
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
@@ -31,7 +31,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     120: (1200, 1205, 7205, 1250),  # Cash at bank and in hand TODO Check 7205 smart user payment
     200: (2100, 2200),  # Creditors: Amounts falling due within one year
     210: (3100, ),  # Creditors: Amounts falling due after more than one year
-    300: (4200, 4300),  # Profit and Loss Account
+    300: (4300, ),  # Profit and Loss Account 4200 is virtual and calculated
     310: (4100, ),  # Called up share capital
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
