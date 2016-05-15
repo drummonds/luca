@@ -480,8 +480,8 @@ class FYNotes(ExcelReportPage):
             xlb.line_number +=1
 
         def row_title(a, b):
-            ws.write(icol(0), a, xlb.fmt)
-            ws.write(icol(1), b, xlb.fmt)
+            ws.write(icol(0), a, xlb.bold_fmt)
+            ws.write(icol(1), b, xlb.bold_fmt)
             xlb.line_number += 1
 
         def row(title, a, b, bottom = 0):
@@ -506,7 +506,8 @@ class FYNotes(ExcelReportPage):
         xlb.line_number +=1
         title('Notes to the Financial Statements for the Year Ended {}'.format(rep.full_datestring))
         note_title('Accounting Policies')
-        sub_title('Basis of Preperation')
+        xlb.line_number +=1
+        sub_title('Basis of Preparation')
         note("The financial statements have been prepared under the historical cost convention and in accordance with the Financial ")
         note("Report Standard for Smaller Entities (Effective April 2008).")
         xlb.line_number +=1
@@ -521,9 +522,9 @@ class FYNotes(ExcelReportPage):
         ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Asset class', xlb.bold_left_fmt)
         ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), 'Depreciation method and rate', xlb.bold_left_fmt)
         xlb.line_number += 1
-        ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Office Euipment', xlb.left_fmt)
+        ws.merge_range('A{0}:B{0}'.format(xlb.line_number + 1), 'Office Equipment', xlb.left_fmt)
         ws.merge_range('D{0}:H{0}'.format(xlb.line_number + 1), '25% straight line', xlb.left_fmt)
-        xlb.line_number +=1
+        xlb.line_number +=2
         sub_title('Financial Instruments')
         note("Financial instruments are classified and acounted for, according to the substance of the contractual arrangement, ")
         note("as financial assets, financial liabilities or equity instruments.  An equity instrument is any contract that ")
@@ -544,8 +545,9 @@ class FYNotes(ExcelReportPage):
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
         sub_title('Current tax')
-        write_block_sum(coa.year_corporation_tax, 'Corporation tax (credit)/ charge', sign=-1)
+        write_block_sum(coa.year_corporation_tax, 'Corporation tax (credit)/ charge')
         xlb.line_number += 1
+        xlb.line_number += 7  #  Manual Page break
         note_title('Tangible Fixed Assets')
         #*********************************************************
         row_title('Office Equipment', 'Total')

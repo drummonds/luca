@@ -32,6 +32,7 @@ class JournalSqlite:
             raise LucaError('Getting Journal Entries from db {} for period {} but no data'.format(self.dbname, period))
 
 
+
 @contextmanager
 def journal_from_db(dbname, coa, journal_entry_class=JournalEntry):
     js = JournalSqlite(dbname, coa, journal_entry_class)
@@ -43,6 +44,7 @@ def journal_from_db(dbname, coa, journal_entry_class=JournalEntry):
 
 class LoadDatabaseError(Exception):
     pass
+
 
 class LoadDatabase():
     """Does not have the ability to create a database or chart of acconts if they don't exist."""
@@ -98,27 +100,6 @@ class LoadDatabase():
 
         else:
             raise LoadDatabaseError('{} already is in management report database'.format(period))
-
-class JournalSqlite:
-
-    def __init__(self, dbname, coa, journal_entry_class=JournalEntry):
-        self.dbname = dbname
-        self.coa=coa
-        self.conn = sqlite3.connect(self.dbname)
-        self.journal_entry_class=journal_entry_class
-
-    def close(self):
-        self.conn.close()
-
-    def get_entry(self, period):
-        je = self.journal_entry_class(self.coa)
-        sql = "SELECT code as Code, balance as TB FROM trial_balance WHERE period = '{}'".format(period)
-        df = pd.read_sql(sql, self.conn, index_col='Code')
-        if len(df) != 0:
-            je.add_dict(df.to_dict()['TB'])
-            return je
-        else:  # Prevents error of getting nothing back because you have got the period name wrong
-            raise LucaError('Getting Journal Entries from db {} for period {} but no data'.format(self.dbname, period))
 
 
 def is_period_data_available(dbname, period):
