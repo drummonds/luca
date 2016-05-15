@@ -20,7 +20,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
          8008, 8009, 8010, 8011, 8012, 8013, 8014,
          8017, 8018, 8019, 8020, 8021, 8100, 8300, 8900),  # Administrative Expenses
     91: (9100, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
-    92: (9200),  # Dividends
+    92: (9200, ),  # Dividends
     }
 
 DRUMMONDS_TO_FY_DETAIL = {
@@ -50,7 +50,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     840: (8010, ),  # Travel and subsistence
     890: (7000, ),  # Bank charges
     910: (9100, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
-    920: (9200),  # Dividends
+    920: (9200, ),  # Dividends
     }
 
 SLF_MA_TO_FY_SUMMARY = {
