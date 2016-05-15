@@ -209,8 +209,8 @@ class FYPnLPage(ExcelReportPage):
         xlb.write_fy_row(ws, operating_profit, '(Loss)/profit on ordinary activities before taxation', row_height=22)
         corporation_tax = xlb.sum(coa.year_corporation_tax)
         xlb.write_fy_row(ws, corporation_tax, 'Tax on (loss)/profit on ordinary activities', note='3',
-                         cell_format={'bottom': '1'}, row_height=22)
-        profit_or_loss= [x[0]+x[1] for x in zip(operating_profit, corporation_tax)]
+                         cell_format={'bottom': '1'}, row_height=22, sign=-1)
+        profit_or_loss= [x[0]-x[1] for x in zip(operating_profit, corporation_tax)]
         xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
                          cell_format={'bottom': 6}, row_height = 22)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
@@ -585,19 +585,19 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        write_block_sum(coa.short_term_liabilities, 'Corporation tax')
+        write_block_sum(coa.short_term_liabilities, 'Corporation tax', sign=-1)
         xlb.line_number += 1
         #*********************************************************
         note_title('Creditors: Amount falling due after more than one year')
         xlb.line_number += 1
         row_title(rep.year, rep.prior_year)
         row_title('£', '£')
-        write_block_sum(coa.short_term_liabilities, 'Other creditors')
+        write_block_sum(coa.long_term_liabilities, 'Other creditors', sign=-1)
         xlb.line_number += 1
         #*********************************************************
         note_title('Share Capital')
         xlb.line_number += 1
-        sub_title('Allotted, called up and fully paid shares')
+        sub_title('Allotted, called up and fully paid shares')  # TODO need to deal with partly paid up shares
         cell_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary, **{'bottom': 6, 'align': 'right'}})
         ws.write(col(2), rep.year, xlb.bold_fmt)
         ws.write(col(6), rep.prior_year, xlb.bold_fmt)
@@ -609,9 +609,10 @@ class FYNotes(ExcelReportPage):
         xlb.line_number += 2
         ws.write(col(0), 'Ordinary Shares of £1 each', xlb.left_fmt)
         called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
-        ws.write(col(1), called_up_share_capital[0], cell_fmt)
+        # Todo need to find a place for the share capital
+        ws.write(col(1), 2, cell_fmt)
         ws.write(col(3), called_up_share_capital[0], cell_fmt)
-        ws.write(col(5), called_up_share_capital[1], cell_fmt)
+        ws.write(col(5), 2, cell_fmt)
         ws.write(col(7), called_up_share_capital[1], cell_fmt)
         xlb.line_number += 1
         #*********************************************************

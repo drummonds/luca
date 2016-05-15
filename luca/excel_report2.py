@@ -48,7 +48,7 @@ class ExcelManagementReport2():
             ws.write(cell_location, entries[i], self.bold_fmt)
         self.line_number += 1
 
-    def write_fy_row(self, ws, entries, label, note = '', cell_format={}, row_height=None):
+    def write_fy_row(self, ws, entries, label, note = '', cell_format={}, row_height=None, sign=1):
         cell_fmt = self.workbook.add_format({**self.base_format_dictionary, **cell_format})
         if row_height:
             ws.set_row(self.line_number, row_height)
@@ -60,7 +60,7 @@ class ExcelManagementReport2():
         for i, column in enumerate(self.col_list):
             # Determine where we will place the formula
             cell_location = xl_rowcol_to_cell(self.line_number, column)
-            ws.write(cell_location, entries[i], cell_fmt)
+            ws.write(cell_location, entries[i]*sign, cell_fmt)
         self.line_number += 1
 
     def get_value(self, tb, nominal_code, sign = 1):

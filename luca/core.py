@@ -281,7 +281,7 @@ class CoreDrummonds(Core):
         coa.short_term_liabilities = [200]
         coa.long_term_liabilities = [210]
         coa.owners_equity = [300, 310, 320]
-        coa.called_up_capital = [300]
+        coa.called_up_capital = [310]
         coa.dividends = []
         coa.profit_and_loss_account = [310, 320]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
