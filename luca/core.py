@@ -42,7 +42,6 @@ DRUMMONDS_TO_FY_DETAIL = {
     700: (8300, ), # Home office costs
     750: (7100, 7300 ), # Employment costs TODO Check POYE/NI
     760: (8012, ),  # Staff training
-    770: (7700, ),  # Office equipment depreciation
     800: (7500, 8003, 8008, 8011, 8018, 8021),  # Sundry expense TODO check 8002 computer hardware capex
     810: (8005, 8006),  # Telephone and fax
     815: (8007, 8017, 8019, 8900), # Office Expense
