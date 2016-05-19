@@ -3,6 +3,7 @@
 from copy import copy
 import pandas as pd
 
+from .chart_of_accounts import ChartOfAccounts
 from .utils import LucaError, p
 
 
@@ -23,6 +24,9 @@ class JournalEntry:
     Every value in the journal is a decimal."""
 
     def __init__(self, chart_of_accounts):
+        if not isinstance(chart_of_accounts, ChartOfAccounts):
+            raise LucaError(' Trying to create JournalEntry a chart of accounts that is not ChartOfAccounts. {}'.
+                            format(chart_of_accounts))
         self.chart_of_accounts = chart_of_accounts
         self.dict = {}  # Dictionary for JournalEntry of nominal_code: value
 
@@ -48,7 +52,7 @@ class JournalEntry:
             return a_value + b_value
 
         assert self.chart_of_accounts.name == b.chart_of_accounts.name, 'Chart of accounts must be the same {}, {}'.\
-            format(self.chart_of_accounts.name, b.chart_of_accounts.name)
+                format(self.chart_of_accounts.name, b.chart_of_accounts.name)
         nc_list = list(set(self.nominal_codes) | set(b.nominal_codes))
         # For each nominal code add from both
         nc_list.sort()
@@ -92,14 +96,42 @@ class JournalEntry:
     def is_valid(self):
         return (len(self.dict) > 0) and (self.sum() == p(0))
 
-    def __getitem__(self, item):
-        return self.dict[item]
+    def __getitem__(self, nominal_code):
+        """Use standard square bracket notation to get data from journal entry"""
+        try:
+            sum = 0
+            for i in nominal_code:
+                sum += self[i]
+            return sum
+        except TypeError:
+            try:
+                self[self.chart_of_accounts.virtual_nominal_codes[nominal_code]]
+                # Some properties are like nominal codes but are in fact virtual.  Eg the period profit and loss
+                # is a calculated number
+            except KeyError:  # Just get the normal data
+                try:
+                    return self.dict[nominal_code]
+                except KeyError:  #  There is no data but it might be a valid nominal code
+                    if self.chart_of_accounts[nominal_code]:
+                        return p(0)
+                    else:
+                        return LucaError('Nomiinal code not in chart of accounts {}'.format(nominal_code))
+
+
+    def get_value(self, nominal_code, default = 0):
+        """This might be used in reports where you want to make sure you just print blank data for
+        information which is missing"""
+        try:
+            return self[nominal_code]
+        except (KeyError, IndexError) as e:
+            return default
 
     def __setitem__(self, nominal_code, item):
         if nominal_code in self.dict:  # Self.dict is all the codes that are present.  This is slightly slacker
             # than allowing only codes in the chart of accounts.  Inferring chart of accounts
+            # TOO eliminate this and create a fnction to build an inferred chart of accounts
             self.dict[nominal_code] = item
-        elif nominal_code in self.chart_of_accounts.dict:  # These are codes that could be presents
+        elif nominal_code in self.chart_of_accounts.dict:  # These are codes that could be present
             self.dict[nominal_code] = item
         else:
             raise LucaError('Setting nominal code {} but not in chart of accounts {}'.format(
@@ -110,7 +142,6 @@ class JournalEntry:
         nc = [nc for nc in self.dict.keys()]
         nc.sort()
         return nc
-
 
     @property
     def coa(self):  #  Aid as often used as an abrevation
@@ -132,11 +163,7 @@ class TrialBalance(JournalEntry):
 
     @property
     def profit_and_loss(self):
-        result = p(0)
-        for k, v in iter(self.dict.items()):
-            if k > self.chart_of_accounts.pnl_nc_start:
-                result += v
-        return result
+        return self[self.chart_of_accounts.retained_profit]
 
 
     def close_period(self):

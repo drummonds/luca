@@ -16,11 +16,14 @@ DRUMMONDS_TO_FY_SUMMARY = {
     31: (4100, ),  # Called up share capital
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
-    80: (7000, 7001, 7002, 7100, 7205, 7300, 7700, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
+    80: (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
          8008, 8009, 8010, 8011, 8012, 8013, 8014,
          8017, 8018, 8019, 8020, 8021, 8100, 8300, 8900),  # Administrative Expenses
-    91: (9100, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
-    92: (9200, ),  # Dividends
+    91: (9100, ),  # Depreciation
+    92: (9200, ),  # Amortisation
+    93: (9300, ),  # Interest
+    94: (9400, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
+    96: (9600, ),  # Dividends
     }
 
 DRUMMONDS_TO_FY_DETAIL = {
@@ -49,8 +52,11 @@ DRUMMONDS_TO_FY_DETAIL = {
     835: (8100, ),  # Legal and professional Fees
     840: (8010, ),  # Travel and subsistence
     890: (7000, ),  # Bank charges
-    910: (9100, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
-    920: (9200, ),  # Dividends
+    910: (9100, ),  # Depreciation
+    920: (9200, ),  # Amortisation
+    930: (9300, ),  # Interest
+    940: (9400, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
+    960: (9600, ),  # Dividends
     }
 
 SLF_MA_TO_FY_SUMMARY = {
@@ -138,6 +144,7 @@ class Core:
     def __init__(self, file_name = 'historic_trial_balances.db'):
         self.filename = file_name
         self.dbname = file_name  # Default database name
+        # TODO the whole chart of accounts should be stored in the database including all the lists etc
         with chart_of_accounts_from_db(self.dbname) as coa_s:
             self.fy_coa = coa_s.get_chart_of_account('FY_Summary')
         self.__setup_core_chart_of_accounts()
@@ -170,6 +177,13 @@ class Core:
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 91  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [91]
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >49 and nc < 80]
+        coa.EBITDA = coa.gross_profit + [80]  # Earnings Before Interest, Taxes, Depreciation, and Amortization
+        coa.PBIT = coa.EBIT = coa.EBITDA + [90, 91]
+        coa.PBT = coa.EBT = coa.PBIT + [92]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [93]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.PAT + [96]  # Earnings After Tax/ Net Profit After Tax
+        coa.add_virtual_nominal_code(coa.calc_pnl, coa.retained_profit)
 
     def copy_trial_balance(self, period, old_prefix, new_prefix):
         """This is a datatabase level copy"""
@@ -234,7 +248,7 @@ class CoreDrummonds(Core):
         coa.material_costs = [6000, 6100, 6200]
         coa.variable_costs = [7000]
         coa.fixed_production_costs = [7001, 7002, 7100, 7205, 7300]
-        coa.depreciation_costs = [7700]
+        coa.depreciation_costs = [9100]
         coa.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
         coa.selling_costs = []
@@ -253,6 +267,13 @@ class CoreDrummonds(Core):
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 9500  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [9510]
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
+        coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
+        coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
+        coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
+        coa.add_virtual_nominal_code(coa.calc_pnl, coa.retained_profit)
 
     def __setup_core_detail_chart_of_accounts(self):
         coa = self.fy_detail_coa
@@ -288,7 +309,13 @@ class CoreDrummonds(Core):
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.tax_control_account = 910  # This is a balancing account for tax that is carried forward
         coa.year_corporation_tax = [910]
-
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >499 and nc < 800]
+        coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=800 and nc < 900]
+        coa.PBIT = coa.EBIT = coa.EBITDA + [910, 920]
+        coa.PBT = coa.EBT = coa.PBIT + [930]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [940]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.PAT + [960]  # Earnings After Tax/ Net Profit After Tax
+        coa.add_virtual_nominal_code(coa.calc_pnl, coa.retained_profit)
 
 class CoreSlumberfleece(Core):
 
@@ -329,6 +356,13 @@ class CoreSlumberfleece(Core):
         coa.long_term_liabilities = [2103]
         coa.owners_equity = [2120, 2125, 2126]
         coa.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
+        coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
+        coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
+        coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
+        coa.add_virtual_nominal_code(coa.calc_pnl, coa.retained_profit)
 
     def __setup_sage_chart_of_accounts(self):
         """Almost identical to SLF-MA"""
@@ -355,4 +389,12 @@ class CoreSlumberfleece(Core):
         coa.long_term_liabilities = [2103]
         coa.owners_equity = [3000, 3210, 3200]
         coa.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
+        coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
+        coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
+        coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
+        coa.add_virtual_nominal_code(coa.calc_pnl, coa.retained_profit)
+
 
