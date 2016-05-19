@@ -371,7 +371,7 @@ class CoreSlumberfleece(Core):
         coa.company_number = '123'
         coa.constants = {
             'period_pnl': 2125,  # Period to date Profit and Loss
-            'pnl_nc_start': 3000  # Nominal codes greater than this are all profit and loss
+            'pnl_nc_start': 3999  # Nominal codes greater than this are all profit and loss
         }
         coa.calc_pnl = 3210  # This is virtual nominal code as it is the balance of the P&L items for use in
         # balance sheet reports

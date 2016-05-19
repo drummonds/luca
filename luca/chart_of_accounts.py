@@ -10,7 +10,7 @@ class ChartOfAccountsError(Exception):
 
 
 def _allowed_chart_of_account(name):
-    allowed_coa = ('SLF-MA', 'drummonds', 'FY_Summary', 'FY_Detail_Summary')  # Todo move to core
+    allowed_coa = ('SLF-MA', 'drummonds', 'FY_Summary', 'FY_Detail_Summary', 'SAGE')  # Todo move to core
     assert name in allowed_coa, 'Only works for {} chart of accounts- you tried {}'.format(
         allowed_coa, name)
 
