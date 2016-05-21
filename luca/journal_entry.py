@@ -131,7 +131,7 @@ class JournalEntry:
         try:
             nominal_code = nominal_code_q[0]
             assert len(nominal_code_q)  == 1, LucaError('Trying to assign to a list {}'.format(nominal_code_q))
-        except (KeyError, TypeError):
+        except (IndexError, TypeError):
             nominal_code = nominal_code_q
         if nominal_code in self.dict:  # Self.dict is all the codes that are present.  This is slightly slacker
             # than allowing only codes in the chart of accounts.  Inferring chart of accounts
