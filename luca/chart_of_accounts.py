@@ -10,7 +10,7 @@ class ChartOfAccountsError(Exception):
 
 
 def _allowed_chart_of_account(name):
-    allowed_coa = ('SLF-MA', 'drummonds', 'FY_Summary', 'FY_Detail_Summary', 'SAGE')  # Todo move to core
+    allowed_coa = ('SLF-MA', 'drummonds', 'FY_Summary', 'FY_Detail_Summary', 'SAGE', 'Test')  # Todo move to core
     assert name in allowed_coa, 'Only works for {} chart of accounts- you tried {}'.format(
         allowed_coa, name)
 
@@ -22,10 +22,8 @@ class ChartOfAccounts:
         self.name = name
         self.dict = {}
         self.virtual_nominal_codes = {}
-        if name == 'Test':
+        if name == 'Test':  # Simple test case
             self.__setup_test_chart_of_accounts()
-        else:
-            self.constants = {}
 
     def __len__(self):
         return len(self.dict)
@@ -76,14 +74,6 @@ class ChartOfAccounts:
         functon when only a small subset of chart of accounts are supported."""
         _allowed_chart_of_account(self.name)
 
-    @property
-    def pnl_nc_start(self):
-        return self.constants['pnl_nc_start']
-
-    @property
-    def period_pnl(self):
-        return self.constants['period_pnl']
-
     def nc_set(self):
         """Return set of all nominal codes"""
         set_nc = set()
@@ -91,7 +81,13 @@ class ChartOfAccounts:
             set_nc = set_nc | {nc}
         return set_nc
 
-    def add_virtual_nominal_code(self, nominal_code, nominal_code_list, overwrite=True):
+    def add_virtual_nominal_code(self, nominal_code_q, nominal_code_list, overwrite=True):
+        # Allow a single entry list to work as well
+        try:
+            nominal_code = nominal_code_q[0]
+            assert len(nominal_code_q)  == 1, LucaError('Trying to assign to a list {}'.format(nominal_code_q))
+        except TypeError:
+            nominal_code = nominal_code_q
         if not overwrite and nominal_code in self.virtual_nominal_codes:
             raise LucaError('Adding virtual nominal code that already exists {}'.format(nominal_code))
         self.virtual_nominal_codes[nominal_code] = [nc for nc in nominal_code_list]  # ensures and makes a list
@@ -112,12 +108,12 @@ class ChartOfAccounts:
             12: ('Cash at bank and in hand', 'Asset'),
             20: ('Creditors: Amounts falling due within one year', 'Liability'),
             21: ('Creditors: Amounts falling due after more than one year', 'Liability'),
-            30: ('Profit and Loss Account', 'Equity'),
+            30: ('Profit and Loss Account', 'Equity'),  # carried forward from previous periods
             31: ('Called up share capital', 'Equity'),
-            # 32 Retained Earings virtual
+            # 32 Retained Earnings for period virtual
             50: ('Turnover', 'Income'),
             60: ('Cost of sales', 'Expense'),
-            70: ('Varriable costs', 'Expense'),
+            70: ('Variable costs', 'Expense'),
             80: ('Administrative Expenses', 'Expense'),
             91: ('Depreciation', 'Expense'),
             92: ('Amortization', 'Expense'),
@@ -127,10 +123,6 @@ class ChartOfAccounts:
         }
         self.company_name = 'Test Co Not Limited'
         self.company_number = '123'
-        self.constants = {
-            'period_pnl': 32,  # Period Retained Profit and Loss - is a calculated item from trial balance
-            'pnl_nc_start': 49  # Nominal codes greater than this are all profit and loss
-        }
         self._recalculate_ranges = self.__recalcalculate_test_chart_of_accounts
         self._recalculate_ranges()
 
@@ -160,9 +152,17 @@ class ChartOfAccounts:
         # extraordinary expenses represents the same but before adjusting for extraordinary items.
         self.retained_profit = self.retained_earnings = self.PAT + [96]  # Earnings After Tax/ Net Profit After Tax
         # minus payable dividends becomes Retained Earnings.
-        self.calc_pnl = 32  # This is virtual nominal code as it is the balance of the P&L items for use in
         # balance sheet reports
         # TODO convert all lists of acounts to sets of accounts
+        self.fixed_asset = [10]
+        self.current_asset = [11, 12]
+        self.short_term_liabilities = [20]
+        self.long_term_liabilities = [21]
+        self.owners_equity = [30, 31, 32]
+        self.called_up_capital = [30]
+        self.retained_capital = [31]
+        self.profit_and_loss_account = [32]   # This is virtual nominal code as it is the balance of the P&L items
+        self.pnl_nc_start = 49 # Nominal codes greater than this are all profit and loss
         self.sales = [50]
         self.material_costs_name = 'Total Material Cost'
         self.material_costs = [60]
@@ -174,13 +174,6 @@ class ChartOfAccounts:
         self.depreciation_costs = [90]
         self.dividends = [96]
         self.selling_costs = [60]
-        self.fixed_asset = [10]
-        self.current_asset = [11, 12]
-        self.short_term_liabilities = [20]
-        self.long_term_liabilities = [21]
-        self.owners_equity = [30, 31, 32]
-        self.called_up_capital = [31]
-        self.profit_and_loss_account = [32]
         # Tooo There may be be a better place for this code so it doesn't have to be repeated
-        self.add_virtual_nominal_code(self.calc_pnl, self.retained_profit, overwrite=True)
+        self.add_virtual_nominal_code(self.profit_and_loss_account, self.retained_profit, overwrite=True)
 

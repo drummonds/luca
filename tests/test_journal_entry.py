@@ -37,6 +37,8 @@ class TestTB(unittest.TestCase):
         assert tb.is_valid()
         print(tb.profit_and_loss)
         assert tb.profit_and_loss == p(50)
+        tb_closed = tb.close_period()
+        assert tb[32] == p(50)
 
 
     def test_trial_balance_add(self):

@@ -105,7 +105,7 @@ class JournalEntry:
             return sum
         except TypeError:
             try:
-                self[self.chart_of_accounts.virtual_nominal_codes[nominal_code]]
+                return self[self.chart_of_accounts.virtual_nominal_codes[nominal_code]]
                 # Some properties are like nominal codes but are in fact virtual.  Eg the period profit and loss
                 # is a calculated number
             except KeyError:  # Just get the normal data
@@ -126,13 +126,22 @@ class JournalEntry:
         except (KeyError, IndexError) as e:
             return default
 
-    def __setitem__(self, nominal_code, item):
+    def __setitem__(self, nominal_code_q, item):
+        # Allow a single entry list to work as well
+        try:
+            nominal_code = nominal_code_q[0]
+            assert len(nominal_code_q)  == 1, LucaError('Trying to assign to a list {}'.format(nominal_code_q))
+        except TypeError:
+            nominal_code = nominal_code_q
         if nominal_code in self.dict:  # Self.dict is all the codes that are present.  This is slightly slacker
             # than allowing only codes in the chart of accounts.  Inferring chart of accounts
             # TOO eliminate this and create a fnction to build an inferred chart of accounts
             self.dict[nominal_code] = item
         elif nominal_code in self.chart_of_accounts.dict:  # These are codes that could be present
             self.dict[nominal_code] = item
+        elif nominal_code in self.chart_of_accounts.virtual_nominal_codes:  # These can't be set
+            raise LucaError('Setting nominal code {} but not in chart of accounts {}'.format(
+                nominal_code, self.chart_of_accounts.name))
         else:
             raise LucaError('Setting nominal code {} but not in chart of accounts {}'.format(
                 nominal_code, self.chart_of_accounts.name))
@@ -165,23 +174,22 @@ class TrialBalance(JournalEntry):
     def profit_and_loss(self):
         return self[self.chart_of_accounts.retained_profit]
 
-
     def close_period(self):
         """AT the end of a year you want to close off a year and only roll forward the Balance sheet items.
         These calculations do that."""
-        self.chart_of_accounts.assert_valid_name()
-        pnl = self.profit_and_loss
+        coa = self.chart_of_accounts
+        coa.assert_valid_name()
+        period_pnl = self[coa.retained_profit]
         # print("P&L = {}".format(pnl))
         try:
-            old_pnl = self[self.chart_of_accounts.period_pnl]
+            previous_periods_pnl = self[coa.retained_capital]
         except KeyError:  # There is no old pnl
-            old_pnl = p(0)
+            previous_periods_pnl = p(0)
         # print("Prev retain = {}, changing to {}".format(old_pnl, old_pnl+pnl))
         b = copy(self)
-        b[self.chart_of_accounts.period_pnl] = old_pnl+pnl
-        new_pnl = b[self.chart_of_accounts.period_pnl]
+        b[coa.retained_capital] = previous_periods_pnl + period_pnl
         for k, v in iter(self.dict.items()):
-            if k > self.chart_of_accounts.pnl_nc_start:
+            if k > coa.pnl_nc_start:
                 b[k]=p(0)
         # print("Sum after clearing old balances = {}".format(b.sum()))
         return b
