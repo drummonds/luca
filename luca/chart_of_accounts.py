@@ -170,8 +170,8 @@ class ChartOfAccounts:
         self.fixed_production_costs = []
         self.admin_costs = [80]
         self.establishment_costs = []
+        self.depreciation_costs = [91]
         self.finance_charges = [93]
-        self.depreciation_costs = [90]
         self.dividends = [96]
         self.selling_costs = [60]
         # Tooo There may be be a better place for this code so it doesn't have to be repeated

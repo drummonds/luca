@@ -296,7 +296,7 @@ class FYBSPage(ExcelReportPage):
         xlb.line_number += 1
         called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
         write_row(called_up_share_capital, 'Called up share capital', note = 8)
-        profit_and_loss_account = xlb.sum(coa.profit_and_loss_account, sign = -1)
+        profit_and_loss_account = xlb.sum(coa.profit_and_loss_account + coa.retained_capital, sign = -1)
         write_row(profit_and_loss_account, 'Profit and loss account', note = 10, bottom = 1)
         shareholders_funds = [x[0]+x[1] for x in zip(called_up_share_capital, profit_and_loss_account)]
         write_row(shareholders_funds, 'Shareholders'' funds', bottom = 6)

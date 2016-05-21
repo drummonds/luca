@@ -13,7 +13,8 @@ DRUMMONDS_TO_FY_SUMMARY = {
     20: (2100, 2200),  # Creditors: Amounts falling due within one year
     21: (3100, ),  # Creditors: Amounts falling due after more than one year
     30: (4100, ),  # Called up share capital
-    31: (4300, ),  # Profit and Loss Account, 4200 is virtual
+    31: (4200, ),  # Profit and Loss Account, 4300 is virtual
+    # 32 Retained Earnings for period virtual
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010, 7500),  # Cost of sales
     80: (7000, 7001, 7002, 7100, 7205, 7300, 8000, 8001, 8002, 8003, 8005, 8006, 8007,
@@ -160,7 +161,7 @@ class Core:
         coa.owners_equity = [30, 31, 32]
         coa.called_up_capital = [30]
         coa.retained_capital = [31]
-        coa.profit_and_loss_account = [32]  # Period Profit and Loss - is a caculated item from trial balance
+        coa.profit_and_loss_account = [32]  # Period Profit and Loss - is a calculated item from trial balance
         coa.pnl_nc_start = 49  # Nominal codes greater than this are all profit and loss
         coa.sales = [50]
         coa.material_costs_name = 'Cost of Sales'
@@ -252,9 +253,9 @@ class CoreDrummonds(Core):
         coa.material_costs = [6000, 6100, 6200]
         coa.variable_costs = [7000]
         coa.fixed_production_costs = [7001, 7002, 7100, 7205, 7300]
-        coa.depreciation_costs = [9100]
         coa.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
+        coa.depreciation_costs = [9100]
         coa.selling_costs = []
         coa.dividends = []
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
@@ -294,10 +295,10 @@ class CoreDrummonds(Core):
         coa.establishment_costs = [700]
         coa.employment_costs = [750]
         coa.finance_charges = [890]
-        coa.depreciation_costs = [910]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
-        coa.tax_control_account = 910  # This is a balancing account for tax that is carried forward
-        coa.year_corporation_tax = [910]
+        coa.depreciation_costs = [910]
+        coa.tax_control_account = 940  # This is a balancing account for tax that is carried forward
+        coa.year_corporation_tax = [940]
         coa.dividends = []
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >499 and nc < 800]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=800 and nc < 900]
