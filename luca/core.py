@@ -36,7 +36,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     200: (2100, 2200),  # Creditors: Amounts falling due within one year
     210: (3100, ),  # Creditors: Amounts falling due after more than one year
     300: (4100, ),  # Called up share capital
-    310: (4300, ),  # Profit and Loss Account 4200 is virtual and calculated
+    310: (4200, ),  # Profit and Loss Account 4300 is virtual and calculated
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
     610: (6100, 6200), # Subcontract cost
