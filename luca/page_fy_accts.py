@@ -338,8 +338,19 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         def icol(index):  # Indexed column, index into data table
             return col(xlb.col_list[index])
 
-        def write_block_sum(acct_list, title, sign=1):
-            _write_block_sum(ws, xlb, rep, acct_list, title, sign=sign)
+        def write_block_sum(acct_list, title, col_increment=1, sign=1, bottom=0):
+            fmt_title = xlb.workbook.add_format(
+                {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
+            fmt_cell = xlb.workbook.add_format(
+                {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11, 'bottom': bottom}})
+            ws.write(col(0), '{}'.format(title), xlb.bold_left_fmt)
+            block_sum, has_data = _calc_block_sum(xlb, rep, acct_list, sign)
+            # write out summary
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 0 + col_increment)
+            ws.write(cell_location, block_sum[0], fmt_cell)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, 2 + col_increment)
+            ws.write(cell_location, block_sum[1], fmt_cell)
+            xlb.line_number += 1
 
         def title(text):
             # Merge whole row
@@ -379,18 +390,21 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         ws.write(col(5), '£', xlb.bold_fmt)
         ws.write(col(7), '£', xlb.bold_fmt)
         xlb.line_number += 1
-        write_block_sum(coa.sales, 'Turnover (analysed below)', sign=-1)
-        write_block_sum(coa.material_costs, 'Cost of sales (analysed below)')
-        write_block_sum(coa.profit_and_loss_account, 'Gross Profit', sign=-1)
-        write_block_sum(coa.sales, 'Gross profit (%)', sign=-1)
+        write_block_sum(coa.sales, 'Turnover (analysed below)', sign=-1, bottom=0)
+        write_block_sum(coa.material_costs, 'Cost of sales (analysed below)', bottom=1)
+        write_block_sum(coa.profit_and_loss_account, 'Gross Profit', sign=-1, bottom=1)
+        # TODO write_block_sum(coa.sales, 'Gross profit (%)', sign=-1)
         sub_title('Administrative expenses')
-        write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1)
+        write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1, col_increment=0,
+                        bottom = 0)
         sub_title('General administrative expenses')
-        write_block_sum(coa.admin_costs, '(analysed below)', sign=-1)
-        write_block_sum(coa.finance_charges, 'Finance costs (analysed below)', sign=-1)
-        write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1)
+        write_block_sum(coa.admin_costs, '(analysed below)', sign=-1, col_increment=0, bottom=0)
+        write_block_sum(coa.finance_charges, 'Finance costs (analysed below)', sign=-1, col_increment=0, bottom=0)
+        write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1, col_increment=0,
+                        bottom = 1)
         xlb.line_number += 1
-        write_block_sum(coa.depreciation_costs, '(Loss)/profit on ordinary activities before taxation', sign=-1)
+        write_block_sum(coa.depreciation_costs, '(Loss)/profit on ordinary activities before taxation', sign=-1,
+                        bottom=6)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
                               show_footer=False, show_header=False)
         ws.set_footer('This page does not form part of the statutory financial statements.\n' +
@@ -627,8 +641,8 @@ class FYNotes(ExcelReportPage):
         note_title('Reserves')
         row_title('Profit and loss Account', 'Total')
         row_title('£', '£')
-        prev_pnl = xlb.list_get_value(rep.trial_balances[1], coa.profit_and_loss_account)
-        this_pnl = xlb.list_get_value(rep.trial_balances[0], coa.profit_and_loss_account)
+        prev_pnl = xlb.list_get_value(rep.trial_balances[1], coa.retained_earnings)
+        this_pnl = xlb.list_get_value(rep.trial_balances[0], coa.retained_earnings)
         years_pnl = this_pnl  - prev_pnl  # Todo not sure this is a general solution
         row('At {}'.format(rep.full_year_start_string), prev_pnl, prev_pnl)
         row('Profit/(loss) for the year', years_pnl, years_pnl, bottom=1)
