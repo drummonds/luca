@@ -394,8 +394,8 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         ws.write(col(7), '£', xlb.bold_fmt)
         xlb.line_number += 1
         write_block_sum(coa.sales, 'Turnover (analysed below)', sign=-1, bottom=0)
-        write_block_sum(coa.material_costs, 'Cost of sales (analysed below)', bottom=1)
-        write_block_sum(coa.profit_and_loss_account, 'Gross Profit', sign=-1, bottom=1)
+        write_block_sum(coa.material_costs, 'Cost of sales (analysed below)', sign=-1, bottom=1)
+        write_block_sum(coa.sales + coa.material_costs, 'Gross Profit', sign=-1, bottom=1)
         # TODO write_block_sum(coa.sales, 'Gross profit (%)', sign=-1)
         sub_title('Administrative expenses')
         write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1, col_increment=0,
