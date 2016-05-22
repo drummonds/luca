@@ -409,7 +409,7 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         write_block_sum(coa.establishment_costs + coa.admin_costs + coa.finance_charges + coa.depreciation_costs,
                         '', sign=-1, col_increment=1, bottom=1)  # Sum admin
         sub_title('(Loss)/profit on ordinary activities', bold=False)
-        write_block_sum(coa.pbt, 'before taxation', sign=-1,
+        write_block_sum(coa.PBT, 'before taxation', sign=-1,
                         bottom=6)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
                               show_footer=False, show_header=False)
