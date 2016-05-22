@@ -346,9 +346,9 @@ class FYDetailPnLPageSummary(ExcelReportPage):
             ws.write(col(0), '{}'.format(title), xlb.bold_left_fmt)
             block_sum, has_data = _calc_block_sum(xlb, rep, acct_list, sign)
             # write out summary
-            cell_location = xl_rowcol_to_cell(xlb.line_number, 0 + col_increment)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0] + col_increment)
             ws.write(cell_location, block_sum[0], fmt_cell)
-            cell_location = xl_rowcol_to_cell(xlb.line_number, 2 + col_increment)
+            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[2] + col_increment)
             ws.write(cell_location, block_sum[1], fmt_cell)
             xlb.line_number += 1
 
