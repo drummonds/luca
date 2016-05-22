@@ -343,7 +343,7 @@ class FYDetailPnLPageSummary(ExcelReportPage):
                 {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
             fmt_cell = xlb.workbook.add_format(
                 {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11, 'bottom': bottom}})
-            ws.write(col(0), '{}'.format(title), xlb.bold_left_fmt)
+            ws.write(col(0), '{}'.format(title), fmt_title)
             block_sum, has_data = _calc_block_sum(xlb, rep, acct_list, sign)
             # write out summary
             cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0 + col_increment])
@@ -363,8 +363,11 @@ class FYDetailPnLPageSummary(ExcelReportPage):
             ws.write(col(0), '{} {}'.format(self.note_number, text), xlb.bold_left_fmt)
             xlb.line_number += 1
 
-        def sub_title(text):
-            ws.write(col(0), text, xlb.bold_left_fmt)
+        def sub_title(text, bold=True):
+            if bold:
+                ws.write(col(0), text, xlb.bold_left_fmt)
+            else:
+                ws.write(col(0), text, xlb.left_fmt)
             xlb.line_number +=1
 
         ws = worksheet
@@ -375,8 +378,8 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         self.note_number = 0
         xlb.col_list=(1, 3, 5, 7, )  # Two column report
         # Nominal code info columns
-        for range, width in [('A:A', 23), ('B:B', 14), ('C:C', 1), ('D:D', 14), ('E:E', 1), ('F:F', 14), ('G:G', 1),
-                             ('H:H', 14)]:
+        for range, width in [('A:A', 30), ('B:B', 12), ('C:C', 1), ('D:D', 12), ('E:E', 1), ('F:F', 12), ('G:G', 1),
+                             ('H:H', 12)]:
             ws.set_column(range, width)
         title(coa.company_name)
         xlb.line_number +=1
@@ -397,13 +400,16 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         sub_title('Administrative expenses')
         write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 0)
-        sub_title('General administrative expenses')
+        sub_title('General administrative expenses', bold=False)
         write_block_sum(coa.admin_costs, '(analysed below)', sign=-1, col_increment=0, bottom=0)
         write_block_sum(coa.finance_charges, 'Finance costs (analysed below)', sign=-1, col_increment=0, bottom=0)
         write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 1)
         xlb.line_number += 1
-        write_block_sum(coa.depreciation_costs, '(Loss)/profit on ordinary activities before taxation', sign=-1,
+        write_block_sum(coa.establishment_costs + coa.admin_costs + coa.finance_charges + coa.depreciation_costs,
+                        '', sign=-1, col_increment=1, bottom=1)  # Sum admin
+        sub_title('(Loss)/profit on ordinary activities', bold=False)
+        write_block_sum(coa.pbt, 'before taxation', sign=-1,
                         bottom=6)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
                               show_footer=False, show_header=False)
