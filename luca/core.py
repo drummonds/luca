@@ -175,9 +175,9 @@ class Core:
         coa.dividends = [96]
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >49 and nc < 80]
         coa.EBITDA = coa.gross_profit + [80]  # Earnings Before Interest, Taxes, Depreciation, and Amortization
-        coa.PBIT = coa.EBIT = coa.EBITDA + [90, 91]
-        coa.PBT = coa.EBT = coa.PBIT + [92]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
-        coa.PAT = coa.EAT = coa.PBT + [93]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.PBIT = coa.EBIT = coa.EBITDA + [91, 92]
+        coa.PBT = coa.EBT = coa.PBIT + [93]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        coa.PAT = coa.EAT = coa.PBT + [94]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
         coa.retained_profit = coa.retained_earnings = coa.PAT + [96]  # Earnings After Tax/ Net Profit After Tax
         coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
 
