@@ -395,7 +395,8 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         xlb.line_number += 1
         write_block_sum(coa.sales, 'Turnover (analysed below)', sign=-1, bottom=0)
         write_block_sum(coa.material_costs, 'Cost of sales (analysed below)', sign=-1, bottom=1)
-        write_block_sum(coa.sales + coa.material_costs, 'Gross Profit', sign=-1, bottom=1)
+        sum_gross_profit = coa.sales + coa.material_costs
+        write_block_sum(sum_gross_profit, 'Gross Profit', sign=-1, bottom=1)
         # TODO write_block_sum(coa.sales, 'Gross profit (%)', sign=-1)
         sub_title('Administrative expenses')
         write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1, col_increment=0,
@@ -406,9 +407,10 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 1)
         xlb.line_number += 1
-        write_block_sum(coa.establishment_costs + coa.admin_costs + coa.finance_charges + coa.depreciation_costs,
-                        '', sign=-1, col_increment=1, bottom=1)  # Sum admin
+        sum_costs = coa.establishment_costs + coa.admin_costs + coa.finance_charges + coa.depreciation_costs
+        write_block_sum(sum_costs, '', sign=-1, col_increment=1, bottom=1)  # Sum admin
         sub_title('(Loss)/profit on ordinary activities', bold=False)
+        assert set(coa.PBT) == set(sum_gross_profit + sum_costs)
         write_block_sum(coa.PBT, 'before taxation', sign=-1,
                         bottom=6)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
