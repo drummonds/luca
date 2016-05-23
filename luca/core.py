@@ -171,7 +171,7 @@ class Core:
         coa.admin_costs = [80]
         coa.selling_costs = []
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
-        coa.drepeciation_costs = [91]
+        coa.depeciation_costs = [91]
         coa.amortisation_costs = [92]
         coa.finance_costs = [93]
         coa.year_corporation_tax = [94]
@@ -298,6 +298,7 @@ class CoreDrummonds(Core):
         coa.selling_costs = []
         coa.establishment_costs = [700]
         coa.employment_costs = [750]
+        coa.staff_training_costs = [760]
         coa.bank_charges = [890]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.depreciation_costs = [910]

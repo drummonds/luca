@@ -403,19 +403,23 @@ class FYDetailPnLPageSummary(ExcelReportPage):
         write_block_sum(coa.establishment_costs, 'Establishment costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 0)
         sub_title('General administrative expenses', bold=False)
-        write_block_sum(coa.admin_costs, '(analysed below)', sign=-1, col_increment=0, bottom=0)
+        write_block_sum(coa.admin_costs + coa.employment_costs + coa.staff_training_costs,
+                        '(analysed below)', sign=-1, col_increment=0, bottom=0)
         write_block_sum(coa.bank_charges, 'Finance costs (analysed below)', sign=-1, col_increment=0, bottom=0)
         write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 1)
         write_block_sum(coa.amortisation_costs, 'Amortisation costs (analysed below)', sign=-1, col_increment=0,
                         bottom=1)
+        write_block_sum(coa.finance_costs, 'Finance costs (analysed below)', sign=-1, col_increment=0,
+                        bottom=1)
         xlb.line_number += 1
-        sum_costs = coa.establishment_costs + coa.admin_costs + coa.bank_charges + coa.depreciation_costs
+        sum_costs = coa.establishment_costs + coa.admin_costs + coa.bank_charges + coa.depreciation_costs \
+                + coa.amortisation_costs + coa.finance_costs + coa.employment_costs + coa.staff_training_costs
         write_block_sum(sum_costs, '', sign=-1, col_increment=1, bottom=1)  # Sum admin
         sub_title('(Loss)/profit on ordinary activities', bold=False)
         nc_PBT = set(coa.PBT)
         nc_calc = set(sum_gross_profit + sum_costs)
-        assert nc_PBT == nc_calc, 'BT = {} and sum = {} diff = {}'.format(nc_PBT, nc_calc, nc_PBT.difference(nc_calc))
+        assert nc_PBT == nc_calc, 'PBT = {} and sum = {} diff = {}'.format(nc_PBT, nc_calc, nc_PBT.difference(nc_calc))
         write_block_sum(coa.PBT, 'before taxation', sign=-1,
                         bottom=6)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines=True,
