@@ -339,18 +339,19 @@ class FYDetailPnLPageSummary(ExcelReportPage):
             return col(xlb.col_list[index])
 
         def write_block_sum(acct_list, title, col_increment=1, sign=1, bottom=0):
-            fmt_title = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
-            fmt_cell = xlb.workbook.add_format(
-                {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11, 'bottom': bottom}})
-            ws.write(col(0), '{}'.format(title), fmt_title)
             block_sum, has_data = _calc_block_sum(xlb, rep, acct_list, sign)
-            # write out summary
-            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0 + col_increment])
-            ws.write(cell_location, block_sum[0], fmt_cell)
-            cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[2 + col_increment])
-            ws.write(cell_location, block_sum[1], fmt_cell)
-            xlb.line_number += 1
+            if has_data:
+                fmt_title = xlb.workbook.add_format(
+                    {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11}})
+                fmt_cell = xlb.workbook.add_format(
+                    {**xlb.base_format_dictionary, **{'align': 'left', 'font_size': 11, 'bottom': bottom}})
+                ws.write(col(0), '{}'.format(title), fmt_title)
+                # write out summary
+                cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[0 + col_increment])
+                ws.write(cell_location, block_sum[0], fmt_cell)
+                cell_location = xl_rowcol_to_cell(xlb.line_number, xlb.col_list[2 + col_increment])
+                ws.write(cell_location, block_sum[1], fmt_cell)
+                xlb.line_number += 1
 
         def title(text):
             # Merge whole row
@@ -403,11 +404,13 @@ class FYDetailPnLPageSummary(ExcelReportPage):
                         bottom = 0)
         sub_title('General administrative expenses', bold=False)
         write_block_sum(coa.admin_costs, '(analysed below)', sign=-1, col_increment=0, bottom=0)
-        write_block_sum(coa.finance_charges, 'Finance costs (analysed below)', sign=-1, col_increment=0, bottom=0)
+        write_block_sum(coa.bank_charges, 'Finance costs (analysed below)', sign=-1, col_increment=0, bottom=0)
         write_block_sum(coa.depreciation_costs, 'Depreciation costs (analysed below)', sign=-1, col_increment=0,
                         bottom = 1)
+        write_block_sum(coa.amortisation_costs, 'Amortisation costs (analysed below)', sign=-1, col_increment=0,
+                        bottom=1)
         xlb.line_number += 1
-        sum_costs = coa.establishment_costs + coa.admin_costs + coa.finance_charges + coa.depreciation_costs
+        sum_costs = coa.establishment_costs + coa.admin_costs + coa.bank_charges + coa.depreciation_costs
         write_block_sum(sum_costs, '', sign=-1, col_increment=1, bottom=1)  # Sum admin
         sub_title('(Loss)/profit on ordinary activities', bold=False)
         nc_PBT = set(coa.PBT)
@@ -460,7 +463,7 @@ class FYDetailPnLPage(ExcelReportPage):
         write_block(coa.establishment_costs, 'Establishment Costs')
         write_block(coa.variable_costs + coa.fixed_production_costs + coa.admin_costs,
                     'General administrative expenses')
-        write_block(coa.finance_charges, 'Finance Charges')
+        write_block(coa.bank_charges, 'Finance Charges')
         write_block(coa.depreciation_costs, 'Depreciation of office equipment')
         xlb.format_print_area(ws, 'DETAILED PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer=False, show_header=False)

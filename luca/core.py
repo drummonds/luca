@@ -171,6 +171,9 @@ class Core:
         coa.admin_costs = [80]
         coa.selling_costs = []
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
+        coa.drepeciation_costs = [91]
+        coa.amortisation_costs = [92]
+        coa.finance_costs = [93]
         coa.year_corporation_tax = [94]
         coa.dividends = [96]
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >49 and nc < 80]
@@ -255,6 +258,8 @@ class CoreDrummonds(Core):
         coa.admin_costs = [8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013,
                            8014, 8015, 8016, 8017, 8018, 8019, 8020, 8100, 8900]
         coa.depreciation_costs = [9100]
+        coa.amortisation_costs = [9200]
+        coa.finance_costs = [9300]
         coa.selling_costs = []
         coa.dividends = [9600]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
@@ -293,11 +298,13 @@ class CoreDrummonds(Core):
         coa.selling_costs = []
         coa.establishment_costs = [700]
         coa.employment_costs = [750]
-        coa.finance_charges = [890]
+        coa.bank_charges = [890]
         coa.optional_accounts = []  # These nominal codes should only be present in the report if non zero
         coa.depreciation_costs = [910]
-        coa.tax_control_account = 950  # This is a balancing account for tax that is carried forward
+        coa.amortisation_costs = [920]
+        coa.finance_costs = [930]
         coa.year_corporation_tax = [940]
+        coa.tax_control_account = 950  # This is a balancing account for tax that is carried forward
         coa.dividends = [960]
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >499 and nc < 800]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=800 and nc < 900]
