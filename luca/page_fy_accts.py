@@ -662,8 +662,8 @@ class FYNotes(ExcelReportPage):
         note_title('Reserves')
         row_title('Profit and loss Account', 'Total')
         row_title('£', '£')
-        prev_pnl = xlb.list_get_value(rep.trial_balances[1], coa.retained_earnings)
-        this_pnl = xlb.list_get_value(rep.trial_balances[0], coa.retained_earnings)
+        prev_pnl = xlb.list_get_value(rep.trial_balances[1], coa.profit_and_loss_account + coa.retained_capital)
+        this_pnl = xlb.list_get_value(rep.trial_balances[0], coa.profit_and_loss_account + coa.retained_capital)
         years_pnl = this_pnl  - prev_pnl  # Todo not sure this is a general solution
         row('At {}'.format(rep.full_year_start_string), prev_pnl, prev_pnl)
         row('Profit/(loss) for the year', years_pnl, years_pnl, bottom=1)
