@@ -294,7 +294,7 @@ class CoreDrummonds(Core):
         coa.material_costs = [600, 610]
         coa.variable_costs = []
         coa.fixed_production_costs = []
-        coa.admin_costs = [805, 810, 815, 820, 825, 800, 830, 835, 840]
+        coa.admin_costs = [810, 815, 820, 825, 800, 830, 835, 840]
         coa.selling_costs = []
         coa.establishment_costs = [700]
         coa.employment_costs = [750]
