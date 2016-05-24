@@ -213,6 +213,11 @@ class FYPnLPage(ExcelReportPage):
         profit_or_loss= [x[0]-x[1] for x in zip(operating_profit, corporation_tax)]
         xlb.write_fy_row(ws, profit_or_loss, '(Loss)/profit for the financial year', note='10',
                          cell_format={'bottom': 6}, row_height = 22)
+        # Check used all nominal codes
+        nc_PAT = set(coa.PAT)
+        nc_calc = set(coa.sales + coa.material_costs + coa.variable_costs + coa.fixed_production_costs
+                      + coa.admin_costs + coa.year_corporation_tax)
+        assert nc_PAT == nc_calc, 'PAT = {} and sum = {} diff = {}'.format(nc_PAT, nc_calc, nc_PAT ^ nc_calc)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer = False, show_header = False)
         ws.set_footer('The notes on pages 5 to 7 form an integral part of these financial statements statements.\n' +
