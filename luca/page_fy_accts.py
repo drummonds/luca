@@ -199,9 +199,9 @@ class FYPnLPage(ExcelReportPage):
         xlb.write_fy_row(ws, cost_of_sales, 'Cost of sales', cell_format={'bottom': 1}, row_height=22)
         gross_profit = [x[0]+x[1] for x in zip(turnover, cost_of_sales)]
         xlb.write_fy_row(ws, gross_profit, 'Gross profit', row_height=22)
-        admin_expenses = xlb.sum(coa.variable_costs
-                                 + coa.fixed_production_costs
-                                 + coa.admin_costs,  sign = -1)
+        admin_nc = coa.variable_costs + coa.fixed_production_costs + coa.admin_costs\
+            + coa.depeciation_costs + coa.amortisation_costs + coa.finance_costs
+        admin_expenses = xlb.sum(admin_nc ,  sign = -1)
         xlb.write_fy_row(ws, admin_expenses, 'Administrative expenses', cell_format={'bottom': 1}, row_height=22)
         operating_profit = [x[0]+x[1] for x in zip(gross_profit, admin_expenses)]
         xlb.write_fy_row(ws, operating_profit, 'Operating (loss)/profit', note='2',
@@ -215,8 +215,7 @@ class FYPnLPage(ExcelReportPage):
                          cell_format={'bottom': 6}, row_height = 22)
         # Check used all nominal codes
         nc_PAT = set(coa.PAT)
-        nc_calc = set(coa.sales + coa.material_costs + coa.variable_costs + coa.fixed_production_costs
-                      + coa.admin_costs + coa.year_corporation_tax)
+        nc_calc = set(coa.sales + coa.material_costs + admin_nc + coa.year_corporation_tax)
         assert nc_PAT == nc_calc, 'PAT = {} and sum = {} diff = {}'.format(nc_PAT, nc_calc, nc_PAT ^ nc_calc)
         xlb.format_print_area(ws, 'PROFIT & LOSS ACCOUNT', hide_gridlines = True,
                               show_footer = False, show_header = False)
