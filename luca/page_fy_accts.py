@@ -519,11 +519,11 @@ class FYNotes(ExcelReportPage):
             ws.write(icol(1), b, xlb.bold_fmt)
             xlb.line_number += 1
 
-        def row(title, a, b, bottom = 0):
+        def row(title, a, b, bottom = 0, sign=1):
             cell_fmt = xlb.workbook.add_format({**xlb.base_format_dictionary, **{'bottom': bottom, 'align': 'right'}})
             ws.write(col(0), title, xlb.fmt)
-            ws.write(icol(0), a, cell_fmt)
-            ws.write(icol(1), b, cell_fmt)
+            ws.write(icol(0), a * sign, cell_fmt)
+            ws.write(icol(1), b * sign, cell_fmt)
             xlb.line_number += 1
 
         ws = worksheet
