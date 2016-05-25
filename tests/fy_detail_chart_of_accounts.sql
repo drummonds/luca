@@ -16,6 +16,7 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_S
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 840, 'Travel and subsistence', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 890, 'Bank charges', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 910, 'Tax on(loss)/profit on ordinary acitivies', 'Expense');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 920, 'Dividends', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 100, 'Tangible fixed assets', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 110, 'Debtors', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('FY_Detail_Summary', 102, 'Office Equipment Cost', 'Asset');
