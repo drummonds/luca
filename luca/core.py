@@ -13,7 +13,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     20: (2100, 2200),  # Creditors: Amounts falling due within one year
     21: (3100, ),  # Creditors: Amounts falling due after more than one year
     30: (4100, ),  # Called up share capital
-    31: (4200, ),  # Profit and Loss Account, 4300 is virtual
+    31: (4200, 4350, 4351),  # Profit and Loss Account, 4300 is virtual
     # 32 Retained Earnings for period virtual
     50: (5000, 5100),  # Turnover
     60: (6000, 6100, 6200, 7010),  # Cost of sales
@@ -23,7 +23,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     91: (9100, ),  # Depreciation
     92: (9200, ),  # Amortisation
     93: (9300, ),  # Interest
-    94: (9400, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
+    94: (9400, 9450, 9451, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     96: (9600, ),  # Dividends
     }
 
@@ -36,7 +36,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     200: (2100, 2200),  # Creditors: Amounts falling due within one year
     210: (3100, ),  # Creditors: Amounts falling due after more than one year
     300: (4100, ),  # Called up share capital
-    310: (4200, ),  # Profit and Loss Account 4300 is virtual and calculated
+    310: (4200, 4350, 4351),  # Profit and Loss Account 4300 is virtual and calculated
     500: (5000, 5100),  # Turnover
     600: (6000, 7010),  # Purchase
     610: (6100, 6200), # Subcontract cost
@@ -55,7 +55,7 @@ DRUMMONDS_TO_FY_DETAIL = {
     910: (9100, ),  # Depreciation
     920: (9200, ),  # Amortisation
     930: (9300, ),  # Interest
-    940: (9400, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
+    940: (9400, 9450, 9451, 9500, 9510),  # Tax on(loss)/profit on ordinary activities
     960: (9600, ),  # Dividends
     }
 
