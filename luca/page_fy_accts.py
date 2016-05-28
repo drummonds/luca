@@ -730,7 +730,7 @@ class FYCT600_Calcs(ExcelReportPage):
         xlb.line_number += 1
         write_item(1, 'Total Turnover', coa.sales, sign=-1)
         write_item(3, 'Trading and professional profits', coa.profit_and_loss_account)
-        write_item(4, 'Trading losses brought forward claimed against profits', 'Todo')  # Todo Incorporate from somewhere
+        write_item(4, 'Trading losses brought forward claimed against profits', coa.trading_losses)  # Todo Incorporate from somewhere
         write_item(5, 'Net trading and professional profits', coa.profit_and_loss_account)
         write_item(21, 'Total Turnover', coa.profit_and_loss_account)
         write_item(37, 'Profits chargeable to corporation tax', coa.profit_and_loss_account)

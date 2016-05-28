@@ -248,6 +248,7 @@ class CoreDrummonds(Core):
         coa.called_up_capital = [4100]
         coa.retained_capital = [4200]
         coa.profit_and_loss_account = [4300]   # This is virtual nominal code as it is the balance of the P&L items
+        coa.trading_losses = [4350]
         coa.pnl_nc_start = 4999  # Nominal codes greater than this are all profit and loss
         # balance sheet reports
         coa.sales = [5000, 5100]
