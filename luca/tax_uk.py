@@ -29,7 +29,7 @@ def uk_corporation_tax_rate(year, profit):
     """For a year and profit returns the effective tax rate and the tax amount,
     year = fiscal year from 1st April year to 31s of March year+1
     profit = Positive = loss, negative = profit (A-L+E-R-OE = 0, profit abs(R) > abs(E)"""
-    main_rate, tax_list = UK_CORPORATION_TAX[year]
+    main_rate, tax_list = UK_CORPORATION_TAX[int(year)]
     tax = p(0)
     if profit > 0:  # Loss
         return main_rate, p(0)
