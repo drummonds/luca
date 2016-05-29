@@ -31,8 +31,8 @@ def uk_corporation_tax_rate(year, profit):
     profit = Positive = loss, negative = profit (A-L+E-R-OE = 0, profit abs(R) > abs(E)"""
     main_rate, tax_list = UK_CORPORATION_TAX[int(year)]
     tax = p(0)
-    if profit > 0:  # Loss
-        return main_rate, p(0)
+    if p(profit) >= p(0):  # Loss
+        return p(main_rate), p(0)
     else:  # profit
         abs_profit = p(abs(profit))
         lower_limit = p(0)
