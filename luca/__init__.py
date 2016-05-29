@@ -16,3 +16,4 @@ from .page_slf_mgmt import SLF_Mgmt_PnL, SLF_Mgmt_BS, SLF_Mgmt_Cover
 from .core import Core, CoreDrummonds, CoreSlumberfleece, SAGE_TO_SLF_MA, SLF_MA_TO_FY_SUMMARY
 from .core import DRUMMONDS_TO_FY_DETAIL, DRUMMONDS_TO_FY_SUMMARY
 from .metadata import version
+from .tax_uk import UK_CORPORATION_TAX, uk_corporation_tax_rate

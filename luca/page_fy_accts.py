@@ -7,6 +7,7 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 from .excel_report2 import ExcelReportPage
 from .utils import p
 from .metadata import version
+from .tax_uk import uk_corporation_tax_rate
 
 
 def _calc_block_sum(xlb, rep, acct_list, sign=1):
@@ -701,7 +702,10 @@ class FYCT600_Calcs(ExcelReportPage):
                     value = p(0)
                 ws.write(col(1), value, xlb.fmt)
             else:
-                ws.write(col(1), param*sign, xlb.fmt)
+                if sign == 1:  # Allows text to be written out
+                    ws.write(col(1), param, xlb.fmt)
+                else:
+                    ws.write(col(1), param * sign, xlb.fmt)
             xlb.line_number += 1
 
         def write(title, value):
@@ -751,19 +755,29 @@ class FYCT600_Calcs(ExcelReportPage):
         write_item(5, 'Net trading and professional profits', net_trading_and_professional_profits)
         write_item(21, 'Profits before deductions and other reliefs', net_trading_and_professional_profits)
         write_item(37, 'Profits chargeable to corporation tax', net_trading_and_professional_profits)
+        write_item(39, 'Number of associated companies in this period', '0')
         write_item(42, 'Claiming staring rate or small companies rate on any part of the profits', 'X')
         write_item(43, 'Financial Year', rep.prior_year)
-        write_item(44, 'Amount of profit', coa.profit_and_loss_account)
-        write_item(45, 'Rate of tax', '20%')
-        write_item(46, 'Tax in year', coa.year_corporation_tax)
-        write_item(63, 'Corporation tax', coa.year_corporation_tax)
-        write_item(65, 'Corporation tax net of marginal relief', coa.year_corporation_tax)
-        write_item(70, 'Corporation tax chargeable', coa.year_corporation_tax)
-        write_item(86, 'Tax Payable - self assessment of tax payable', coa.year_corporation_tax)
-        write_item(90, 'Tax already paid', 'Todo')
-        write_item(91, 'Tax outstanding', coa.year_corporation_tax)
-        write_item(172, 'Anual investment allowance', 'Todo')
-        write_item(107, 'Machinery and plant main pool', coa.office_equipment_depreciation)
+        write_item(44, 'Amount of profit', net_trading_and_professional_profits)
+        tax_rate, tax_in_year_calc = uk_corporation_tax_rate(rep.prior_year, net_trading_and_professional_profits) == (p(0.20), p(2200))
+        write_item(45, 'Rate of tax', tax_rate)
+        corporation_tax = _calc_block_sum(xlb, rep, coa.year_corporation_tax)[0][0]
+        if corporation_tax > 0:  # Loss rolled over tax
+            tax_in_year = p(0)
+        else:
+            tax_in_year = corporation_tax
+        assert tax_in_year ==  tax_in_year_calc
+        write_item(46, 'Tax in year', tax_in_year)
+        write_item(63, 'Corporation tax', tax_in_year)
+        # TODO need to extract out marginal relief calculation
+        write_item(64, 'Marginal rate relief', tax_in_year)
+        write_item(65, 'Corporation tax net of marginal relief', tax_in_year)
+        write_item(70, 'Corporation tax chargeable', tax_in_year)
+        write_item(86, 'Tax Payable - self assessment of tax payable', tax_in_year)
+        write_item(90, 'Tax already paid', 'Todo')  # TODO add code for the 109.39
+        write_item(91, 'Tax outstanding', tax_in_year)
+        write_item(172, 'Anual investment allowance', 'Todo')  # Purchase
+        write_item(107, 'Machinery and plant main pool', coa.fixed_assets)
         xlb.line_number += 1
         write('Internal Version checking','')
         write('Luca software version', '{}'.format(version))
