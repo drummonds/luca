@@ -730,7 +730,7 @@ class FYCT600_Calcs(ExcelReportPage):
         xlb.line_number += 1
         write_item(1, 'Total Turnover', coa.sales, sign=-1)
         # next item is cardinal and needs to be calculated.  If there is a loss if a loss it is zero
-        pnl = _calc_block_sum(xlb, rep, coa.profit_and_loss_account)[0]
+        pnl = _calc_block_sum(xlb, rep, coa.profit_and_loss_account)[0][0]
         if pnl > p(0):  # Loss
             item_3 = p(0)
         else:
