@@ -759,7 +759,7 @@ class FYCT600_Calcs(ExcelReportPage):
         write_item(42, 'Claiming staring rate or small companies rate on any part of the profits', 'X')
         write_item(43, 'Financial Year', rep.prior_year)
         write_item(44, 'Amount of profit', net_trading_and_professional_profits)
-        tax_rate, tax_in_year_calc = uk_corporation_tax_rate(rep.prior_year, net_trading_and_professional_profits) == (p(0.20), p(2200))
+        tax_rate, tax_in_year_calc = uk_corporation_tax_rate(rep.prior_year, net_trading_and_professional_profits)
         write_item(45, 'Rate of tax', tax_rate)
         corporation_tax = _calc_block_sum(xlb, rep, coa.year_corporation_tax)[0][0]
         if corporation_tax > 0:  # Loss rolled over tax
