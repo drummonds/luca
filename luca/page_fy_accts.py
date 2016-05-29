@@ -721,7 +721,7 @@ class FYCT600_Calcs(ExcelReportPage):
             ws.set_column(range, width)
         title(coa.company_name)
         xlb.line_number +=1
-        title('TAX calculations for CT600 Account for the Year Ended {}'.format(rep.full_datestring))
+        title('Tax calculations for CT600 Account for the Year Ended {}'.format(rep.full_datestring))
         write('Company name', coa.company_name)
         write('Company number', coa.company_number)
         write('Tax reference', coa.tax_reference)
@@ -729,7 +729,13 @@ class FYCT600_Calcs(ExcelReportPage):
         write('Return for period to:', rep.full_datestring)
         xlb.line_number += 1
         write_item(1, 'Total Turnover', coa.sales, sign=-1)
-        write_item(3, 'Trading and professional profits', coa.profit_and_loss_account)
+        # next item is cardinal and needs to be calculated.  If there is a loss if a loss it is zero
+        pnl = _calc_block_sum(xlb, rep, coa.profit_and_loss_account)
+        if pnl > p(0):  # Loss
+            item_3 = p(0)
+        else:
+            item_3 = pnl
+        write_item(3, 'Trading and professional profits', pnl, sign=-1)
         write_item(4, 'Trading losses brought forward claimed against profits', coa.trading_losses)  # Todo Incorporate from somewhere
         write_item(5, 'Net trading and professional profits', coa.profit_and_loss_account)
         write_item(21, 'Total Turnover', coa.profit_and_loss_account)
