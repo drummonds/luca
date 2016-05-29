@@ -762,7 +762,7 @@ class FYCT600_Calcs(ExcelReportPage):
         tax_rate, tax_in_year_calc = uk_corporation_tax_rate(rep.prior_year, net_trading_and_professional_profits)
         write_item(45, 'Rate of tax', tax_rate)
         corporation_tax = _calc_block_sum(xlb, rep, coa.year_corporation_tax)[0][0]
-        if corporation_tax > 0:  # Loss rolled over tax
+        if corporation_tax < 0:  # Loss rolled over tax
             tax_in_year = p(0)
         else:
             tax_in_year = corporation_tax
