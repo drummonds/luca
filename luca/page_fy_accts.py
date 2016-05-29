@@ -701,7 +701,7 @@ class FYCT600_Calcs(ExcelReportPage):
                     value = p(0)
                 ws.write(col(1), value, xlb.fmt)
             else:
-                ws.write(col(1), '{}'.format(param), xlb.fmt)
+                ws.write(col(1), param*sign, xlb.fmt)
             xlb.line_number += 1
 
         def write(title, value):
@@ -730,16 +730,27 @@ class FYCT600_Calcs(ExcelReportPage):
         xlb.line_number += 1
         write_item(1, 'Total Turnover', coa.sales, sign=-1)
         # next item is cardinal and needs to be calculated.  If there is a loss if a loss it is zero
-        pnl = _calc_block_sum(xlb, rep, coa.profit_and_loss_account)[0][0]
+        pnl = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
         if pnl > p(0):  # Loss
             item_3 = p(0)
         else:
             item_3 = pnl
-        write_item(3, 'Trading and professional profits', pnl, sign=-1)
-        write_item(4, 'Trading losses brought forward claimed against profits', coa.trading_losses)  # Todo Incorporate from somewhere
-        write_item(5, 'Net trading and professional profits', coa.profit_and_loss_account)
-        write_item(21, 'Total Turnover', coa.profit_and_loss_account)
-        write_item(37, 'Profits chargeable to corporation tax', coa.profit_and_loss_account)
+        write_item(3, 'Trading and professional profits', item_3, sign=-1)
+        # Calc Trading losses brought forward claimed against profits
+        if pnl < 0:  # Made a profit
+            trading_losses_brought_forward = _calc_block_sum(xlb, rep, coa.trading_losses)[0][0]
+            assert trading_losses_brought_forward > p(0) # > 0 by definition
+            if abs(trading_losses_brought_forward) > pnl:
+                trading_losses_brought_forward_claimed = -pnl  # Claim only the PNL
+            else:
+                trading_losses_brought_forward_claimed = trading_losses_brought_forward # Use all the B/F losses
+        else:  # made a lost so no brought forward loasses
+            trading_losses_brought_forward_claimed = p(0)
+        write_item(4, 'Trading losses brought forward claimed against profits', trading_losses_brought_forward_claimed)
+        net_trading_and_professional_profits = item_3 + trading_losses_brought_forward_claimed
+        write_item(5, 'Net trading and professional profits', net_trading_and_professional_profits)
+        write_item(21, 'Profits before deductions and other reliefs', net_trading_and_professional_profits)
+        write_item(37, 'Profits chargeable to corporation tax', net_trading_and_professional_profits)
         write_item(42, 'Claiming staring rate or small companies rate on any part of the profits', 'X')
         write_item(43, 'Financial Year', rep.prior_year)
         write_item(44, 'Amount of profit', coa.profit_and_loss_account)
