@@ -766,8 +766,6 @@ class FYCT600_Calcs(ExcelReportPage):
             tax_in_year = p(0)
         else:
             tax_in_year = corporation_tax
-        assert tax_in_year ==  tax_in_year_calc, 'Tax in year ({}) = {} but calculated as {}'.format(
-            rep.year, tax_in_year, tax_in_year_calc)
         write_item(46, 'Tax in year', tax_in_year)
         write_item(63, 'Corporation tax', tax_in_year)
         # TODO need to extract out marginal relief calculation
