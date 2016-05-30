@@ -744,11 +744,12 @@ class FYCT600_Calcs(ExcelReportPage):
             item_122 = p(0)
             # Write out profit calculation
             write('Source:', 'Profit and loss account')
-            pnl_1 = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
-            write('(Loss(/Profit on ordinary activities before taxtaion', pnl_1)
+            pnl_1 = _calc_block_sum(xlb, rep, coa.PBT)[0][0]*-1
+            write('3_a Profit on ordinary activities before taxtaion', pnl_1)
             depreciation = _calc_block_sum(xlb, rep, coa.depreciation_costs)[0][0]
-            write('Add back depreciation', depreciation)
+            write('3_b add back depreciation', depreciation)
             pnl_2 = pnl_1 + depreciation
+            write('3 = 3_a + 3_b Trading profit', pnl_2)
         write_item(3, 'Trading and professional profits', item_3, sign=-1)
         # Calc Trading losses brought forward claimed against profits
         if pnl < 0:  # Made a profit
@@ -791,10 +792,11 @@ class FYCT600_Calcs(ExcelReportPage):
             # Write out Losss calculation
             write('Source:', 'Profit and loss account')
             pnl_1 = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
-            write('(Loss(/Profit on ordinary activities before taxtaion', pnl_1)
+            write('122_a Loss on ordinary activities before taxation', pnl_1)
             depreciation = _calc_block_sum(xlb, rep, coa.depreciation_costs)[0][0]
-            write('Add back depreciation', depreciation)
+            write('122_b Subtract depreciation', depreciation)
             pnl_2 = pnl_1 + depreciation
+            write('122 = 122_a - 122_b Trading losses', pnl_2)
         write_item(122, 'Trading losses', item_122)
         xlb.line_number += 1
         write('Internal Version checking','')
