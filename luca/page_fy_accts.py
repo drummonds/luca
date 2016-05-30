@@ -732,6 +732,7 @@ class FYCT600_Calcs(ExcelReportPage):
         write('Return for period from:', rep.full_year_start_string)
         write('Return for period to:', rep.full_datestring)
         xlb.line_number += 1
+        write('Source:', 'Profit and loss account')
         write_item(1, 'Total Turnover', coa.sales, sign=-1)
         # next item is cardinal and needs to be calculated.  If there is a loss if a loss it is zero
         pnl = _calc_block_sum(xlb, rep, coa.EBITDA)[0][0]
@@ -741,6 +742,13 @@ class FYCT600_Calcs(ExcelReportPage):
         else:
             item_3 = pnl
             item_122 = p(0)
+            # Write out profit calculation
+            write('Source:', 'Profit and loss account')
+            pnl_1 = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
+            write('(Loss(/Profit on ordinary activities before taxtaion', pnl_1)
+            depreciation = _calc_block_sum(xlb, rep, coa.depreciation_costs)[0][0]
+            write('Add back depreciation', depreciation)
+            pnl_2 = pnl_1 + depreciation
         write_item(3, 'Trading and professional profits', item_3, sign=-1)
         # Calc Trading losses brought forward claimed against profits
         if pnl < 0:  # Made a profit
@@ -775,10 +783,18 @@ class FYCT600_Calcs(ExcelReportPage):
         write_item(65, 'Corporation tax net of marginal relief', tax_in_year)
         write_item(70, 'Corporation tax chargeable', tax_in_year)
         write_item(86, 'Tax Payable - self assessment of tax payable', tax_in_year)
-        write_item(90, 'Tax already paid', 'Todo')  # TODO add code for the 109.39
+        write_item(90, 'Tax already paid', 0)  # TODO add code for the 109.39
         write_item(91, 'Tax outstanding', tax_in_year)
         write_item(172, 'Anual investment allowance', coa.annual_investment_allowance)  # Purchase
         write_item(107, 'Machinery and plant main pool', coa.machinery_and_plant_main_pool)
+        if pnl > p(0):  # Loss
+            # Write out Losss calculation
+            write('Source:', 'Profit and loss account')
+            pnl_1 = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
+            write('(Loss(/Profit on ordinary activities before taxtaion', pnl_1)
+            depreciation = _calc_block_sum(xlb, rep, coa.depreciation_costs)[0][0]
+            write('Add back depreciation', depreciation)
+            pnl_2 = pnl_1 + depreciation
         write_item(122, 'Trading losses', item_122)
         xlb.line_number += 1
         write('Internal Version checking','')
