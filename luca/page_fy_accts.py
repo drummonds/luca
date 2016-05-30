@@ -737,8 +737,10 @@ class FYCT600_Calcs(ExcelReportPage):
         pnl = _calc_block_sum(xlb, rep, coa.PBT)[0][0]
         if pnl > p(0):  # Loss
             item_3 = p(0)
+            item_122 = pnl
         else:
             item_3 = pnl
+            item_122 = p(0)
         write_item(3, 'Trading and professional profits', item_3, sign=-1)
         # Calc Trading losses brought forward claimed against profits
         if pnl < 0:  # Made a profit
@@ -775,8 +777,9 @@ class FYCT600_Calcs(ExcelReportPage):
         write_item(86, 'Tax Payable - self assessment of tax payable', tax_in_year)
         write_item(90, 'Tax already paid', 'Todo')  # TODO add code for the 109.39
         write_item(91, 'Tax outstanding', tax_in_year)
-        write_item(172, 'Anual investment allowance', 'Todo')  # Purchase
-        write_item(107, 'Machinery and plant main pool', coa.fixed_assets)
+        write_item(172, 'Anual investment allowance', coa.annual_investment_allowance)  # Purchase
+        write_item(107, 'Machinery and plant main pool', coa.machinery_and_plant_main_pool)
+        write_item(122, 'Trading losses', item_122)
         xlb.line_number += 1
         write('Internal Version checking','')
         write('Luca software version', '{}'.format(version))

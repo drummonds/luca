@@ -7,7 +7,7 @@ from .coa_sqlite import chart_of_accounts_from_db
 from .trial_balance_conversion import TrialBalanceConversion
 
 DRUMMONDS_TO_FY_SUMMARY = {
-    10: (100, 102, 103, ),  # Tangible fixed assets
+    10: (100, 102, 103, 150, 151, 162, 163 ),  # Tangible fixed assets
     11: (1100, ),  # Debtors
     12: (1200, 1205, 1250, 7205),  # Cash at bank and in hand
     20: (2100, 2200),  # Creditors: Amounts falling due within one year
@@ -28,7 +28,7 @@ DRUMMONDS_TO_FY_SUMMARY = {
     }
 
 DRUMMONDS_TO_FY_DETAIL = {
-    100: (100, ),  # Tangible fixed assets
+    100: (100, 150, 151, 162, 163 ),  # Tangible fixed assets
     102: (102, ),  # Office Equipment cost
     103: (103, ),  # Office Equipment depreciation
     110: (1100, ),  # Debtors
@@ -239,6 +239,8 @@ class CoreDrummonds(Core):
         coa.fixed_assets = [10]
         coa.office_equipment_cost = [102]
         coa.office_equipment_depreciation = [103]
+        coa.annual_investment_allowance = [150]
+        coa.machinery_and_plant_main_pool = [162]
         coa.cash_at_bank = [1200, 1205, 1250]
         coa.current_asset = [1200, 1205, 1250]
         coa.debtors = [1100]
