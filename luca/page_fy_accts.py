@@ -646,7 +646,7 @@ class FYNotes(ExcelReportPage):
         ws.write(col(0), 'Ordinary Shares of £1 each', xlb.left_fmt)
         called_up_share_capital = xlb.sum(coa.called_up_capital, sign = -1)
         # Todo need to find a place for the share capital
-        ws.write(col(1), 2, cell_fmt)
+        ws.write(col(1), 1000, cell_fmt)
         ws.write(col(3), called_up_share_capital[0], cell_fmt)
         ws.write(col(5), 2, cell_fmt)
         ws.write(col(7), called_up_share_capital[1], cell_fmt)
