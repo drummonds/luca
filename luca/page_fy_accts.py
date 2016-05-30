@@ -795,7 +795,7 @@ class FYCT600_Calcs(ExcelReportPage):
             write('122_a Loss on ordinary activities before taxation', pnl_1)
             depreciation = _calc_block_sum(xlb, rep, coa.depreciation_costs)[0][0]
             write('122_b Subtract depreciation', depreciation)
-            pnl_2 = pnl_1 + depreciation
+            pnl_2 = pnl_1 - depreciation
             write('122 = 122_a - 122_b Trading losses', pnl_2)
         write_item(122, 'Trading losses', item_122)
         xlb.line_number += 1
