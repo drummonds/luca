@@ -1,4 +1,4 @@
-DELETE FROM chart_of_accounts WHERE chart='SAGE'
+DELETE FROM chart_of_accounts WHERE chart='SAGE';
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 8435, 'Admin Travel', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 8414, 'Repairs/Maint/Bldgs', 'Expense');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 8410, 'Admin Rent & Rates', 'Expense');
@@ -48,7 +48,6 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1204
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1200, 'Bank Current Account', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2100, 'Creditors Control Account', 'Liability');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2125, 'Profit & Loss Prior Years', 'Equity');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2108, 'VAT', 'Liability');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2103, 'I. N. Rankin Oil Ltd', 'Liability');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 10, 'Fixed Assets', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2107, 'PAYE & NI', 'Liability');
@@ -58,8 +57,11 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1001
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2120, 'Share Capital', 'Equity');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1203, 'Bank Euro A/c', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2104, 'Gavin Rankin/ D W Trustees', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2108, 'Accumulated Depreciation Provision', 'Liability');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2109, 'Accruals & Prepayments', 'Liability');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2110, 'Accumulated Depreciation Provision', 'Liability');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2110, 'Prepayments', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2111, 'Motor Prepayments', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2112, 'Prepayments', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 20, 'Fixed Assets 1', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 21, 'Fixed Assets 1 Depreciation', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 30, 'Fixed Assets 2', 'Asset');
@@ -87,7 +89,8 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2204
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2210, 'Unknown 26', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2211, 'Unknown 27', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 8102, 'Unknown 28', 'Asset');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2220, 'Unknown 29', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 2220, 'Unknown 58', 'Asset');
+INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 4200, 'Unknown 59', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 7604, 'Unknown 30', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1205, 'Unknown 40', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SAGE', 1207, 'Unknown 41', 'Asset');

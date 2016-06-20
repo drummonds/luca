@@ -60,5 +60,3 @@ INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 21
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 1203, 'Bank Euro A/c', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 2104, 'Gavin Rankin/ D W Trustees', 'Asset');
 INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 2109, 'Accruals & Prepayments', 'Liability');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 2110, 'Accumulated Depreciation Provision', 'Liability');
-INSERT INTO chart_of_accounts (chart, code, name, category) VALUES ('SLF-MA', 2111, 'Motor Accruals & Prepayments', 'Liability');
