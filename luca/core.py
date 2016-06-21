@@ -361,8 +361,9 @@ class CoreSlumberfleece(Core):
         #coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200] # TODO add 9100 to 9400
         #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
         #coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        coa.retained_profit = coa.retained_earnings = coa.EBITDA  # TODO very temporary work around
         #coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
-        #coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
+        coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
 
     def __setup_sage_chart_of_accounts(self):
         """Almost identical to SLF-MA"""
@@ -394,6 +395,7 @@ class CoreSlumberfleece(Core):
         #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
         #coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
         #coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
-        #coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
+        coa.retained_profit = coa.retained_earnings = coa.EBITDA  # TODO Very temporary work around
+        coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
 
 
