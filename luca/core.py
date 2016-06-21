@@ -339,7 +339,7 @@ class CoreSlumberfleece(Core):
         coa.company_number = '123'
         # balance sheet reports
         coa.fixed_asset = [10]
-        coa.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 2111, 2112, 1200, 1202, 1203, 1204]
+        coa.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
         coa.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110]
         coa.long_term_liabilities = [2103]
         coa.owners_equity = [2120, 2125, 2126]
@@ -371,7 +371,7 @@ class CoreSlumberfleece(Core):
         coa.company_number = '123'
         # balance sheet reports
         coa.fixed_asset = [10]
-        coa.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 2111, 2112, 1200, 1202, 1203, 1204]
+        coa.current_asset = [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204]
         coa.short_term_liabilities = [2100, 2106, 2107, 2108, 2109, 2110]
         coa.long_term_liabilities = [2103]
         coa.owners_equity = [3000, 3210, 3200]

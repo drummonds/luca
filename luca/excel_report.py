@@ -266,7 +266,7 @@ class ExcelManagementReport():
         owners_equity = zero.copy()
         self.line_number = 4
         self.write_bs_block(ws, fixed_assets, [10], 'FIXED ASSETS')
-        self.write_bs_block(ws, current_assets, [1001, 1100, 1102, 1115, 1103, 2105, 2104, 2111, 2112, 1200, 1202, 1203, 1204],
+        self.write_bs_block(ws, current_assets, [1001, 1100, 1102, 1115, 1103, 2105, 2104, 1200, 1202, 1203, 1204],
                             'CURRENT ASSETS', indent=-1)
         self.write_bs_block(ws, short_term_liabilities, [2100, 2106, 2107, 2108, 2109, 2110],
                             'CREDITORS PAYABLE WITHIN 1 YEAR', sign=-1, indent=-1)
