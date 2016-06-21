@@ -358,11 +358,11 @@ class CoreSlumberfleece(Core):
         coa.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
-        coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
-        coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
-        coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
-        coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
-        coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
+        #coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200] # TODO add 9100 to 9400
+        #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        #coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        #coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
+        #coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
 
     def __setup_sage_chart_of_accounts(self):
         """Almost identical to SLF-MA"""
@@ -390,10 +390,10 @@ class CoreSlumberfleece(Core):
         coa.selling_costs = [4905, 6100, 6200, 6201, 4009]
         coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
-        coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
-        coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
-        coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
-        coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
-        coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
+        #coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
+        #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
+        #coa.PAT = coa.EAT = coa.PBT + [9400]  # Earnings After Tax/ Net Profit After Tax equal sales revenue
+        #coa.retained_profit = coa.retained_earnings = coa.PAT + [9600]  # Earnings After Tax/ Net Profit After Tax
+        #coa.add_virtual_nominal_code(coa.profit_and_loss_account, coa.retained_profit)
 
 
