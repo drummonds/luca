@@ -356,7 +356,7 @@ class CoreSlumberfleece(Core):
                            8433, 8408, 8410, 8414, 8420, 8424, 8426, 8430, 8435, 8440]
         coa.selling_costs = [4905, 6100, 6200, 6201, 4009]
         coa.optional_accounts = [5001]  # These nominal codes should only be present in the report if non zero
-        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >3999 and nc < 8000]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
         #coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200] # TODO add 9100 to 9400
         #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
@@ -389,7 +389,7 @@ class CoreSlumberfleece(Core):
         coa.admin_costs = [7020, 8100, 8200, 8204, 8300, 7906, 8310, 8400, 8402, 8405, 8201,
                            8433, 8408, 8410, 8414, 8420, 8424, 8426, 8430, 8435, 8440]
         coa.selling_costs = [4905, 6100, 6200, 6201, 4009]
-        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >4999 and nc < 8000]
+        coa.gross_profit = [nc for nc, v in coa.dict.items() if nc >3999 and nc < 8000]
         coa.EBITDA = coa.gross_profit + [nc for nc, v in coa.dict.items() if nc >=8000 and nc < 9000]
         #coa.PBIT = coa.EBIT = coa.EBITDA + [9100, 9200]
         #coa.PBT = coa.EBT = coa.PBIT + [9300]  # Earnings Before Taxes (EBT)/ Net Profit Before Tax equals sales
