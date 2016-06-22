@@ -100,8 +100,10 @@ class JournalEntry:
         """Use standard square bracket notation to get data from journal entry"""
         try:
             sum = 0
+            if isinstance(nominal_code, str):  #  Allow string eg tb['32'
+                nominal_code = int(nominal_code)
             for i in nominal_code:
-                sum += self[i]
+                sum += self[int(i)]
             return sum
         except TypeError:
             try:

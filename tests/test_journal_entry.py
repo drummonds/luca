@@ -40,7 +40,6 @@ class TestTB(unittest.TestCase):
         tb_closed = tb.close_period()
         assert tb[32] == p(50)
 
-
     def test_trial_balance_add(self):
         """Try out the predefined type"""
         coa = ChartOfAccounts('Test')
@@ -53,3 +52,20 @@ class TestTB(unittest.TestCase):
         assert je2.sum() == 0
         assert len(je2.chart_of_accounts) == 18
         assert je2[1200]  == p(200)
+
+    def test_trial_balance_get(self):
+        """Try out the predefined type"""
+        coa = ChartOfAccounts('Test')
+        coa.add_dict({81: 'Extra Admin Expenses'})
+        tb = TrialBalance(coa)
+        tb.add_dict({12:50, 31:-100, 81:50})
+        assert len(tb) == 3
+        assert tb.is_valid()
+        # Test direct access
+        assert tb[12] == p(50)
+        # Test using a string instead of an integer
+        assert tb['32'] == p(50)
+        assert tb['0032'] == p(50)
+        # Test list access
+        assert tb[[12, 31]] == p(-50)
+
