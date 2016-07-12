@@ -80,12 +80,18 @@ class JournalEntry:
         #  self.dict = {**self.dict, **new_dict}
         # but want every value to be a decimal version
         for k, v in iter(new_dict.items()):
-            self.dict[k] = p(v)
+            try:
+                self.dict[k] = p(v) + self.dict[k]
+            except KeyError:
+                self.dict[k] = p(v)
 
     def add_series(self, new_series):
-        #  Assume series has
+        #  Pandas series still used iteritems
         for k, v in new_series.iteritems():
-            self.dict[k] = p(v)
+            try:
+                self.dict[k] = p(v) + self.dict[k]
+            except KeyError:
+                self.dict[k] = p(v)
 
     def sum(self):
         result = p(0)

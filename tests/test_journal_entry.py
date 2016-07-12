@@ -1,3 +1,4 @@
+import pandas as pd
 import unittest
 
 from luca import ChartOfAccounts, JournalEntry, TrialBalance, p, LucaError
@@ -68,4 +69,57 @@ class TestTB(unittest.TestCase):
         assert tb['0032'] == p(50)
         # Test list access
         assert tb[[12, 31]] == p(-50)
+
+
+    def test_add_dict_disjoint(self):
+        """Test adding dictionary.  Test adding """
+        coa = ChartOfAccounts('Test')
+        coa.add_dict({1200: 'Bank', 2120: 'Share Capital'})
+        je = JournalEntry(coa)
+        je.add_dict({1200: 100, 2120: -100})
+        je.add_dict({1400: 100, 2140: -100})
+        assert len(je) == 4
+        assert je.is_valid()
+        assert je.sum() == 0
+        assert je[1200] == p(100)
+        assert je[1400] == p(100)
+
+
+    def test_add_dict_sum(self):
+        """Test adding dictionary.  Test adding """
+        coa = ChartOfAccounts('Test')
+        coa.add_dict({1200: 'Bank', 2120: 'Share Capital'})
+        je = JournalEntry(coa)
+        je.add_dict({1200: 100, 2120: -100})
+        je.add_dict({1200: 150, 2120: -150})
+        assert len(je) == 2
+        assert je.is_valid()
+        assert je.sum() == 0
+        assert je[1200] == p(250)
+
+    def test_add_series_disjoint(self):
+        """Test adding dictionary.  Test adding """
+        coa = ChartOfAccounts('Test')
+        coa.add_dict({1200: 'Bank', 2120: 'Share Capital'})
+        je = JournalEntry(coa)
+        je.add_series(pd.Series({1200: 100, 2120: -100}))
+        je.add_series(pd.Series({1400: 100, 2140: -100}))
+        assert len(je) == 4
+        assert je.is_valid()
+        assert je.sum() == 0
+        assert je[1200] == p(100)
+        assert je[1400] == p(100)
+
+
+    def test_add_series_sum(self):
+        """Test adding dictionary.  Test adding """
+        coa = ChartOfAccounts('Test')
+        coa.add_dict({1200: 'Bank', 2120: 'Share Capital'})
+        je = JournalEntry(coa)
+        je.add_series(pd.Series({1200: 100, 2120: -100}))
+        je.add_series(pd.Series({1200: 150, 2120: -150}))
+        assert len(je) == 2
+        assert je.is_valid()
+        assert je.sum() == 0
+        assert je[1200] == p(250)
 
