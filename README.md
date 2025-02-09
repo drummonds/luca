@@ -1,35 +1,38 @@
 # luca
 
-Python accounting tools for transactions and trial balance manipulation.
+This is a plain text go library to manipulate and record accounting journal entries. It
+inherits ideas from [Luca Pacioli translated by Geijsbeek][pacioli], [Martin Blais' Beancount][beancount] and [Kobetic's coin][coin].
 
-The first version of this was quite different using a SQLite database.
+[beancount](https://beancount.github.io/docs/beancount_language_syntax.html#accounts)
+[coin](https://github.com/drummonds/luca/internal)
+[pacioli](https://archive.org/details/ancientdoubleent00geijuoft)
 
-I am relooking at an abtract representation of accounts and transactions based on plain text accounting.
+## Digital representations
 
-Using beancount as a reference there are a number of changes:
+There will be three representations of the data which will be supported:
+- A plain text account format (storage only)
+- An in memory version for fast transformation
+- A database format for larger scale
 
-1. Support from microsecond based ordering of events
-2. Aiming to support small numbers of transactions eg up to 10,000
-3. Storage an conversion to a text/json
-   a) the text format will not have an ordering
-4. Support for bitemporal functions which will be used to support a knowledge date
-5. Suport fo digital twins for comparing two similar list of transactions perhaps with one generated dynamically
+### Plain text form .luca
 
-The exploration will be done in ipython notebooks in directory notes
+This is a storage format and will be transformed to the in memory or database
+form for conversion.
 
-# Introduction
+Using Beancount as a reference there are a number of changes:
 
-My aim here is use plain text accounting to create a simple python model for modelling accounting. This will be used to answer such questions as what is the balance of an account at time x
+1. Support from nanosecond based ordering of events
+2. Support for bitemporal functions which will be used to support a knowledge date
+3. Suport for digital twins for comparing two similar journal books.
 
-A great collection of reference material on plain text accounting is here https://plaintextaccounting.org/ and I particulary want to highlight Martin Kleppmann https://martin.kleppmann.com/2011/03/07/accounting-for-computer-scientists.html
+### In memory form
 
-## Starting
+Operations will be defined on this:
 
-```ledger
-2022-07-23T23:59:58 * "Accrue interest"
-  Expense:PnL    -0.12345
-  Liabilities:Client
-```
+- Read from text and Db forms
+- creating balances at time X knowledge date y
+- reporting data eg P&L for a period
+
 
 # EBNF definition of text format
 
@@ -38,8 +41,6 @@ Using the language of Martin Blais Beancount https://beancount.github.io/docs/be
 Current it is a lot simplified:
 
 - no option entries
-- no commodities
-- no currencies
 - no balance postings
 
 I have tried to document it use W3C EBNF description https://www.w3.org/TR/xml/#sec-notation
@@ -48,22 +49,27 @@ I have tried to document it use W3C EBNF description https://www.w3.org/TR/xml/#
 
 journal ::= entry*
 entry ::= comment | transaction
-comment ::= WS* ";" AllChar* EOL
+comment ::= WS* ";" AllChar* 
 transaction ::= header postings
 postings ::= posting posting posting*
+commodity ::= commodity_id commodity-directives
 
-directive ::= value-date {^knowledge-date} {* transaction | 'open' open-directive | 'balance' balance-directive}
-blank-line ::= \n;
-header ::= value white_space id  \n;
+directive ::= value-date {^knowledge-date} {* transaction | 'open' open-directive | 
+    'balance' balance-directive | 'commodity' commodity}
+blank-line ::= EOL
+header ::= value white_space id  EOL
 value-date ::= (full-date | date-time);
 knowledge-date ::= (full-date | date-time);
 white-space ::= ? white space characters ? ;
-posting = account { {asset-class};
+posting = account  {asset-class};
 balance-posting = account;
 id = string;
 comment = string;
 string ::= '"' AllChar* '"'
 
+commodity-directives ::= commodity-name-line sub-unit-line {description-line}
+commodity-name ::= white-space 'name' name
+sub-unit ::= white-space 'sub-unit' integer
 
 account = (`Assets` | `Liabilities` | `Equity` | `Income` | 'Expenses') : name
 name = TEXT | TEXT : name
@@ -106,32 +112,19 @@ EOL ::=  #xD #xA| #xA
 Notes:
 For directives apart from transactions full_date is assumed at the start of the day, and for transactions one microsecond before the end of the day.
 
-The resolution of datetime is assumed to be 1 microsecond
-
-## Signs
-
-The accounting equation is:
-
-$$ Assets = Liabilities + Equity + Income − Expenses$$
-
-Where:
-
-$$Equity = ContributedCapital - Dividends$$
-
-In a computer system we usually use +ve and -ve to as opposed to Credit and Debit which are the traditional accounting forms of increasing and decreasing then the equation is:
-
-$$ Assets - Liabilities - Equity - Income + Expenses = 0$$
-
-So this give you:
-
-| Account Types | Increase |
-| ------------- | -------- |
-| Assets        | +        |
-| Liabilities   | -        |
-| Equity        | -        |
-| Income        | -        |
-| Expenses      | +        |
+The resolution of datetime is assumed to be 1 microsecond.  Note that different versions might
+implement it with different resolutions to squeeze the amount of storage. Eg the default
+datetime uses Unix Epoch timestamps
 
 ## References
 
 date time format comes from https://www.rfc-editor.org/rfc/rfc3339
+
+## colophon
+
+This is third version of luca.  The first was a python sqlite implementation, the second a
+more generic Python version and this a go implmention of a plain text accounting format,
+
+I have read Luca Paciolo's book in translation and think it is admirably clear. I used to 
+worry that he was taking credit from Benedeto Cotrugli who wrote earlier and was ppublished
+later.  However Paciolo's book is so clear that I am happy to call this luca.
