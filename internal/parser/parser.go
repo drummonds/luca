@@ -125,7 +125,7 @@ func PreprocessIndentation(input string) (string, error) {
 type Entry struct {
 	Date        string        `parser:"@Date"`
 	Generic     *GenericEntry `parser:"@@?"`
-	Transaction *Transaction  //  `parser:"| @@?"`
+	Transaction *Transaction  //`parser:"| @@?)"`
 }
 
 // A generic format to illustrate the meta structure of an entry
@@ -144,7 +144,7 @@ type Transaction struct {
 
 // Posting represents an account posting
 type SubDirective struct {
-	Text string `parser:"@Ident"`
+	Text string `parser:"@String"`
 }
 
 // Posting represents an account posting

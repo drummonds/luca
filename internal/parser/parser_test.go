@@ -110,7 +110,7 @@ func TestParse(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "basic generic entry",
+			name: "generic entry with subdirective",
 			input: `2024-01-01 generic "Grocery shopping"
     "assets:bank -50.00"`, // Needs to be a single string
 			want: &Document{
@@ -119,9 +119,9 @@ func TestParse(t *testing.T) {
 						Date: "2024-01-01",
 						Generic: &GenericEntry{
 							Directive:   "generic",
-							Description: `"Grocery shopping"`,
+							Description: "Grocery shopping",
 							SubDirectives: []SubDirective{
-								{Text: "assets:bank-50.00"},
+								{Text: "assets:bank -50.00"},
 							},
 						},
 					},
@@ -152,7 +152,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		if i > 2 {
+		if i > 3 { //} && i != 2 {
 			continue
 		}
 		t.Run(tt.name, func(t *testing.T) {
