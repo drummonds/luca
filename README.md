@@ -47,14 +47,15 @@ I have tried to document it use W3C EBNF description https://www.w3.org/TR/xml/#
 
 ```ebnf
 
+folder ::= journal*
 journal ::= entry*
-entry ::= comment | transaction
-comment ::= WS* ";" AllChar* 
+entry ::= comment*  directive
+comment ::= WS* "//" AllChar* 
 transaction ::= header postings
 postings ::= posting posting posting*
 commodity ::= commodity_id commodity-directives
 
-directive ::= value-date {^knowledge-date} {* transaction | 'open' open-directive | 
+directive ::= value-date {"^"knowledge-date} {"*" transaction | 'open' open-directive | 
     'balance' balance-directive | 'commodity' commodity}
 blank-line ::= EOL
 header ::= value white_space id  EOL
@@ -111,10 +112,62 @@ EOL ::=  #xD #xA| #xA
 
 Notes:
 For directives apart from transactions full_date is assumed at the start of the day, and for transactions one microsecond before the end of the day.
+Directives names are lower case.
 
 The resolution of datetime is assumed to be 1 microsecond.  Note that different versions might
 implement it with different resolutions to squeeze the amount of storage. Eg the default
 datetime uses Unix Epoch timestamps
+
+## Implmentation details
+
+Pacioli has 4 types of records which are used to hold the accounting data:
+
+- Inventory of goods and money
+- Day notebooks, voluminous contemporaneous diaries
+- Journal entries.  In chonological order with notes (cross referenced to the ledger)
+- Ledgers Summary of activity by account
+
+With a computerf we are going to focus on the journal.  The cross referencing and ledger balances can
+be produced by computation.
+
+- Commodity
+- Account
+- Transaction
+- Balance
+
+The core concept is to take Pacioli's books and conentate on the journal entries.  In order for this
+to be complete you need to be able to extne
+
+There are a number of domains:
+
+- parsing
+    - Serialisation to and from text
+- Core manipulation
+- Balance query functions
+
+
+### Hierarchy of implementation
+
+At the base level you have some helper functions:
+
+#### Serialisation
+
+- internal/datetime:  Support LucaDateTimeString
+- directiveHeader: Generic directive header
+
+#### Core
+
+- directive: interface
+- journal: list of entries
+- directives
+    - commodity
+    - account
+    - transaction
+    - balance
+
+# Ideas
+Segmenting by time period.  This allows you to deal with all the data for a period in memory 
+as well as handling longer time periods.
 
 ## References
 

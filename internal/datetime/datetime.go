@@ -2,6 +2,7 @@ package datetime
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,4 +40,21 @@ func LucaDateTimeString(t time.Time) string {
 		return t.Format(time.RFC3339)
 	}
 	return t.Format(time.RFC3339Nano)
+}
+
+func ParseLucaDateTime(s string) (time.Time, error) {
+	l := len(s)
+	switch {
+	case l <= 4:
+		i, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("invalid year %s, %+v", s, err)
+		}
+		return time.Date(int(i), 1, 1, 0, 0, 0, 0, time.UTC), nil
+	case l == 10:
+		return time.Parse(time.DateOnly, s)
+	case l == 19:
+		return time.Parse(time.RFC3339, s)
+	}
+	return time.Parse(time.RFC3339Nano, s)
 }

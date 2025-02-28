@@ -12,21 +12,19 @@ var (
 	CommoditiesBySymbol = map[string]*Commodity{}
 )
 
+// Should implement all methods of the Directive interface
+// Note this is slightly unsatisfactory for a pound as the sub unit changes twice between
+// 1961 and 1971 if this is used as a mthod of storage.
 type Commodity struct {
-	Comments       []string //Whole line comments
-	ValueDate      time.Time
-	KnowledgeDate  *time.Time //Optional
-	Id             string     // eg GBP
-	IdComment      string
-	Name           string // eg Pound sterling
-	NameComment    string
-	SubUnit        int64 // how many decimal places to use
+	DirectiveHeader
+	Comments           []string //Whole line comments
+	Id                 string   // eg GBP
+	IdComment          string
+	Description        string // eg Pound sterling
+	DescriptionComment string
+	SubUnit            int64 // How many of smallest unit makes up the unit
+	// so for pre 1961 sterling it is 960 farthings or groats
 	SubUnitComment string
-}
-
-// Convert commodity to a string
-func (c *Commodity) Directive() string {
-	return "commodity"
 }
 
 func (c *Commodity) GetIdComment() string {
@@ -51,23 +49,40 @@ func (c *Commodity) String() string {
 	return c.Id
 }
 
+func (c *Commodity) NumArguments() (count int) {
+	count = 0
+	if c.Name != "" {
+		count++
+	}
+	if c.SubUnit != 1 {
+		count++
+	}
+	return
+}
+
 /*
-;
+//
 892-01-01 commodity GBP
 
 	name "Pound sterling"
 	sub-unit 100
 */
 func (c *Commodity) ToLines() []string {
-	lines := DirectiveToLines(c)
+	lines := make([]string, len(c.Comments)+1+c.NumArguments())
+	for _, comment := range c.Comments {
+		lines = append(lines, "// "+comment)
+	}
+	// Add the directive line
+	lines = append(lines, DirectiveToLine(c))
+	// Add argument line
 	s := fmt.Sprintf("  name %s", c.Name)
 	if c.NameComment != "" {
-		s = " ;" + c.NameComment
+		s = " // " + c.NameComment
 	}
 	lines = append(lines, s+"\n")
 	s = fmt.Sprintf("  sub-unit %d", c.SubUnit)
 	if c.SubUnitComment != "" {
-		s = " ;" + c.SubUnitComment
+		s = " // " + c.SubUnitComment
 	}
 	lines = append(lines, s+"\n")
 	return lines
