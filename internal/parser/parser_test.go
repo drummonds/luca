@@ -60,104 +60,26 @@ DEDENT`,
 	}
 }
 
-func TestParse(t *testing.T) {
-	tests := []struct {
-		name    string
-		input   string
-		want    *Document
-		wantErr bool
-	}{
-		{
-			name:  "empty entry",
-			input: ``,
-			want: &Document{
-				Entries: nil,
-			},
-			wantErr: false,
-		},
-		{
-			name:  "simplest generic entry",
-			input: `2024-01-01 generic`,
-			want: &Document{
-				Entries: []*Entry{
-					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							SubDirectives: nil,
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-		{
-			name:  "simplest generic entry with description",
-			input: `2024-01-01 generic "Grocery shopping"`,
-			want: &Document{
-				Entries: []*Entry{
-					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "Grocery shopping",
-							SubDirectives: nil,
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-		{
-			name: "generic entry with subdirective",
-			input: `2024-01-01 generic "Grocery shopping"
-    "assets:bank -50.00"`, // Needs to be a single string
-			want: &Document{
-				Entries: []*Entry{
-					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:   "generic",
-							Description: "Grocery shopping",
-							SubDirectives: []SubDirective{
-								{Text: "assets:bank -50.00"},
-							},
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-		{
-			name: "basic transaction",
-			input: `2024-01-01 txn "Coffee shop"
-    "food  3.50 -> assets:cash`,
-			want: &Document{
-				Entries: []*Entry{
-					{
-						Date: "2024-01-01",
-						Transaction: &Transaction{
-							Directive:   "txn",
-							Description: `"Coffee shop"`,
-							Movements: []Movement{
-								{From: "expenses:food", To: "assets:cash", Amount: "3.50"},
-							},
-						},
-					},
-				},
-			},
-			wantErr: false,
-		},
-	}
+type ParserTests []struct {
+	name    string
+	input   string
+	want    *Document
+	wantErr bool
+	debug   bool
+}
 
+func AbstractTestParse(t *testing.T, tests ParserTests) {
+	var (
+		got *Document
+		err error
+	)
 	for i, tt := range tests {
-		if i > 3 { //} && i != 2 {
-			continue
-		}
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Parse(tt.input)
-			// got, err := ParseWithDebug(tt.input)
+			if tt.debug {
+				got, err = ParseWithDebug(tt.input)
+			} else {
+				got, err = Parse(tt.input)
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Parse() %d error = %v, wantErr %v", i, err, tt.wantErr)
 				return
@@ -169,7 +91,6 @@ func TestParse(t *testing.T) {
 	}
 }
 
-// documentsEqual compares two Documents for equality
 func documentsEqual(a, b *Document) bool {
 	if len(a.Entries) != len(b.Entries) {
 		return false
@@ -196,7 +117,7 @@ func entriesEqual(a, b *Entry) bool {
 
 	// Compare Transaction entries
 	if a.Transaction != nil && b.Transaction != nil {
-		return transactionsEqual(a.Transaction, b.Transaction)
+		return a.Transaction.Equal(b.Transaction)
 	}
 
 	// One is nil while the other isn't
@@ -208,20 +129,4 @@ func entriesEqual(a, b *Entry) bool {
 	}
 
 	return true
-}
-
-// genericEntriesEqual compares two GenericEntries for equality
-func genericEntriesEqual(a, b *GenericEntry) bool {
-	if a.Directive != b.Directive || a.Description != b.Description {
-		return false
-	}
-	return ArrayEqual(a.SubDirectives, b.SubDirectives)
-}
-
-// transactionsEqual compares two Transactions for equality
-func transactionsEqual(a, b *Transaction) bool {
-	if a.Directive != b.Directive || a.Description != b.Description {
-		return false
-	}
-	return ArrayEqual(a.Movements, b.Movements)
 }

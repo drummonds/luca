@@ -32,12 +32,11 @@ func test(args []string) {
 	testCmd.Parse(args)
 
 	input := `2024-03-20 generic "Grocery shopping"
-    assets:checking    -50.00
-    expenses:food       50.00
+    "assets:checking    -50.00"
+    "expenses:food       50.00"
 
-2024-03-21 "Coffee"
-    assets:cash        -5.00
-    expenses:coffee     5.00
+2024-03-21 txn "Coffee"
+	cash 5.00 -> expenses:coffee
 `
 
 	if _verbose {
@@ -50,21 +49,9 @@ func test(args []string) {
 	}
 
 	// Print the parsed entries
-	for _, entry := range doc.Entries {
-		fmt.Printf("Date: %s\n", entry.Date)
-		if entry.Generic != nil {
-			fmt.Printf("Description: %s\n", entry.Generic.Description)
-			for _, subdirective := range entry.Generic.SubDirectives {
-				fmt.Printf("  %s\n", subdirective.Text)
-			}
-		}
-		if entry.Transaction != nil {
-			fmt.Printf("Description: %s\n", entry.Transaction.Description)
-			for _, subdirective := range entry.Transaction.SubDirectives {
-				fmt.Printf("  %s\n", subdirective.Text)
-			}
-			fmt.Println()
-		}
+	lines := doc.ToLines()
+	for _, line := range lines {
+		fmt.Println(line)
 	}
 }
 

@@ -48,8 +48,9 @@ var tokenLexer = lexer.Must(lexer.New(lexer.Rules{
 		{Name: "String", Pattern: `"[^"]*"`}, // Keep simple string pattern without action
 		// {Name: "StringContent", Pattern: `(?:[^"\\]|\\.)*`},
 		{Name: "Number", Pattern: `[-+]?\d*\.?\d+`},
+		{Name: "Arrow", Pattern: `->|→|⮕|🡒|⇒|⟶|➜|➝|➞|➡|⇨|⇾|⟹`}, // Extended arrow alternatives
 		{Name: "Ident", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*`},
-		{Name: "Account", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*:[a-zA-Z][a-zA-Z0-9_:]*`},
+		// {Name: "Account", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*:[a-zA-Z][a-zA-Z0-9_:]*`},
 		{Name: "Punct", Pattern: `[-[!@#$%^&*()+_={}\|:;"'<,>.?/]|]`},
 		{Name: "Whitespace", Pattern: `[ \t]+`, Action: nil},
 		{Name: "Comment", Pattern: `;[^\n]*`, Action: nil},
@@ -124,39 +125,21 @@ func PreprocessIndentation(input string) (string, error) {
 // Entry in journal
 type Entry struct {
 	Date        string        `parser:"@Date"`
-	Generic     *GenericEntry `parser:"@@?"`
-	Transaction *Transaction  //`parser:"| @@?)"`
+	Transaction *Transaction  `parser:"(@@"`
+	Commodity   *Commodity    `parser:"| @@"`
+	Generic     *GenericEntry `parser:"| @@)"`
 }
 
-// A generic format to illustrate the meta structure of an entry
-type GenericEntry struct {
-	Directive     string         `parser:" @'generic' "`
-	Description   string         `parser:" (@String)?"`
-	SubDirectives []SubDirective `parser:"('INDENT' @@+ 'DEDENT')?"`
-}
-
-// An accounting transaction
-type Transaction struct {
-	Directive   string     `parser:"@( 'txn' | '*' )"`
-	Description string     `parser:"@String?"`
-	Movements   []Movement `parser:"('INDENT' @@+ 'DEDENT')?"`
-}
-
-// Posting represents an account posting
-type SubDirective struct {
-	Text string `parser:"@String"`
-}
-
-// Posting represents an account posting
-type Movement struct {
-	From   string `parser:"@Account"`
-	Amount string `parser:"('->' | '→' | '⮕' | '🡒')@Number"`
-	To     string `parser:"@Account"`
-}
-
-// Document represents the entire file
-type Document struct {
-	Entries []*Entry `parser:"@@*"`
+func (e Entry) ToStringBuider(sb *strings.Builder) {
+	if e.Transaction != nil {
+		e.Transaction.ToStringBuider(sb)
+	}
+	if e.Commodity != nil {
+		e.Commodity.ToStringBuider(sb)
+	}
+	if e.Generic != nil {
+		e.Generic.ToStringBuider(sb)
+	}
 }
 
 func NewParser() (*participle.Parser[Document], error) {
@@ -248,23 +231,6 @@ func ArrayEqual[T comparable](A, B []T) bool {
 		if A[i] != B[i] {
 			return false
 		}
-	}
-	return true
-}
-
-func (a SubDirective) Equal(b SubDirective) bool {
-	return a.Text == b.Text
-}
-
-func (a Movement) Equal(b Movement) bool {
-	if a.To != b.To {
-		return false
-	}
-	if a.From != b.From {
-		return false
-	}
-	if a.Amount != b.Amount {
-		return false
 	}
 	return true
 }
