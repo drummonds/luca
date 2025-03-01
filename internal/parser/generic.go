@@ -8,6 +8,7 @@ import (
 type GenericEntry struct {
 	Directive     string         `parser:" @'generic' "`
 	Description   string         `parser:" (@String)?"`
+	Comment       string         `parser:"@Comment?"`
 	SubDirectives []SubDirective `parser:"('INDENT' @@+ 'DEDENT')?"`
 }
 

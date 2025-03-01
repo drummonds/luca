@@ -1,7 +1,7 @@
 # luca
 
 This is a plain text go library to manipulate and record accounting journal entries. It
-inherits ideas from [Luca Pacioli translated by Geijsbeek][pacioli], [Martin Blais' Beancount][beancount] and [Kobetic's coin][coin].
+inherits ideas from [Luca Pacioli translated by Geijsbeek][pacioli], [Martin Blais' Beancount][beancount] and a lot from [Kobetic's coin][coin].
 
 [beancount](https://beancount.github.io/docs/beancount_language_syntax.html#accounts)
 [coin](https://github.com/drummonds/luca/internal)
@@ -21,7 +21,7 @@ form for conversion.
 
 Using Beancount as a reference there are a number of changes:
 
-1. Support from nanosecond based ordering of events
+1. Support for nanosecond based ordering of events
 2. Support for bitemporal functions which will be used to support a knowledge date
 3. Suport for digital twins for comparing two similar journal books.
 
@@ -32,6 +32,33 @@ Operations will be defined on this:
 - Read from text and Db forms
 - creating balances at time X knowledge date y
 - reporting data eg P&L for a period
+
+
+## Differences from Coin
+
+- Different dateformats
+- Addition of Knowledge date
+- Uses commodity movements as core item rather than posting entries
+- Uses alecthomas/participle/ as parser rather than own version
+- Seperates Text representation models from core accounts model, Quaderno
+
+## Knowledge date
+
+This is used as the date the book keeper is aware of the information.  you might also refer date as
+"value date" and Knowledge date as "insertion date".  For accountants preparing books of accounts it 
+allows them to say that as of date X we were told the accounts were Y but with new information on date P
+the accounts are now Q.
+
+## Documents and Quaderno
+
+I am going to use quaderno for the complete set of accounts as this is the work that Pacioli used which
+means ledger.  However the meaning of ledger is occupied by the original implmentation and also the 
+crypto usage which is more closely related to journal entries.  So quaderno it is.
+
+Quaderno can also be calculated on different basis eg models which can be much more compact.
+
+The documents are defined as the collection of text files and we can parse into them and out.  The books
+is an internal representation of the accunts which is built from the journals. 
 
 
 # EBNF definition of text format

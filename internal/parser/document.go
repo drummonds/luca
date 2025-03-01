@@ -20,7 +20,5 @@ func (d Document) String() string {
 }
 
 func (d Document) ToLines() []string {
-	sb := strings.Builder{}
-	d.ToStringBuider(&sb)
-	return strings.Split(sb.String(), "\n")
+	return strings.Split(d.String(), "\n")
 }

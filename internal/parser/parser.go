@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
 
 	"github.com/alecthomas/participle/v2"
@@ -45,11 +47,11 @@ var tokenLexer = lexer.Must(lexer.New(lexer.Rules{
 		{Name: "DEDENT", Pattern: `DEDENT`}, // For the synthetic DEDENT token
 		{Name: "Newline", Pattern: `\n+`},   // Handle one or more newlines
 		{Name: "Date", Pattern: `\d{4}[-/]\d{2}[-/]\d{2}`},
+		{Name: "KnowledgeDate", Pattern: `\^\d{4}[-/]\d{2}[-/]\d{2}`},
 		{Name: "String", Pattern: `"[^"]*"`}, // Keep simple string pattern without action
 		{Name: "Number", Pattern: `[-+]?\d*\.?\d+`},
 		{Name: "Arrow", Pattern: `->|→|⮕|🡒|⇒|⟶|➜|➝|➞|➡|⇨|⇾|⟹`}, // Extended arrow alternatives
 		{Name: "Ident", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*`},
-		// {Name: "Punct", Pattern: `[-[!@#$%^&*()+_={}\|:;"'<,>.?/]|]`},
 		{Name: "Whitespace", Pattern: `[ \t]+`, Action: nil},
 		{Name: "Comment", Pattern: `;[^\n]*`, Action: nil},
 	},
@@ -122,11 +124,12 @@ func PreprocessIndentation(input string) (string, error) {
 
 // Entry in journal
 type Entry struct {
-	Comments    []string      `parser:"@Comment*"`
-	Date        string        `parser:"@Date"`
-	Transaction *Transaction  `parser:"(@@"`
-	Commodity   *Commodity    `parser:"| @@"`
-	Generic     *GenericEntry `parser:"| @@)"`
+	Comments      []string      `parser:"@Comment*"`
+	Date          string        `parser:"@Date"`
+	KnowledgeDate string        `parser:"@KnowledgeDate?"`
+	Transaction   *Transaction  `parser:"(@@"`
+	Commodity     *Commodity    `parser:"| @@"`
+	Generic       *GenericEntry `parser:"| @@)"`
 }
 
 func (e Entry) ToStringBuider(sb *strings.Builder) {
@@ -149,22 +152,21 @@ func NewParser() (*participle.Parser[Document], error) {
 		participle.Lexer(tokenLexer),
 		participle.Elide("Comment", "Whitespace", "Newline"),
 		// Add a transformer to remove quotes from strings
+		//^ from KnowledgeDate
+		//; from Comment
 		participle.Map(func(token lexer.Token) (lexer.Token, error) {
-			if token.Type == tokenLexer.Symbols()["String"] && len(token.Value) >= 2 {
+			switch {
+			case token.Type == tokenLexer.Symbols()["String"] && len(token.Value) >= 2:
 				token.Value = token.Value[1 : len(token.Value)-1]
+			case token.Type == tokenLexer.Symbols()["KnowledgeDate"]:
+				token.Value = token.Value[1:len(token.Value)]
+			case token.Type == tokenLexer.Symbols()["Comment"]:
+				token.Value = strings.TrimSpace(token.Value[1:len(token.Value)])
 			}
 			return token, nil
 		}),
 	)
 }
-
-func NewParserWithDebug() (*participle.Parser[Document], error) {
-	return participle.MustBuild[Document](
-		participle.Lexer(tokenLexer),
-		participle.Elide("Comment", "Whitespace", "Newline"),
-		participle.UseLookahead(2),
-	), nil
-} // Add this line for detailed trace output
 
 // Parse takes a string input and returns a parsed Document
 func Parse(input string) (*Document, error) {
@@ -196,20 +198,47 @@ func ParseWithDebug(input string) (*Document, error) {
 		return nil, err
 	}
 	fmt.Println("Tokenenised")
-	tokenEOF := indentLexer.Symbols()["EOF"] // || token.Type == tokenEOF
+	tokenEOF := indentLexer.Symbols()["EOF"]
 	fmt.Println("TokenEOF", tokenEOF)
-	var (
-		token lexer.Token
-	)
+
+	// Create a context with cancellation for handling CTRL+C
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Set up signal handling for CTRL+C
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	defer signal.Stop(signalChan)
+
+	// Start a goroutine to handle the interrupt signal
+	go func() {
+		<-signalChan
+		fmt.Println("\nReceived interrupt signal. Cancelling operation...")
+		cancel()
+	}()
+
+	var token lexer.Token
+
+	// Modified loop with context check
+tokenLoop:
 	for {
-		token, err = tokens.Next()
-		if err == io.EOF {
-			break
+		select {
+		case <-ctx.Done():
+			fmt.Println("Operation cancelled")
+			break tokenLoop
+		default:
+			token, err = tokens.Next()
+			if err == io.EOF {
+				break tokenLoop
+			}
+			if err != nil {
+				return nil, err
+			}
+			if token.Type == tokenEOF {
+				break tokenLoop
+			}
+			fmt.Printf("%+v: |%s|\n", token.Type, token.Value)
 		}
-		if token.Type == tokenEOF {
-			break
-		}
-		fmt.Printf("%+v: |%s|\n", token.Type, token.Value)
 	}
 
 	// Second pass: parse the processed input

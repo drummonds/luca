@@ -40,13 +40,53 @@ func TestGenericParse(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:  "simplest generic entry with knowledge date",
+			input: `2024-01-01 ^2024-01-02 generic`,
+			want: &Document{
+				Entries: []*Entry{
+					{
+						Date:          "2024-01-01",
+						KnowledgeDate: "2024-01-02",
+						Generic: &GenericEntry{
+							Directive:     "generic",
+							Description:   "",
+							SubDirectives: nil,
+						},
+					},
+				},
+			},
+			wantErr: false,
+			debug:   false,
+		},
+		{
+			name:  "simplest generic entry with knowledge date and comment",
+			input: `2024-01-01 ^2024-01-02 generic ; This is a comment`,
+			want: &Document{
+				Entries: []*Entry{
+					{
+						Date:          "2024-01-01",
+						KnowledgeDate: "2024-01-02",
+						Generic: &GenericEntry{
+							Directive:     "generic",
+							Description:   "",
+							Comment:       "This is a comment",
+							SubDirectives: nil,
+						},
+					},
+				},
+			},
+			wantErr: false,
+			debug:   false,
+		},
+		{
 			name: "simplest generic entry with comment",
-			input: `;Generic test with comment
+			input: `
+;Generic test with comment
 2024-01-01 generic`,
 			want: &Document{
 				Entries: []*Entry{
 					{
-						Comments: []string{";Generic test with comment"},
+						Comments: []string{"Generic test with comment"},
 						Date:     "2024-01-01",
 						Generic: &GenericEntry{
 							Directive:     "generic",
@@ -66,7 +106,7 @@ func TestGenericParse(t *testing.T) {
 			want: &Document{
 				Entries: []*Entry{
 					{
-						Comments: []string{";Generic test with comment", "; Second comment"},
+						Comments: []string{"Generic test with comment", "Second comment"},
 						Date:     "2024-01-01",
 						Generic: &GenericEntry{
 							Directive:     "generic",
@@ -97,7 +137,8 @@ func TestGenericParse(t *testing.T) {
 		},
 		{
 			name: "generic entry with subdirective",
-			input: `2024-01-01 generic "Grocery shopping"
+			input: `
+2024-01-01 generic "Grocery shopping"
     "assets:bank -50.00"`, // Needs to be a single string
 			want: &Document{
 				Entries: []*Entry{
