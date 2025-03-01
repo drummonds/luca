@@ -1,4 +1,0 @@
-2022-07-23T23:59:58 * "Accrue interest"
-  Expense:PnL    -0.12345
-  Liabilities:Client
-  
