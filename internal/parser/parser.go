@@ -46,12 +46,10 @@ var tokenLexer = lexer.Must(lexer.New(lexer.Rules{
 		{Name: "Newline", Pattern: `\n+`},   // Handle one or more newlines
 		{Name: "Date", Pattern: `\d{4}[-/]\d{2}[-/]\d{2}`},
 		{Name: "String", Pattern: `"[^"]*"`}, // Keep simple string pattern without action
-		// {Name: "StringContent", Pattern: `(?:[^"\\]|\\.)*`},
 		{Name: "Number", Pattern: `[-+]?\d*\.?\d+`},
 		{Name: "Arrow", Pattern: `->|→|⮕|🡒|⇒|⟶|➜|➝|➞|➡|⇨|⇾|⟹`}, // Extended arrow alternatives
 		{Name: "Ident", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*`},
-		// {Name: "Account", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*:[a-zA-Z][a-zA-Z0-9_:]*`},
-		{Name: "Punct", Pattern: `[-[!@#$%^&*()+_={}\|:;"'<,>.?/]|]`},
+		// {Name: "Punct", Pattern: `[-[!@#$%^&*()+_={}\|:;"'<,>.?/]|]`},
 		{Name: "Whitespace", Pattern: `[ \t]+`, Action: nil},
 		{Name: "Comment", Pattern: `;[^\n]*`, Action: nil},
 	},
@@ -124,6 +122,7 @@ func PreprocessIndentation(input string) (string, error) {
 
 // Entry in journal
 type Entry struct {
+	Comments    []string      `parser:"@Comment*"`
 	Date        string        `parser:"@Date"`
 	Transaction *Transaction  `parser:"(@@"`
 	Commodity   *Commodity    `parser:"| @@"`
@@ -131,6 +130,9 @@ type Entry struct {
 }
 
 func (e Entry) ToStringBuider(sb *strings.Builder) {
+	for _, comment := range e.Comments {
+		sb.WriteString(comment)
+	}
 	if e.Transaction != nil {
 		e.Transaction.ToStringBuider(sb)
 	}
@@ -232,5 +234,53 @@ func ArrayEqual[T comparable](A, B []T) bool {
 			return false
 		}
 	}
+	return true
+}
+
+func documentsEqual(a, b *Document) bool {
+	if len(a.Entries) != len(b.Entries) {
+		return false
+	}
+
+	for i, entry := range a.Entries {
+		if !entriesEqual(entry, b.Entries[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+// entriesEqual compares two Entries for equality
+func entriesEqual(a, b *Entry) bool {
+	if len(a.Comments) != len(b.Comments) {
+		return false
+	}
+	for i, comment := range a.Comments {
+		if comment != b.Comments[i] {
+			return false
+		}
+	}
+	if a.Date != b.Date {
+		return false
+	}
+
+	// Compare Generic entries
+	if a.Generic != nil && b.Generic != nil {
+		return a.Generic.Equal(*b.Generic)
+	}
+
+	// Compare Transaction entries
+	if a.Transaction != nil && b.Transaction != nil {
+		return a.Transaction.Equal(b.Transaction)
+	}
+
+	// One is nil while the other isn't
+	if (a.Generic == nil) != (b.Generic == nil) {
+		return false
+	}
+	if (a.Transaction == nil) != (b.Transaction == nil) {
+		return false
+	}
+
 	return true
 }

@@ -1,0 +1,96 @@
+package luca
+
+import (
+	"fmt"
+	"io"
+	"time"
+
+	"github.com/drummonds/luca/internal/parser"
+)
+
+var (
+	// Commodities by Id
+	Commodities         = map[string]*parser.Commodity{}
+	CommoditiesBySymbol = map[string]*parser.Commodity{}
+)
+
+func (c *Commodity) GetIdComment() string {
+	return c.IdComment
+}
+
+func (c *Commodity) GetValueDate() time.Time {
+	return c.ValueDate
+}
+
+func (c *Commodity) GetKnowledgeDate() *time.Time {
+	return c.KnowledgeDate
+}
+
+// Convert commodity to a string
+func (c *Commodity) GetComments() []string {
+	return c.Comments
+}
+
+// Convert commodity to a string
+func (c *Commodity) String() string {
+	return c.Id
+}
+
+func (c *Commodity) NumArguments() (count int) {
+	count = 0
+	if c.Name != "" {
+		count++
+	}
+	if c.SubUnit != 1 {
+		count++
+	}
+	return
+}
+
+/*
+//
+892-01-01 commodity GBP
+
+	name "Pound sterling"
+	sub-unit 100
+*/
+func (c *Commodity) ToLines() []string {
+	lines := make([]string, len(c.Comments)+1+c.NumArguments())
+	for _, comment := range c.Comments {
+		lines = append(lines, "// "+comment)
+	}
+	// Add the directive line
+	lines = append(lines, DirectiveToLine(c))
+	// Add argument line
+	s := fmt.Sprintf("  name %s", c.Name)
+	if c.NameComment != "" {
+		s = " // " + c.NameComment
+	}
+	lines = append(lines, s+"\n")
+	s = fmt.Sprintf("  sub-unit %d", c.SubUnit)
+	if c.SubUnitComment != "" {
+		s = " // " + c.SubUnitComment
+	}
+	lines = append(lines, s+"\n")
+	return lines
+}
+
+func (c *Commodity) Write(w io.Writer) error {
+	lines := c.ToLines()
+	for _, line := range lines {
+		_, err := io.WriteString(w, line)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Commodity) includedIn(list []*Commodity) bool {
+	for _, c2 := range list {
+		if c == c2 {
+			return true
+		}
+	}
+	return false
+}
