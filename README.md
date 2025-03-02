@@ -200,6 +200,14 @@ as well as handling longer time periods.
 
 date time format comes from https://www.rfc-editor.org/rfc/rfc3339
 
+### String concatenation
+
+You could use either + or stringbuilder.  This article https://dev.to/jonathanlawhh/golang-string-concatenation-what-how-why-3fcd 
+shows that for adding 2 strings both methods are fast but 
++ is twice as fast.  However by the time you get to 10 strings stringbuilder is twice as fast.
+
+So using `"\t" + test.data + "/n"` is clear and good practice but not much longer. 
+
 ## colophon
 
 This is third version of luca.  The first was a python sqlite implementation, the second a
