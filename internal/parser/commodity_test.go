@@ -175,7 +175,7 @@ func TestCommodityDetailEqual(t *testing.T) {
 	}
 }
 
-func TestCommodityToStringBuider(t *testing.T) {
+func TestCommodityToStringBuilder(t *testing.T) {
 	tests := []struct {
 		name      string
 		commodity Commodity
@@ -228,14 +228,14 @@ func TestCommodityToStringBuider(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var sb strings.Builder
-			tt.commodity.ToStringBuider(&sb)
+			tt.commodity.ToStringBuilder(&sb)
 			got := sb.String()
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
-func TestCommodityDetailToStringBuider(t *testing.T) {
+func TestCommodityDetailToStringBuilder(t *testing.T) {
 	tests := []struct {
 		name   string
 		detail CommodityDetail
@@ -273,7 +273,7 @@ func TestCommodityDetailToStringBuider(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var sb strings.Builder
-			tt.detail.ToStringBuider(&sb)
+			tt.detail.ToStringBuilder(&sb)
 			got := sb.String()
 			assert.Equal(t, tt.want, got)
 		})

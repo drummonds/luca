@@ -19,7 +19,7 @@ type SubDirective struct {
 	Text string `parser:"@String"`
 }
 
-func (s SubDirective) ToStringBuider(sb *strings.Builder) {
+func (s SubDirective) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString("\t" + `"` + s.Text + `"` + "\n")
 }
 
@@ -27,7 +27,7 @@ func (a SubDirective) Equal(b SubDirective) bool {
 	return a.Text == b.Text
 }
 
-func (g GenericEntry) ToStringBuider(sb *strings.Builder) {
+func (g GenericEntry) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString(" " + g.Directive)
 	if g.Description != "" {
 		sb.WriteString(` "` + g.Description + `"`)
@@ -37,7 +37,7 @@ func (g GenericEntry) ToStringBuider(sb *strings.Builder) {
 	}
 	sb.WriteString("\n")
 	for _, subDirective := range g.SubDirectives {
-		subDirective.ToStringBuider(sb)
+		subDirective.ToStringBuilder(sb)
 	}
 }
 

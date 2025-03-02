@@ -4,15 +4,15 @@ import "strings"
 
 // An accounting Account
 type Account struct {
-	Directive      string        `parser:"@( 'account' )"`
-	Description    string        `parser:"@String?"`
+	Directive      string        `parser:"@( 'open' )"`
+	FullName       string        `parser:"@Ident?"`
+	Commodity      string        `parser:"@Ident?"`
 	AccountDetails AccountDetail `parser:"('INDENT' @@+ 'DEDENT')?"`
 }
 
-// Posting represents an account posting
+// AccountDetail represents additional account details
 type AccountDetail struct {
-	Commodity string `parser:"@Ident"?`
-	FullName  string `parser:"@Ident"?`
+	Description string `parser:"@String?"`
 }
 
 // AccountsEqual compares two Accounts for equality
@@ -20,17 +20,17 @@ func (a *Account) Equal(b *Account) bool {
 	if a.Directive != b.Directive {
 		return false
 	}
-	if a.Description != b.Description {
+	if a.FullName != b.FullName {
+		return false
+	}
+	if a.Commodity != b.Commodity {
 		return false
 	}
 	return a.AccountDetails.Equal(b.AccountDetails)
 }
 
 func (a AccountDetail) Equal(b AccountDetail) bool {
-	if a.Commodity != b.Commodity {
-		return false
-	}
-	if a.FullName != b.FullName {
+	if a.Description != b.Description {
 		return false
 	}
 	return true
@@ -38,23 +38,18 @@ func (a AccountDetail) Equal(b AccountDetail) bool {
 
 func (t Account) ToStringBuider(sb *strings.Builder) {
 	sb.WriteString(" " + t.Directive)
-	if t.Description != "" {
-		sb.WriteString(` "` + t.Description + `"`)
+	if t.FullName != "" {
+		sb.WriteString(" " + t.FullName)
+	}
+	if t.Commodity != "" {
+		sb.WriteString(" " + t.Commodity)
 	}
 	sb.WriteString("\n")
-	if t.AccountDetails.Commodity != "" {
-		sb.WriteString("\t" + t.AccountDetails.Commodity + " ")
-	}
-	if t.AccountDetails.FullName != "" {
-		sb.WriteString(t.AccountDetails.FullName)
-	}
+	t.AccountDetails.ToStringBuider(sb)
 }
 
 func (ad AccountDetail) ToStringBuider(sb *strings.Builder) {
-	if ad.Commodity != "" {
-		sb.WriteString("\t" + ad.Commodity + "\n")
-	}
-	if ad.FullName != "" {
-		sb.WriteString("\t" + ad.FullName + "\n")
+	if ad.Description != "" {
+		sb.WriteString("\t" + ad.Description + "\n")
 	}
 }

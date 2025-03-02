@@ -128,11 +128,12 @@ type Entry struct {
 	Date          string        `parser:"@Date"`
 	KnowledgeDate string        `parser:"@KnowledgeDate?"`
 	Transaction   *Transaction  `parser:"(@@"`
+	Account       *Account      `parser:"| @@"`
 	Commodity     *Commodity    `parser:"| @@"`
 	Generic       *GenericEntry `parser:"| @@)"`
 }
 
-func (e Entry) ToStringBuider(sb *strings.Builder) {
+func (e Entry) ToStringBuilder(sb *strings.Builder) {
 	for _, comment := range e.Comments {
 		sb.WriteString("; " + comment + "\n")
 	}
@@ -143,13 +144,16 @@ func (e Entry) ToStringBuider(sb *strings.Builder) {
 		sb.WriteString(" ^" + e.KnowledgeDate)
 	}
 	if e.Transaction != nil {
-		e.Transaction.ToStringBuider(sb)
+		e.Transaction.ToStringBuilder(sb)
+	}
+	if e.Account != nil {
+		e.Account.ToStringBuilder(sb)
 	}
 	if e.Commodity != nil {
-		e.Commodity.ToStringBuider(sb)
+		e.Commodity.ToStringBuilder(sb)
 	}
 	if e.Generic != nil {
-		e.Generic.ToStringBuider(sb)
+		e.Generic.ToStringBuilder(sb)
 	}
 }
 

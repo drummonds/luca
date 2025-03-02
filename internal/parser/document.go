@@ -7,15 +7,15 @@ type Document struct {
 	Entries []*Entry `parser:"@@*"`
 }
 
-func (d Document) ToStringBuider(sb *strings.Builder) {
+func (d Document) ToStringBuilder(sb *strings.Builder) {
 	for _, entry := range d.Entries {
-		entry.ToStringBuider(sb)
+		entry.ToStringBuilder(sb)
 	}
 }
 
 func (d Document) String() string {
 	sb := strings.Builder{}
-	d.ToStringBuider(&sb)
+	d.ToStringBuilder(&sb)
 	return sb.String()
 }
 

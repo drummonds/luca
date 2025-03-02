@@ -47,13 +47,13 @@ func (a CommodityDetail) Equal(b CommodityDetail) bool {
 	return true
 }
 
-func (c Commodity) ToStringBuider(sb *strings.Builder) {
+func (c Commodity) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString(" " + c.Directive)
 	sb.WriteString(" " + c.Id + "\n")
-	c.CommodityDetail.ToStringBuider(sb)
+	c.CommodityDetail.ToStringBuilder(sb)
 }
 
-func (cd CommodityDetail) ToStringBuider(sb *strings.Builder) {
+func (cd CommodityDetail) ToStringBuilder(sb *strings.Builder) {
 	if cd.Description != "" {
 		sb.WriteString("\tdescription \"" + cd.Description + "\"\n")
 	}

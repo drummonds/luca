@@ -44,18 +44,18 @@ func (a Movement) Equal(b Movement) bool {
 	return true
 }
 
-func (t Transaction) ToStringBuider(sb *strings.Builder) {
+func (t Transaction) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString(" " + t.Directive)
 	if t.Description != "" {
 		sb.WriteString(` "` + t.Description + `"`)
 	}
 	sb.WriteString("\n")
 	for _, movement := range t.Movements {
-		movement.ToStringBuider(sb)
+		movement.ToStringBuilder(sb)
 	}
 }
 
-func (m Movement) ToStringBuider(sb *strings.Builder) {
+func (m Movement) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString("\t")
 	sb.WriteString(m.From + " ")
 	sb.WriteString(m.Amount + " ")
