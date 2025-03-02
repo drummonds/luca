@@ -16,11 +16,11 @@ type Commodity struct {
 // Posting represents an account posting
 type CommodityDetail struct {
 	// eg Pound sterling
-	Description string `parser:"'description' @String?"`
+	Description string `parser:"( 'description' @String)?"`
 	// DescriptionComment string
 	// How many of smallest unit makes up the unit
 	// so for pre 1961 sterling it is 960 farthings or groats
-	SubUnit int64 `parser:"'subunit' @Number?"`
+	SubUnit int64 `parser:"( 'subunit' @Number)?"`
 	// SubUnitComment string
 }
 
@@ -50,19 +50,14 @@ func (a CommodityDetail) Equal(b CommodityDetail) bool {
 func (c Commodity) ToStringBuider(sb *strings.Builder) {
 	sb.WriteString(" " + c.Directive)
 	sb.WriteString(" " + c.Id + "\n")
-	if c.CommodityDetail.Description != "" {
-		sb.WriteString("\t" + c.CommodityDetail.Description + "\n")
-	}
-	if c.CommodityDetail.SubUnit != 0 {
-		sb.WriteString("\t" + strconv.FormatInt(c.CommodityDetail.SubUnit, 10) + "\n")
-	}
+	c.CommodityDetail.ToStringBuider(sb)
 }
 
 func (cd CommodityDetail) ToStringBuider(sb *strings.Builder) {
 	if cd.Description != "" {
-		sb.WriteString("\t" + cd.Description + "\n")
+		sb.WriteString("\tdescription \"" + cd.Description + "\"\n")
 	}
 	if cd.SubUnit != 0 {
-		sb.WriteString("\t" + strconv.FormatInt(cd.SubUnit, 10) + "\n")
+		sb.WriteString("\tsubunit " + strconv.FormatInt(cd.SubUnit, 10) + "\n")
 	}
 }

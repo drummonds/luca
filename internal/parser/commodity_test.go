@@ -191,7 +191,7 @@ func TestCommodityToStringBuider(t *testing.T) {
 					SubUnit:     100,
 				},
 			},
-			want: "commodity USD\n\tUS Dollar\n\t100\n",
+			want: " commodity USD\n\tdescription \"US Dollar\"\n\tsubunit 100\n",
 		},
 		{
 			name: "commodity without description",
@@ -202,7 +202,7 @@ func TestCommodityToStringBuider(t *testing.T) {
 					SubUnit: 100,
 				},
 			},
-			want: "commodity USD\n\t100\n",
+			want: " commodity USD\n\tsubunit 100\n",
 		},
 		{
 			name: "commodity without subunit",
@@ -213,7 +213,7 @@ func TestCommodityToStringBuider(t *testing.T) {
 					Description: "US Dollar",
 				},
 			},
-			want: "commodity USD\n\tUS Dollar\n",
+			want: " commodity USD\n\tdescription \"US Dollar\"\n",
 		},
 		{
 			name: "minimal commodity",
@@ -221,7 +221,7 @@ func TestCommodityToStringBuider(t *testing.T) {
 				Directive: "commodity",
 				Id:        "USD",
 			},
-			want: "commodity USD\n",
+			want: " commodity USD\n",
 		},
 	}
 
@@ -247,21 +247,21 @@ func TestCommodityDetailToStringBuider(t *testing.T) {
 				Description: "US Dollar",
 				SubUnit:     100,
 			},
-			want: "\tUS Dollar\n\t100\n",
+			want: "\tdescription \"US Dollar\"\n\tsubunit 100\n",
 		},
 		{
 			name: "detail without description",
 			detail: CommodityDetail{
 				SubUnit: 100,
 			},
-			want: "\t100\n",
+			want: "\tsubunit 100\n",
 		},
 		{
 			name: "detail without subunit",
 			detail: CommodityDetail{
 				Description: "US Dollar",
 			},
-			want: "\tUS Dollar\n",
+			want: "\tdescription \"US Dollar\"\n",
 		},
 		{
 			name:   "empty detail",
