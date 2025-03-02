@@ -134,7 +134,13 @@ type Entry struct {
 
 func (e Entry) ToStringBuider(sb *strings.Builder) {
 	for _, comment := range e.Comments {
-		sb.WriteString(comment)
+		sb.WriteString("; " + comment + "\n")
+	}
+	if e.Date != "" {
+		sb.WriteString(e.Date)
+	}
+	if e.KnowledgeDate != "" {
+		sb.WriteString(" ^" + e.KnowledgeDate)
 	}
 	if e.Transaction != nil {
 		e.Transaction.ToStringBuider(sb)
@@ -263,53 +269,5 @@ func ArrayEqual[T comparable](A, B []T) bool {
 			return false
 		}
 	}
-	return true
-}
-
-func documentsEqual(a, b *Document) bool {
-	if len(a.Entries) != len(b.Entries) {
-		return false
-	}
-
-	for i, entry := range a.Entries {
-		if !entriesEqual(entry, b.Entries[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-// entriesEqual compares two Entries for equality
-func entriesEqual(a, b *Entry) bool {
-	if len(a.Comments) != len(b.Comments) {
-		return false
-	}
-	for i, comment := range a.Comments {
-		if comment != b.Comments[i] {
-			return false
-		}
-	}
-	if a.Date != b.Date {
-		return false
-	}
-
-	// Compare Generic entries
-	if a.Generic != nil && b.Generic != nil {
-		return a.Generic.Equal(*b.Generic)
-	}
-
-	// Compare Transaction entries
-	if a.Transaction != nil && b.Transaction != nil {
-		return a.Transaction.Equal(b.Transaction)
-	}
-
-	// One is nil while the other isn't
-	if (a.Generic == nil) != (b.Generic == nil) {
-		return false
-	}
-	if (a.Transaction == nil) != (b.Transaction == nil) {
-		return false
-	}
-
 	return true
 }

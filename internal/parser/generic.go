@@ -5,6 +5,8 @@ import (
 )
 
 // A generic format to illustrate the meta structure of an entry
+// This is not actually useful except in testing the generic portions
+// of the parser.
 type GenericEntry struct {
 	Directive     string         `parser:" @'generic' "`
 	Description   string         `parser:" (@String)?"`
@@ -18,7 +20,7 @@ type SubDirective struct {
 }
 
 func (s SubDirective) ToStringBuider(sb *strings.Builder) {
-	sb.WriteString(s.Text)
+	sb.WriteString("\t" + `"` + s.Text + `"` + "\n")
 }
 
 func (a SubDirective) Equal(b SubDirective) bool {
@@ -26,10 +28,14 @@ func (a SubDirective) Equal(b SubDirective) bool {
 }
 
 func (g GenericEntry) ToStringBuider(sb *strings.Builder) {
-	sb.WriteString(g.Directive)
+	sb.WriteString(" " + g.Directive)
 	if g.Description != "" {
-		sb.WriteString(" " + g.Description)
+		sb.WriteString(` "` + g.Description + `"`)
 	}
+	if g.Comment != "" {
+		sb.WriteString(` ; ` + g.Comment)
+	}
+	sb.WriteString("\n")
 	for _, subDirective := range g.SubDirectives {
 		subDirective.ToStringBuider(sb)
 	}

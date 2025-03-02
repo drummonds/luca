@@ -51,13 +51,14 @@ func (a CommodityDetail) Equal(b CommodityDetail) bool {
 
 func (c Commodity) ToStringBuider(sb *strings.Builder) {
 	sb.WriteString(c.Directive)
-	sb.WriteString(" " + c.Id)
+	sb.WriteString(" " + c.Id + "\n")
 	for _, cd := range c.CommodityDetails {
 		cd.ToStringBuider(sb)
 	}
 }
 
 func (cd CommodityDetail) ToStringBuider(sb *strings.Builder) {
-	sb.WriteString(cd.Description)
+	sb.WriteString("\t" + cd.Description)
 	sb.WriteString(strconv.FormatInt(cd.SubUnit, 10))
+	sb.WriteString("\n")
 }

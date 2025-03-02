@@ -9,7 +9,8 @@ func TestParseTransaction(t *testing.T) {
 		{
 			name: "basic transaction",
 			input: `2024-01-01 txn "Coffee shop"
-    food  3.50 → assets:cash`,
+	food 3.50 → assets:cash
+`,
 			want: &Document{
 				Entries: []*Entry{
 					{

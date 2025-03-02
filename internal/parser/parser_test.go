@@ -61,11 +61,12 @@ DEDENT`,
 }
 
 type ParserTests []struct {
-	name    string
-	input   string
-	want    *Document
-	wantErr bool
-	debug   bool
+	name          string
+	input         string
+	expectedInput *string // "" is a valid expected input
+	want          *Document
+	wantErr       bool
+	debug         bool
 }
 
 func AbstractTestParse(t *testing.T, tests ParserTests) {
@@ -86,6 +87,12 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 			}
 			if !tt.wantErr {
 				assert.Equal(t, tt.want, got)
+			}
+			// Check closed loop
+			if tt.expectedInput == nil {
+				assert.Equal(t, tt.input, got.String(), "Input and output converted to string should be equal")
+			} else {
+				assert.Equal(t, *tt.expectedInput, got.String(), "Expected Input (different from input) and output converted to string should be equal")
 			}
 		})
 	}
