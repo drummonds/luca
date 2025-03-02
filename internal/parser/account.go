@@ -5,14 +5,14 @@ import "strings"
 // An accounting Account
 type Account struct {
 	Directive      string        `parser:"@( 'open' )"`
-	FullName       string        `parser:"@Ident?"`
+	FullName       string        `parser:"@Ident"`
 	Commodity      string        `parser:"@Ident?"`
-	AccountDetails AccountDetail `parser:"('INDENT' @@+ 'DEDENT')?"`
+	AccountDetails AccountDetail `parser:"('INDENT' @@ 'DEDENT')?"`
 }
 
 // AccountDetail represents additional account details
 type AccountDetail struct {
-	Description string `parser:"@String?"`
+	Description string `parser:"( 'description' @String)?"`
 }
 
 // AccountsEqual compares two Accounts for equality
@@ -36,7 +36,7 @@ func (a AccountDetail) Equal(b AccountDetail) bool {
 	return true
 }
 
-func (t Account) ToStringBuider(sb *strings.Builder) {
+func (t Account) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString(" " + t.Directive)
 	if t.FullName != "" {
 		sb.WriteString(" " + t.FullName)
@@ -45,11 +45,11 @@ func (t Account) ToStringBuider(sb *strings.Builder) {
 		sb.WriteString(" " + t.Commodity)
 	}
 	sb.WriteString("\n")
-	t.AccountDetails.ToStringBuider(sb)
+	t.AccountDetails.ToStringBuilder(sb)
 }
 
-func (ad AccountDetail) ToStringBuider(sb *strings.Builder) {
+func (ad AccountDetail) ToStringBuilder(sb *strings.Builder) {
 	if ad.Description != "" {
-		sb.WriteString("\t" + ad.Description + "\n")
+		sb.WriteString("\tdescription \"" + ad.Description + "\"\n")
 	}
 }

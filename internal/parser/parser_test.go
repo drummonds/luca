@@ -81,7 +81,10 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 			} else {
 				got, err = Parse(tt.input)
 			}
-			if (err != nil) != tt.wantErr {
+			if err != nil {
+				if tt.wantErr {
+					return
+				}
 				t.Errorf("Parse() %d error = %v, wantErr %v", i, err, tt.wantErr)
 				return
 			}
