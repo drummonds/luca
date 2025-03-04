@@ -4,9 +4,16 @@ import "strings"
 
 // An accounting transaction
 type Transaction struct {
-	Directive   string     `parser:"@( 'txn' | '*' )"`
-	Description string     `parser:"@String?"`
-	Movements   []Movement `parser:"('INDENT' @@+ 'DEDENT')?"`
+	EntryDate
+
+	// Type is "txn" or "generic"
+	Type string `parser:"@('txn' | 'generic')"`
+
+	// Payee is the transaction description
+	Payee string `parser:"@String"`
+
+	// PostingStrings are the raw posting strings
+	PostingStrings []string `parser:"(@String)*"`
 }
 
 // Posting represents an account posting
@@ -19,13 +26,13 @@ type Movement struct {
 
 // transactionsEqual compares two Transactions for equality
 func (a *Transaction) Equal(b *Transaction) bool {
-	if a.Directive != b.Directive {
+	if a.Type != b.Type {
 		return false
 	}
-	if a.Description != b.Description {
+	if a.Payee != b.Payee {
 		return false
 	}
-	return ArrayEqual(a.Movements, b.Movements)
+	return ArrayEqual(a.PostingStrings, b.PostingStrings)
 }
 
 func (a Movement) Equal(b Movement) bool {
@@ -44,14 +51,29 @@ func (a Movement) Equal(b Movement) bool {
 	return true
 }
 
-func (t Transaction) ToStringBuilder(sb *strings.Builder) {
-	sb.WriteString(" " + t.Directive)
-	if t.Description != "" {
-		sb.WriteString(` "` + t.Description + `"`)
+// ToStringBuilder writes the transaction to a string builder
+func (t *Transaction) ToStringBuilder(sb *strings.Builder) {
+	// Format date
+	sb.WriteString(t.Date.Format("2006-01-02"))
+
+	// Add knowledge date if present
+	if !t.KnowledgeDate.IsZero() {
+		sb.WriteString(" =")
+		sb.WriteString(t.KnowledgeDate.Format("2006-01-02"))
 	}
+
+	// Add type and payee
+	sb.WriteString(" ")
+	sb.WriteString(t.Type)
+	sb.WriteString(" ")
+	sb.WriteString(t.Payee)
 	sb.WriteString("\n")
-	for _, movement := range t.Movements {
-		movement.ToStringBuilder(sb)
+
+	// Add postings
+	for _, posting := range t.PostingStrings {
+		sb.WriteString("    ")
+		sb.WriteString(posting)
+		sb.WriteString("\n")
 	}
 }
 

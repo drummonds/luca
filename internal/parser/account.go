@@ -4,8 +4,14 @@ import "strings"
 
 // An accounting Account
 type Account struct {
-	Directive      string        `parser:"@( 'open' )"`
-	FullName       string        `parser:"@Ident"`
+	EntryDate
+
+	// Type is "open" for account declarations
+	Type string `parser:"@('open')"`
+
+	// Name is the account name
+	Name string `parser:"@String"`
+
 	Commodity      string        `parser:"@Ident?"`
 	AccountDetails AccountDetail `parser:"('INDENT' @@ 'DEDENT')?"`
 }
@@ -17,10 +23,10 @@ type AccountDetail struct {
 
 // AccountsEqual compares two Accounts for equality
 func (a *Account) Equal(b *Account) bool {
-	if a.Directive != b.Directive {
+	if a.Type != b.Type {
 		return false
 	}
-	if a.FullName != b.FullName {
+	if a.Name != b.Name {
 		return false
 	}
 	if a.Commodity != b.Commodity {
@@ -36,16 +42,30 @@ func (a AccountDetail) Equal(b AccountDetail) bool {
 	return true
 }
 
-func (t Account) ToStringBuilder(sb *strings.Builder) {
-	sb.WriteString(" " + t.Directive)
-	if t.FullName != "" {
-		sb.WriteString(" " + t.FullName)
+// ToStringBuilder writes the account declaration to a string builder
+func (a *Account) ToStringBuilder(sb *strings.Builder) {
+	// Format date
+	sb.WriteString(a.Date.Format("2006-01-02"))
+
+	// Add knowledge date if present
+	if !a.KnowledgeDate.IsZero() {
+		sb.WriteString(" =")
+		sb.WriteString(a.KnowledgeDate.Format("2006-01-02"))
 	}
-	if t.Commodity != "" {
-		sb.WriteString(" " + t.Commodity)
+
+	// Add type and name
+	sb.WriteString(" ")
+	sb.WriteString(a.Type)
+	sb.WriteString(" ")
+	sb.WriteString(a.Name)
+	sb.WriteString("\n")
+
+	if a.Commodity != "" {
+		sb.WriteString(" " + a.Commodity)
 	}
 	sb.WriteString("\n")
-	t.AccountDetails.ToStringBuilder(sb)
+
+	a.AccountDetails.ToStringBuilder(sb)
 }
 
 func (ad AccountDetail) ToStringBuilder(sb *strings.Builder) {

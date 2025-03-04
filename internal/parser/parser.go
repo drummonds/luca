@@ -124,9 +124,10 @@ func PreprocessIndentation(input string) (string, error) {
 
 // Entry in journal
 type Entry struct {
-	Comments      []string      `parser:"@Comment*"`
-	Date          string        `parser:"@Date"`
-	KnowledgeDate string        `parser:"@KnowledgeDate?"`
+	Comments      []string `parser:"@Comment*"`
+	Date          string   `parser:"@Date"`
+	KnowledgeDate string   `parser:"@KnowledgeDate?"`
+	Filename      string
 	Transaction   *Transaction  `parser:"(@@"`
 	Account       *Account      `parser:"| @@"`
 	Commodity     *Commodity    `parser:"| @@"`

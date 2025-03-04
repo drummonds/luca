@@ -3,80 +3,61 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
-
-	"github.com/alecthomas/participle/v2"
-	"github.com/drummonds/luca/internal/parser"
 )
 
 var (
 	_verbose bool
 )
 
+// Command represents a subcommand to be run
+type Command struct {
+	// Name of the command
+	Name string
+	// Usage description
+	Usage string
+	// FlagSet for command-specific flags
+	FlagSet *flag.FlagSet
+	// Run executes the command with the given arguments
+	Run func(args []string)
+}
+
 func init() {
 	flag.BoolVar(&_verbose, "verbose", false, "enable verbose output")
 }
 
-func usage() {
+func usage(commands []*Command) {
+	fmt.Printf("Luca - A simple plain text accounting application V0.0.1\n")
 	fmt.Printf("Usage: %s [global flags] <command> [command flags]\n\n", os.Args[0])
 	fmt.Println("Global flags:")
 	flag.PrintDefaults()
 	fmt.Println("\nCommands:")
-	fmt.Println("  test    Run parser tests on sample input")
-	fmt.Println("  ebnf    Generate EBNF grammar for the parser")
-}
 
-func test(args []string) {
-	testCmd := flag.NewFlagSet("test", flag.ExitOnError)
-	testCmd.Parse(args)
-
-	input := `2024-03-20 generic "Grocery shopping"
-    "assets:checking    -50.00"
-    "expenses:food       50.00"
-
-2024-03-21 txn "Coffee"
-	cash 5.00 -> expenses:coffee
-`
-
-	if _verbose {
-		fmt.Println("Parsing test input...")
+	for _, cmd := range commands {
+		fmt.Printf("  %-8s %s\n", cmd.Name, cmd.Usage)
 	}
-
-	doc, err := parser.Parse(input)
-	if err != nil {
-		log.Fatalf("Failed to parse: %v", err)
-	}
-
-	// Print the parsed entries
-	lines := doc.ToLines()
-	for _, line := range lines {
-		fmt.Println(line)
-	}
-}
-
-func ebnf(args []string) {
-	ebnfCmd := flag.NewFlagSet("ebnf", flag.ExitOnError)
-	ebnfCmd.Parse(args)
-
-	if _verbose {
-		fmt.Println("Generating EBNF grammar...")
-	}
-
-	// Create a new parser with lexer
-	parser := participle.MustBuild[parser.Document](
-		participle.Lexer(parser.TokenLexer()),
-		participle.Elide("Whitespace", "Comment"),
-		participle.UseLookahead(2),
-	)
-
-	// Generate and print the EBNF
-	fmt.Println("\nGrammar:")
-	fmt.Println(parser.String())
 }
 
 func main() {
-	flag.Usage = usage
+	// Register all available commands
+	commands := []*Command{
+		testCommand(),
+		ebnfCommand(),
+		ofxCommand(),
+	}
+
+	// Create a map for quick command lookup
+	commandMap := make(map[string]*Command)
+	for _, cmd := range commands {
+		commandMap[cmd.Name] = cmd
+	}
+
+	// Set custom usage function
+	flag.Usage = func() {
+		usage(commands)
+	}
+
+	// Parse global flags
 	flag.Parse()
 
 	args := flag.Args()
@@ -85,14 +66,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	switch args[0] {
-	case "test":
-		test(args[1:])
-	case "ebnf":
-		ebnf(args[1:])
-	default:
-		fmt.Printf("Unknown subcommand: %s\n\n", args[0])
+	// Find the requested command
+	cmdName := args[0]
+	cmd, exists := commandMap[cmdName]
+
+	if !exists {
+		fmt.Printf("Unknown subcommand: %s\n\n", cmdName)
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	// Run the command with remaining args
+	cmd.Run(args[1:])
 }

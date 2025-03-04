@@ -2,9 +2,10 @@ package parser
 
 import "strings"
 
-// Document represents the entire file
+// Document represents a complete financial document with multiple entries
 type Document struct {
-	Entries []*Entry `parser:"@@*"`
+	// Entries contains all entries in the document
+	Entries []Entrier
 }
 
 func (d Document) ToStringBuilder(sb *strings.Builder) {
@@ -19,6 +20,16 @@ func (d Document) String() string {
 	return sb.String()
 }
 
-func (d Document) ToLines() []string {
-	return strings.Split(d.String(), "\n")
+// ToLines converts the document to a slice of strings
+func (d *Document) ToLines() []string {
+	var lines []string
+	var sb strings.Builder
+
+	for _, entry := range d.Entries {
+		sb.Reset()
+		entry.ToStringBuilder(&sb)
+		lines = append(lines, sb.String())
+	}
+
+	return lines
 }

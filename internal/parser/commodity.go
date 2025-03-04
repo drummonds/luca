@@ -7,8 +7,14 @@ import (
 
 // An accounting transaction
 type Commodity struct {
-	Directive string `parser:"@'commodity'"`
-	Id        string `parser:"@Ident"`
+	EntryDate
+
+	// Type is "commodity" for commodity declarations
+	Type string `parser:"@('commodity')"`
+
+	// Name is the commodity name
+	Name string `parser:"@String"`
+
 	// IdComment string
 	CommodityDetail CommodityDetail `parser:"('INDENT' @@ 'DEDENT')?"`
 }
@@ -25,7 +31,7 @@ type CommodityDetail struct {
 }
 
 func (a Commodity) Equal(b Commodity) bool {
-	if a.Id != b.Id {
+	if a.Name != b.Name {
 		return false
 	}
 	if a.CommodityDetail.Description != b.CommodityDetail.Description {
@@ -47,9 +53,24 @@ func (a CommodityDetail) Equal(b CommodityDetail) bool {
 	return true
 }
 
-func (c Commodity) ToStringBuilder(sb *strings.Builder) {
-	sb.WriteString(" " + c.Directive)
-	sb.WriteString(" " + c.Id + "\n")
+// ToStringBuilder writes the commodity declaration to a string builder
+func (c *Commodity) ToStringBuilder(sb *strings.Builder) {
+	// Format date
+	sb.WriteString(c.Date.Format("2006-01-02"))
+
+	// Add knowledge date if present
+	if !c.KnowledgeDate.IsZero() {
+		sb.WriteString(" =")
+		sb.WriteString(c.KnowledgeDate.Format("2006-01-02"))
+	}
+
+	// Add type and name
+	sb.WriteString(" ")
+	sb.WriteString(c.Type)
+	sb.WriteString(" ")
+	sb.WriteString(c.Name)
+	sb.WriteString("\n")
+
 	c.CommodityDetail.ToStringBuilder(sb)
 }
 
