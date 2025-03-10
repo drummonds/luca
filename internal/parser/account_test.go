@@ -18,7 +18,7 @@ func TestAccountEqual(t *testing.T) {
 			name: "identical accounts",
 			a: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -26,7 +26,7 @@ func TestAccountEqual(t *testing.T) {
 			},
 			b: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -38,7 +38,7 @@ func TestAccountEqual(t *testing.T) {
 			name: "different full names",
 			a: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -46,7 +46,7 @@ func TestAccountEqual(t *testing.T) {
 			},
 			b: Account{
 				Directive: "open",
-				FullName:  "assets:savings",
+				Name:      "assets:savings",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -58,7 +58,7 @@ func TestAccountEqual(t *testing.T) {
 			name: "different commodities",
 			a: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -66,7 +66,7 @@ func TestAccountEqual(t *testing.T) {
 			},
 			b: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "EUR",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -78,7 +78,7 @@ func TestAccountEqual(t *testing.T) {
 			name: "different descriptions",
 			a: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -86,7 +86,7 @@ func TestAccountEqual(t *testing.T) {
 			},
 			b: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Savings Account",
@@ -98,12 +98,12 @@ func TestAccountEqual(t *testing.T) {
 			name: "empty details",
 			a: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 			},
 			b: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 			},
 			want: true,
@@ -171,7 +171,7 @@ func TestAccountToStringBuilder(t *testing.T) {
 			name: "complete account",
 			account: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
@@ -185,7 +185,7 @@ func TestAccountToStringBuilder(t *testing.T) {
 			name: "account without description",
 			account: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				Commodity: "USD",
 			},
 			want: ` open assets:checking USD
@@ -195,7 +195,7 @@ func TestAccountToStringBuilder(t *testing.T) {
 			name: "account without commodity",
 			account: Account{
 				Directive: "open",
-				FullName:  "assets:checking",
+				Name:      "assets:checking",
 				AccountDetails: AccountDetail{
 					Description: "Checking Account",
 				},
@@ -275,16 +275,16 @@ func TestParseAccount(t *testing.T) {
 	description "Checking Account"
 `,
 			want: &Document{
-				Entries: []*Entry{
+				Accounts: []*Account{
 					{
-						Date: "2024-01-01",
-						Account: &Account{
-							Directive: "open",
-							FullName:  "assets:checking",
-							Commodity: "USD",
-							AccountDetails: AccountDetail{
-								Description: "Checking Account",
-							},
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
+						},
+						Directive: "open",
+						Name:      "assets:checking",
+						Commodity: "USD",
+						AccountDetails: AccountDetail{
+							Description: "Checking Account",
 						},
 					},
 				},
@@ -297,14 +297,14 @@ func TestParseAccount(t *testing.T) {
 			input: `2024-01-01 open assets:checking USD
 `,
 			want: &Document{
-				Entries: []*Entry{
+				Accounts: []*Account{
 					{
-						Date: "2024-01-01",
-						Account: &Account{
-							Directive: "open",
-							FullName:  "assets:checking",
-							Commodity: "USD",
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
 						},
+						Directive: "open",
+						Name:      "assets:checking",
+						Commodity: "USD",
 					},
 				},
 			},
@@ -316,15 +316,15 @@ func TestParseAccount(t *testing.T) {
 	description "Checking Account"
 `,
 			want: &Document{
-				Entries: []*Entry{
+				Accounts: []*Account{
 					{
-						Date: "2024-01-01",
-						Account: &Account{
-							Directive: "open",
-							FullName:  "assets:checking",
-							AccountDetails: AccountDetail{
-								Description: "Checking Account",
-							},
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
+						},
+						Directive: "open",
+						Name:      "assets:checking",
+						AccountDetails: AccountDetail{
+							Description: "Checking Account",
 						},
 					},
 				},
@@ -337,15 +337,15 @@ func TestParseAccount(t *testing.T) {
 	description "Checking Account"
 `,
 			want: &Document{
-				Entries: []*Entry{
+				Accounts: []*Account{
 					{
-						Date: "2024-01-01",
-						Account: &Account{
-							Directive: "open",
-							Commodity: "USD",
-							AccountDetails: AccountDetail{
-								Description: "Checking Account",
-							},
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
+						},
+						Directive: "open",
+						Name:      "USD",
+						AccountDetails: AccountDetail{
+							Description: "Checking Account",
 						},
 					},
 				},
@@ -357,14 +357,12 @@ func TestParseAccount(t *testing.T) {
 			input: `2024-01-01 open
 `,
 			want: &Document{
-				Entries: []*Entry{
-					{
-						Date: "2024-01-01",
-						Account: &Account{
-							Directive: "open",
-						},
+				Accounts: []*Account{{
+					EntryHeader: EntryHeader{
+						Date: ParseDate("2024-01-01"),
 					},
-				},
+					Directive: "open",
+				}},
 			},
 			wantErr: true,
 		},

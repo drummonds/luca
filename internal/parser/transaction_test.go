@@ -12,19 +12,15 @@ func TestParseTransaction(t *testing.T) {
 	food 3.50 → assets:cash
 `,
 			want: &Document{
-				Entries: []*Entry{
+				Transactions: []*Transaction{
 					{
-						Date: "2024-01-01",
-						Transaction: &Transaction{
-							Directive:   "txn",
-							Description: "Coffee shop",
-							Movements: []Movement{
-								{
-									From:   "food",
-									To:     "assets:cash",
-									Arrow:  "→",
-									Amount: "3.50"},
-							},
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
+						},
+						Directive: "txn",
+						Payee:     "Coffee shop",
+						PostingStrings: []string{
+							"food 3.50 → assets:cash",
 						},
 					},
 				},
@@ -33,5 +29,4 @@ func TestParseTransaction(t *testing.T) {
 		},
 	}
 	AbstractTestParse(t, tests)
-
 }

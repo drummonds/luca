@@ -1,27 +1,26 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
 )
 
-// An accounting transaction
+// Commodity represents a currency or financial instrument
 type Commodity struct {
-	EntryDate
+	EntryHeader
 
-	// Type is "commodity" for commodity declarations
-	Type string `parser:"@('commodity')"`
+	// Directive is "commodity" for commodity declarations
+	Directive string `parser:"@('commodity')"`
+
+	// Symbol is the commodity symbol/identifier
+	Symbol string `parser:"@String"`
 
 	// Name is the commodity name
 	Name string `parser:"@String"`
 
-	// IdComment string
-	CommodityDetail CommodityDetail `parser:"('INDENT' @@ 'DEDENT')?"`
-}
-
-// Posting represents an account posting
-type CommodityDetail struct {
-	// eg Pound sterling
 	Description string `parser:"( 'description' @String)?"`
 	// DescriptionComment string
 	// How many of smallest unit makes up the unit
@@ -31,19 +30,12 @@ type CommodityDetail struct {
 }
 
 func (a Commodity) Equal(b Commodity) bool {
+	if a.Symbol != b.Symbol {
+		return false
+	}
 	if a.Name != b.Name {
 		return false
 	}
-	if a.CommodityDetail.Description != b.CommodityDetail.Description {
-		return false
-	}
-	if a.CommodityDetail.SubUnit != b.CommodityDetail.SubUnit {
-		return false
-	}
-	return true
-}
-
-func (a CommodityDetail) Equal(b CommodityDetail) bool {
 	if a.Description != b.Description {
 		return false
 	}
@@ -55,30 +47,165 @@ func (a CommodityDetail) Equal(b CommodityDetail) bool {
 
 // ToStringBuilder writes the commodity declaration to a string builder
 func (c *Commodity) ToStringBuilder(sb *strings.Builder) {
-	// Format date
-	sb.WriteString(c.Date.Format("2006-01-02"))
+	// Write header fields
+	c.EntryHeader.ToStringBuilder(sb)
 
-	// Add knowledge date if present
-	if !c.KnowledgeDate.IsZero() {
-		sb.WriteString(" =")
-		sb.WriteString(c.KnowledgeDate.Format("2006-01-02"))
-	}
-
-	// Add type and name
+	// Add directive and symbol
 	sb.WriteString(" ")
-	sb.WriteString(c.Type)
+	sb.WriteString(c.Directive)
 	sb.WriteString(" ")
-	sb.WriteString(c.Name)
+	sb.WriteString(c.Symbol)
 	sb.WriteString("\n")
 
-	c.CommodityDetail.ToStringBuilder(sb)
+	if c.Description != "" {
+		sb.WriteString("\tdescription \"" + c.Description + "\"\n")
+	}
+	if c.SubUnit != 0 {
+		sb.WriteString("\tsubunit " + strconv.FormatInt(c.SubUnit, 10) + "\n")
+	}
 }
 
-func (cd CommodityDetail) ToStringBuilder(sb *strings.Builder) {
-	if cd.Description != "" {
-		sb.WriteString("\tdescription \"" + cd.Description + "\"\n")
+// GetDirective returns the commodity directive type
+func (c *Commodity) GetDirective() string {
+	return c.Directive
+}
+
+func init() {
+	RegisterDirectiveNew("commodity", NewCommodityDirective)
+	RegisterDirectiveParser("commodity", ParseCommodityDirective)
+	RegisterDirectiveAdder("commodity", AddCommodityDirective)
+}
+
+func NewCommodityDirective(entryHeader *EntryHeader, directive string, ps *parserState) {
+	commodity := Commodity{
+		EntryHeader: *entryHeader,
+		Directive:   directive,
 	}
-	if cd.SubUnit != 0 {
-		sb.WriteString("\tsubunit " + strconv.FormatInt(cd.SubUnit, 10) + "\n")
+	ps.entry = &commodity
+}
+
+type commodityDirectiveState int
+
+const (
+	commodityDirectiveLookForSymbol commodityDirectiveState = iota
+	commodityDirectiveIndentOrNew
+	commodityDirectiveExpectIndent // Know that that it is coming
+	commodityDirectiveDetailStart
+	commodityDirectiveDetailDescription
+	commodityDirectiveDetailSubUnit
+	commodityDirectiveDetailEnd
+)
+
+// Commodity = "commodity" <ident> ("INDENT" CommodityDetail "DEDENT")? .
+// CommodityDetail = ("description" <string>)? ("subunit" <number>)? .
+func ParseCommodityDirective(token lexer.Token, nextToken lexer.Token, ps *parserState) (parseState, error) {
+	if ps.entry == nil {
+		return matchEntryHeader, fmt.Errorf("entry must be initialised before parsing starts")
 	}
+	commodity := ps.entry.(*Commodity)
+	switch commodityDirectiveState(ps.directiveState) {
+	case commodityDirectiveLookForSymbol:
+		switch token.Type {
+		case ps.tokenIdent:
+			commodity.Symbol = token.Value
+			ps.directiveState = int(commodityDirectiveIndentOrNew)
+			return matchDirective, nil
+		case ps.tokenComment:
+			///Ignore wait to add comment to commodity
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case commodityDirectiveIndentOrNew:
+		switch token.Type {
+		case ps.tokenNewline, ps.tokenEOF:
+			if nextToken.Type == ps.tokenIndent {
+				ps.directiveState = int(commodityDirectiveExpectIndent)
+				return matchDirective, nil
+			}
+			return matchEntryHeader, nil // Finished commodity
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+
+	case commodityDirectiveExpectIndent:
+		switch token.Type {
+		case ps.tokenIndent:
+			ps.directiveState = int(commodityDirectiveDetailStart)
+			return matchDirective, nil
+		case ps.tokenDedent:
+			return matchEntryHeader, nil // Finished commodity
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case commodityDirectiveDetailStart:
+		switch token.Type {
+		case ps.tokenIdent:
+			value := strings.ToLower(token.Value)
+			if value == "description" {
+				ps.directiveState = int(commodityDirectiveDetailDescription)
+				return matchDirective, nil
+			}
+			if value == "subunit" {
+				ps.directiveState = int(commodityDirectiveDetailSubUnit)
+				return matchDirective, nil
+			}
+			return matchEntryHeader, fmt.Errorf("unexpected commodity detail identifier, got %s", token.Value)
+		case ps.tokenDedent:
+			return matchEntryHeader, nil // Finished commodity
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case commodityDirectiveDetailDescription:
+		switch token.Type {
+		case ps.tokenString:
+			commodity.Description = DeQuote(token.Value)
+			ps.directiveState = int(commodityDirectiveDetailEnd)
+			return matchDirective, nil
+		case ps.tokenNewline:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case commodityDirectiveDetailSubUnit:
+		switch token.Type {
+		case ps.tokenNumber:
+			subUnit, err := strconv.ParseInt(token.Value, 10, 64)
+			if err != nil {
+				return matchEntryHeader, fmt.Errorf("expected number, got %+v", token)
+			}
+			commodity.SubUnit = subUnit
+			ps.directiveState = int(commodityDirectiveDetailEnd)
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case commodityDirectiveDetailEnd:
+		switch token.Type {
+		case ps.tokenNewline:
+			ps.directiveState = int(commodityDirectiveDetailStart)
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	}
+	return matchEntryHeader, nil
+}
+
+func AddCommodityDirective(doc *Document, entry JournalEntry) error {
+	commodity := entry.(*Commodity)
+	doc.Commodities = append(doc.Commodities, commodity)
+	return nil
+}
+
+func (c *Commodity) GetEntryHeader() *EntryHeader {
+	return &c.EntryHeader
+}
+
+func (c *Commodity) GetFilename() string {
+	return c.EntryHeader.Filename
+}
+
+func (c *Commodity) SetFilename(filename string) {
+	c.EntryHeader.Filename = filename
 }

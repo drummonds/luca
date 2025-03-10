@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"time"
 
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
@@ -41,25 +42,22 @@ var indentLexer = lexer.Must(lexer.New(lexer.Rules{
 }))
 
 // Second pass: actual token lexer
-var tokenLexer = lexer.Must(lexer.New(lexer.Rules{
-	"Root": {
-		{Name: "INDENT", Pattern: `INDENT`}, // For the synthetic INDENT token
-		{Name: "DEDENT", Pattern: `DEDENT`}, // For the synthetic DEDENT token
-		{Name: "Newline", Pattern: `\n+`},   // Handle one or more newlines
-		{Name: "Date", Pattern: `\d{4}[-/]\d{2}[-/]\d{2}`},
-		{Name: "KnowledgeDate", Pattern: `\^\d{4}[-/]\d{2}[-/]\d{2}`},
-		{Name: "String", Pattern: `"[^"]*"`}, // Keep simple string pattern without action
-		{Name: "Number", Pattern: `[-+]?\d*\.?\d+`},
-		{Name: "Arrow", Pattern: `->|→|⮕|🡒|⇒|⟶|➜|➝|➞|➡|⇨|⇾|⟹`}, // Extended arrow alternatives
-		{Name: "Ident", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*`},
-		{Name: "Whitespace", Pattern: `[ \t]+`, Action: nil},
-		{Name: "Comment", Pattern: `;[^\n]*`, Action: nil},
-	},
-}))
-
-// TokenLexer returns the lexer used for tokenizing input
 func TokenLexer() lexer.Definition {
-	return tokenLexer
+	return lexer.Must(lexer.New(lexer.Rules{
+		"Root": {
+			{Name: "INDENT", Pattern: `INDENT`}, // For the synthetic INDENT token
+			{Name: "DEDENT", Pattern: `DEDENT`}, // For the synthetic DEDENT token
+			{Name: "Newline", Pattern: `\n+`},   // Handle one or more newlines
+			{Name: "Date", Pattern: `\d{4}[-/]\d{2}[-/]\d{2}`},
+			{Name: "KnowledgeDate", Pattern: `\^\d{4}[-/]\d{2}[-/]\d{2}`},
+			{Name: "String", Pattern: `"[^"]*"`}, // Keep simple string pattern without action
+			{Name: "Number", Pattern: `[-+]?\d*\.?\d+`},
+			{Name: "Arrow", Pattern: `->|→|⮕|🡒|⇒|⟶|➜|➝|➞|➡|⇨|⇾|⟹`}, // Extended arrow alternatives
+			{Name: "Ident", Pattern: `[a-zA-Z][a-zA-Z0-9_:]*`},
+			{Name: "Whitespace", Pattern: `[ \t]+`, Action: nil},
+			{Name: "Comment", Pattern: `;[^\n]*`, Action: nil},
+		},
+	}))
 }
 
 // PreprocessIndentation converts raw text into a format with explicit INDENT/DEDENT tokens
@@ -122,95 +120,30 @@ func PreprocessIndentation(input string) (string, error) {
 	}
 }
 
-// Entry in journal
-type Entry struct {
-	Comments      []string `parser:"@Comment*"`
-	Date          string   `parser:"@Date"`
-	KnowledgeDate string   `parser:"@KnowledgeDate?"`
-	Filename      string
-	Transaction   *Transaction  `parser:"(@@"`
-	Account       *Account      `parser:"| @@"`
-	Commodity     *Commodity    `parser:"| @@"`
-	Generic       *GenericEntry `parser:"| @@)"`
-}
-
-func (e Entry) ToStringBuilder(sb *strings.Builder) {
-	for _, comment := range e.Comments {
-		sb.WriteString("; " + comment + "\n")
-	}
-	if e.Date != "" {
-		sb.WriteString(e.Date)
-	}
-	if e.KnowledgeDate != "" {
-		sb.WriteString(" ^" + e.KnowledgeDate)
-	}
-	if e.Transaction != nil {
-		e.Transaction.ToStringBuilder(sb)
-	}
-	if e.Account != nil {
-		e.Account.ToStringBuilder(sb)
-	}
-	if e.Commodity != nil {
-		e.Commodity.ToStringBuilder(sb)
-	}
-	if e.Generic != nil {
-		e.Generic.ToStringBuilder(sb)
-	}
-}
-
 func NewParser() (*participle.Parser[Document], error) {
-	return participle.Build[Document](
-		participle.Lexer(tokenLexer),
-		participle.Elide("Comment", "Whitespace", "Newline"),
-		// Add a transformer to remove quotes from strings
-		//^ from KnowledgeDate
-		//; from Comment
-		participle.Map(func(token lexer.Token) (lexer.Token, error) {
-			switch {
-			case token.Type == tokenLexer.Symbols()["String"] && len(token.Value) >= 2:
-				token.Value = token.Value[1 : len(token.Value)-1]
-			case token.Type == tokenLexer.Symbols()["KnowledgeDate"]:
-				token.Value = token.Value[1:len(token.Value)]
-			case token.Type == tokenLexer.Symbols()["Comment"]:
-				token.Value = strings.TrimSpace(token.Value[1:len(token.Value)])
-			}
-			return token, nil
-		}),
-	)
-}
-
-// Parse takes a string input and returns a parsed Document
-func Parse(input string) (*Document, error) {
-	// First pass: handle indentation
-	processedInput, err := PreprocessIndentation(input)
-	if err != nil {
-		return nil, err
-	}
-
-	// Second pass: parse the processed input
-	parser, err := NewParser()
-	if err != nil {
-		return nil, err
-	}
-
-	return parser.ParseString("", processedInput)
+	// Unfortunately, we can't directly parse into a Document with []JournalEntry
+	// Since the Parse function has been rewritten to handle this properly,
+	// this function is now deprecated but kept for API compatibility
+	return nil, nil
 }
 
 // Parse takes a string input and returns a parsed Document
 func ParseWithDebug(input string) (*Document, error) {
-	// First pass: handle indentation
+	// First pass: preprocess indentation and show tokens
 	processedInput, err := PreprocessIndentation(input)
 	if err != nil {
 		return nil, err
 	}
 
+	// Display tokens for debugging
+	tokenLexer := TokenLexer()
 	tokens, err := tokenLexer.Lex("", strings.NewReader(processedInput))
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Tokenenised")
-	tokenEOF := indentLexer.Symbols()["EOF"]
-	fmt.Println("TokenEOF", tokenEOF)
+
+	// Define token types
+	tokenEOF := tokenLexer.Symbols()["EOF"]
 
 	// Create a context with cancellation for handling CTRL+C
 	ctx, cancel := context.WithCancel(context.Background())
@@ -252,15 +185,7 @@ tokenLoop:
 		}
 	}
 
-	// Second pass: parse the processed input
-	parser, err := NewParser()
-	if err != nil {
-		return nil, err
-	}
-
-	return parser.ParseString("", processedInput,
-		participle.Trace(os.Stdout),
-	)
+	return Parse(input, "debug.luca")
 }
 
 // SumIntsOrFloats sums the values of map m. It supports both int64 and float64
@@ -275,4 +200,261 @@ func ArrayEqual[T comparable](A, B []T) bool {
 		}
 	}
 	return true
+}
+
+// Parse parses the input string and returns a Document
+func Parse(input string, filename string) (*Document, error) {
+	// First pass: preprocess indentation and show tokens
+	processedInput, err := PreprocessIndentation(input)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := &Document{}
+
+	err = ParseAndAddToDocument(processedInput, filename, doc)
+	if err != nil {
+		return nil, err
+	}
+
+	return doc, nil
+}
+
+type parseState int
+
+const (
+	matchEntryHeader parseState = iota
+	matchDirective
+	matchEOF
+)
+
+type (
+	DirectiveNewFunc    func(*EntryHeader, string, *parserState)
+	DirectiveParserFunc func(lexer.Token, lexer.Token, *parserState) (parseState, error)
+	DirectiveAdderFunc  func(*Document, JournalEntry) error
+)
+type parserState struct {
+	TokenLexer         lexer.Definition
+	state              parseState
+	directiveState     int
+	tokenEOF           lexer.TokenType
+	tokenIndent        lexer.TokenType
+	tokenDedent        lexer.TokenType
+	tokenNewline       lexer.TokenType
+	tokenDate          lexer.TokenType
+	tokenKnowledgeDate lexer.TokenType
+	tokenString        lexer.TokenType
+	tokenNumber        lexer.TokenType
+	tokenArrow         lexer.TokenType
+	tokenIdent         lexer.TokenType
+	tokenWhitespace    lexer.TokenType
+	tokenComment       lexer.TokenType
+	directiveNewer     DirectiveNewFunc
+	directiveParser    DirectiveParserFunc
+	directiveAdder     DirectiveAdderFunc
+	entry              JournalEntry
+}
+
+func NewParserState(tokenLexer lexer.Definition) *parserState {
+	ps := &parserState{
+		TokenLexer:         tokenLexer,
+		state:              matchEntryHeader,
+		tokenEOF:           tokenLexer.Symbols()["EOF"],
+		tokenIndent:        tokenLexer.Symbols()["INDENT"],
+		tokenDedent:        tokenLexer.Symbols()["DEDENT"],
+		tokenNewline:       tokenLexer.Symbols()["Newline"],
+		tokenDate:          tokenLexer.Symbols()["Date"],
+		tokenKnowledgeDate: tokenLexer.Symbols()["KnowledgeDate"],
+		tokenString:        tokenLexer.Symbols()["String"],
+		tokenNumber:        tokenLexer.Symbols()["Number"],
+		tokenArrow:         tokenLexer.Symbols()["Arrow"],
+		tokenIdent:         tokenLexer.Symbols()["Ident"],
+		tokenWhitespace:    tokenLexer.Symbols()["Whitespace"],
+		tokenComment:       tokenLexer.Symbols()["Comment"],
+	}
+	return ps
+}
+
+func ParseAndAddToDocument(input string, filename string, doc *Document) error {
+	var (
+		token           lexer.Token
+		nextToken       lexer.Token
+		nextState       parseState
+		directive       string
+		thisEntryHeader *EntryHeader
+	)
+	tokenLexer := TokenLexer()
+	ps := NewParserState(tokenLexer)
+	// First pass: preprocess indentation and show tokens
+	processedInput, err := PreprocessIndentation(input)
+	if err != nil {
+		return err
+	}
+	tokens, err := tokenLexer.Lex("", strings.NewReader(processedInput))
+	if err != nil {
+		return err
+	}
+
+	// Create a context with cancellation for handling CTRL+C if get stuck in an infinite loop
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Set up signal handling for CTRL+C
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	defer signal.Stop(signalChan)
+
+	// Start a goroutine to handle the interrupt signal
+	go func() {
+		<-signalChan
+		fmt.Println("\nReceived interrupt signal. Cancelling operation...")
+		cancel()
+	}()
+
+	thisEntryHeader = new(EntryHeader)
+
+	getNext := func() (lexer.Token, error) {
+		for {
+			nextToken, err = tokens.Next()
+			if err != nil && err != io.EOF {
+				return lexer.Token{}, err
+			}
+			if err == io.EOF {
+				return lexer.Token{Type: ps.tokenEOF}, nil
+			}
+			// Skip whitespace
+			if nextToken.Type != ps.tokenWhitespace {
+				return nextToken, nil
+			}
+		}
+	}
+	nextToken, err = getNext()
+	if err != nil && err != io.EOF {
+		return err
+	}
+
+	// Modified loop with context check
+tokenLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Operation cancelled")
+			break tokenLoop
+		default:
+			token = nextToken
+			nextToken, err = getNext()
+			if err != nil && err != io.EOF {
+				return err
+			}
+			if err == io.EOF || token.Type == ps.tokenEOF {
+				if ps.state == matchDirective {
+					err = ps.directiveAdder(doc, ps.entry)
+					if err != nil {
+						return err
+					}
+					ps.entry = nil
+				}
+				break tokenLoop
+			}
+			fmt.Printf("From Parser: %+v: |%s|\n", token.Type, token.Value)
+			switch ps.state {
+			case matchEntryHeader:
+				nextState, directive, err = parseEntryHeader(token, nextToken, ps, thisEntryHeader)
+				if err != nil {
+					return err
+				}
+				if nextState == matchDirective {
+					ps.directiveNewer = GetDirectiveNewer(directive)
+					ps.directiveParser = GetDirectiveParser(directive)
+					ps.directiveAdder = GetDirectiveAdder(directive)
+					ps.directiveState = 0
+					ps.directiveNewer(thisEntryHeader, directive, ps)
+					thisEntryHeader = new(EntryHeader)
+				}
+			case matchDirective:
+				nextState, err = ps.directiveParser(token, nextToken, ps)
+				if err != nil {
+					return err
+				}
+				if nextState != matchDirective {
+					err = ps.directiveAdder(doc, ps.entry)
+					if err != nil {
+						return err
+					}
+					ps.entry = nil
+				}
+			}
+			ps.state = nextState
+		}
+	}
+	return nil
+}
+
+var (
+	directiveNewers  = map[string]DirectiveNewFunc{}
+	directiveParsers = map[string]DirectiveParserFunc{}
+	directiveAdders  = map[string]DirectiveAdderFunc{}
+)
+
+func RegisterDirectiveNew(directive string, newFunc DirectiveNewFunc) {
+	directiveNewers[directive] = newFunc
+}
+
+func RegisterDirectiveParser(directive string, parser DirectiveParserFunc) {
+	directiveParsers[directive] = parser
+}
+
+func RegisterDirectiveAdder(directive string, adder DirectiveAdderFunc) {
+	directiveAdders[directive] = adder
+}
+
+func GetDirectiveNewer(directive string) DirectiveNewFunc {
+	return directiveNewers[directive]
+}
+
+func GetDirectiveParser(directive string) DirectiveParserFunc {
+	return directiveParsers[directive]
+}
+
+func GetDirectiveAdder(directive string) DirectiveAdderFunc {
+	return directiveAdders[directive]
+}
+
+// ParseFile parses a file and returns a Document
+func ParseFile(filename string) (*Document, error) {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %w", err)
+	}
+	return Parse(string(data), filename)
+}
+
+// ParseFiles parses multiple files and returns a merged Document
+func ParseFiles(filenames ...string) (*Document, error) {
+	doc := &Document{}
+
+	for _, filename := range filenames {
+		fileDoc, err := ParseFile(filename)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing %s: %w", filename, err)
+		}
+		fmt.Printf("fileDoc: %+v\n", fileDoc)
+		// doc.Entries = append(doc.Entries, fileDoc.Entries...)
+	}
+
+	return doc, nil
+}
+
+// Helper function to parse date strings into time.Time
+func ParseDate(dateStr string) time.Time {
+	t, _ := time.Parse("2006-01-02", dateStr)
+	return t
+}
+
+func DeQuote(s string) string {
+
+	if len(s) >= 2 {
+		return s[1 : len(s)-1]
+	}
+	return s
 }

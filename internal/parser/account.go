@@ -1,13 +1,17 @@
 package parser
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
+)
 
 // An accounting Account
 type Account struct {
-	EntryDate
+	EntryHeader
 
-	// Type is "open" for account declarations
-	Type string `parser:"@('open')"`
+	// Directive is "open" for account declarations
+	Directive string `parser:"@('open')"`
 
 	// Name is the account name
 	Name string `parser:"@String"`
@@ -23,7 +27,7 @@ type AccountDetail struct {
 
 // AccountsEqual compares two Accounts for equality
 func (a *Account) Equal(b *Account) bool {
-	if a.Type != b.Type {
+	if a.Directive != b.Directive {
 		return false
 	}
 	if a.Name != b.Name {
@@ -44,32 +48,43 @@ func (a AccountDetail) Equal(b AccountDetail) bool {
 
 // ToStringBuilder writes the account declaration to a string builder
 func (a *Account) ToStringBuilder(sb *strings.Builder) {
-	// Format date
-	sb.WriteString(a.Date.Format("2006-01-02"))
+	// Write header fields
+	a.EntryHeader.ToStringBuilder(sb)
 
-	// Add knowledge date if present
-	if !a.KnowledgeDate.IsZero() {
-		sb.WriteString(" =")
-		sb.WriteString(a.KnowledgeDate.Format("2006-01-02"))
-	}
-
-	// Add type and name
+	// Add directive and name
 	sb.WriteString(" ")
-	sb.WriteString(a.Type)
+	sb.WriteString(a.Directive)
 	sb.WriteString(" ")
 	sb.WriteString(a.Name)
-	sb.WriteString("\n")
 
+	// Add commodity if present
 	if a.Commodity != "" {
-		sb.WriteString(" " + a.Commodity)
+		sb.WriteString(" ")
+		sb.WriteString(a.Commodity)
 	}
+
 	sb.WriteString("\n")
 
-	a.AccountDetails.ToStringBuilder(sb)
+	// Add detailed fields if any
+	if a.AccountDetails.Description != "" {
+		a.AccountDetails.ToStringBuilder(sb)
+	}
 }
 
 func (ad AccountDetail) ToStringBuilder(sb *strings.Builder) {
 	if ad.Description != "" {
 		sb.WriteString("\tdescription \"" + ad.Description + "\"\n")
 	}
+}
+
+// GetDirective returns the account directive type
+func (a *Account) GetDirective() string {
+	return a.Directive
+}
+func init() {
+	RegisterDirectiveParser("open", ParseAccountDirective)
+}
+
+func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserState) (parseState, error) {
+	return matchDirective, nil
 }

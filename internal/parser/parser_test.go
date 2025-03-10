@@ -2,6 +2,7 @@ package parser
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -79,7 +80,7 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 			if tt.debug {
 				got, err = ParseWithDebug(tt.input)
 			} else {
-				got, err = Parse(tt.input)
+				got, err = Parse(tt.input, "test.luca")
 			}
 			if err != nil {
 				if tt.wantErr {
@@ -99,4 +100,40 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 			}
 		})
 	}
+}
+
+func TestDirectParsingToConcreteTypes(t *testing.T) {
+	input := `2024-01-01 open "assets:checking"
+2024-01-02 commodity "USD"
+2024-01-03 txn "Grocery shopping"
+    "assets:checking    -50.00"
+    "expenses:food       50.00"
+`
+	doc, err := Parse(input, "test.luca")
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(doc.Accounts))
+	assert.Equal(t, 1, len(doc.Transactions))
+	assert.Equal(t, 1, len(doc.Commodities))
+
+	// Test Account
+	accounts := doc.Accounts
+	assert.Equal(t, 1, len(accounts))
+	assert.Equal(t, "open", accounts[0].GetDirective())
+	assert.Equal(t, "assets:checking", accounts[0].Name)
+	assert.Equal(t, "test.luca", accounts[0].GetFilename())
+	date, _ := time.Parse("2006-01-02", "2024-01-01")
+	assert.Equal(t, date, accounts[0].GetDate())
+
+	// Test Commodity
+	commodities := doc.Commodities
+	assert.Equal(t, 1, len(commodities))
+	assert.Equal(t, "commodity", commodities[0].GetDirective())
+	assert.Equal(t, "USD", commodities[0].Name)
+
+	// Test Transaction
+	transactions := doc.Transactions
+	assert.Equal(t, 1, len(transactions))
+	assert.Equal(t, "txn", transactions[0].GetDirective())
+	assert.Equal(t, "Grocery shopping", transactions[0].Payee)
+	assert.Equal(t, 2, len(transactions[0].PostingStrings))
 }

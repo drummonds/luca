@@ -7,11 +7,9 @@ import (
 func TestGenericParse(t *testing.T) {
 	tests := ParserTests{
 		{
-			name:  "empty entry",
-			input: ``,
-			want: &Document{
-				Entries: nil,
-			},
+			name:    "empty entry",
+			input:   ``,
+			want:    &Document{},
 			wantErr: false,
 		},
 		{
@@ -19,24 +17,22 @@ func TestGenericParse(t *testing.T) {
 			input: `; This is a comment
 `,
 			expectedInput: new(string),
-			want: &Document{
-				Entries: nil,
-			},
-			wantErr: false,
+			want:          &Document{},
+			wantErr:       false,
 		},
 		{
 			name: "simplest generic entry",
 			input: `2024-01-01 generic
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
 						},
+						Directive:     "generic",
+						Description:   "",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -47,15 +43,15 @@ func TestGenericParse(t *testing.T) {
 			input: `2024-01-01 ^2024-01-02 generic
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Date:          "2024-01-01",
-						KnowledgeDate: "2024-01-02",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date:          ParseDate("2024-01-01"),
+							KnowledgeDate: ParseDate("2024-01-02"),
 						},
+						Directive:     "generic",
+						Description:   "",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -67,16 +63,16 @@ func TestGenericParse(t *testing.T) {
 			input: `2024-01-01 ^2024-01-02 generic ; This is a comment
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Date:          "2024-01-01",
-						KnowledgeDate: "2024-01-02",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							Comment:       "This is a comment",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date:          ParseDate("2024-01-01"),
+							KnowledgeDate: ParseDate("2024-01-02"),
 						},
+						Directive:     "generic",
+						Description:   "",
+						Comment:       "This is a comment",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -89,15 +85,15 @@ func TestGenericParse(t *testing.T) {
 2024-01-01 generic
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Comments: []string{"Generic test with comment"},
-						Date:     "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date:     ParseDate("2024-01-01"),
+							Comments: []string{"Generic test with comment"},
 						},
+						Directive:     "generic",
+						Description:   "",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -110,15 +106,15 @@ func TestGenericParse(t *testing.T) {
 2024-01-01 generic
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Comments: []string{"Generic test with comment", "Second comment"},
-						Date:     "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date:     ParseDate("2024-01-01"),
+							Comments: []string{"Generic test with comment", "Second comment"},
 						},
+						Directive:     "generic",
+						Description:   "",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -129,14 +125,14 @@ func TestGenericParse(t *testing.T) {
 			input: `2024-01-01 generic "Grocery shopping"
 `,
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:     "generic",
-							Description:   "Grocery shopping",
-							SubDirectives: nil,
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
 						},
+						Directive:     "generic",
+						Description:   "Grocery shopping",
+						SubDirectives: nil,
 					},
 				},
 			},
@@ -148,15 +144,15 @@ func TestGenericParse(t *testing.T) {
 	"assets:bank -50.00"
 `, // Needs to be a single string
 			want: &Document{
-				Entries: []*Entry{
+				GenericEntries: []*GenericEntry{
 					{
-						Date: "2024-01-01",
-						Generic: &GenericEntry{
-							Directive:   "generic",
-							Description: "Grocery shopping",
-							SubDirectives: []SubDirective{
-								{Text: "assets:bank -50.00"},
-							},
+						EntryHeader: EntryHeader{
+							Date: ParseDate("2024-01-01"),
+						},
+						Directive:   "generic",
+						Description: "Grocery shopping",
+						SubDirectives: []SubDirective{
+							{Text: "assets:bank -50.00"},
 						},
 					},
 				},
