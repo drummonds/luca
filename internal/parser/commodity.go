@@ -16,7 +16,9 @@ type Commodity struct {
 	Directive string `parser:"@('commodity')"`
 
 	// Symbol is the commodity symbol/identifier
+
 	Symbol string `parser:"@String"`
+	Sign   string // eg £,$,Ore
 
 	// Name is the commodity name
 	Name string `parser:"@String"`

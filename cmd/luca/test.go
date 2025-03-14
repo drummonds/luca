@@ -31,7 +31,7 @@ func testCommand() *Command {
 				fmt.Println("Parsing test input...")
 			}
 
-			doc, err := parser.Parse(input)
+			doc, err := parser.Parse(input, "test.luca")
 			if err != nil {
 				log.Fatalf("Failed to parse: %v", err)
 			}

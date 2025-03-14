@@ -80,7 +80,7 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 			if tt.debug {
 				got, err = ParseWithDebug(tt.input)
 			} else {
-				got, err = Parse(tt.input, "test.luca")
+				got, err = Parse(tt.input, "")
 			}
 			if err != nil {
 				if tt.wantErr {
@@ -103,11 +103,10 @@ func AbstractTestParse(t *testing.T, tests ParserTests) {
 }
 
 func TestDirectParsingToConcreteTypes(t *testing.T) {
-	input := `2024-01-01 open "assets:checking"
-2024-01-02 commodity "USD"
+	input := `2024-01-01 open assets:checking USD
+2024-01-02 commodity USD
 2024-01-03 txn "Grocery shopping"
-    "assets:checking    -50.00"
-    "expenses:food       50.00"
+	assets:cash 3.51 → food 
 `
 	doc, err := Parse(input, "test.luca")
 	assert.NoError(t, err)
@@ -128,12 +127,11 @@ func TestDirectParsingToConcreteTypes(t *testing.T) {
 	commodities := doc.Commodities
 	assert.Equal(t, 1, len(commodities))
 	assert.Equal(t, "commodity", commodities[0].GetDirective())
-	assert.Equal(t, "USD", commodities[0].Name)
+	assert.Equal(t, "USD", commodities[0].Symbol)
 
 	// Test Transaction
 	transactions := doc.Transactions
 	assert.Equal(t, 1, len(transactions))
 	assert.Equal(t, "txn", transactions[0].GetDirective())
-	assert.Equal(t, "Grocery shopping", transactions[0].Payee)
-	assert.Equal(t, 2, len(transactions[0].PostingStrings))
+	assert.Equal(t, 1, len(transactions[0].Movements))
 }

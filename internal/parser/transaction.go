@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/shopspring/decimal"
 )
 
 // Transaction represents a financial transaction with postings
@@ -12,18 +13,18 @@ type Transaction struct {
 	EntryHeader
 
 	// Directive is "txn" or "generic"
-	Directive   string     `parser:"@('txn' | '*' | 'transaction')"`
-	Description string     `parser:"@String?"`
-	Comment     string     `parser:"@Comment?"`
-	Movements   []Movement `parser:"( Indent @@+ 'DEDENT')?"`
+	Directive   string      `parser:"@('txn' | '*' | 'transaction')"`
+	Description string      `parser:"@String?"`
+	Comment     string      `parser:"@Comment?"`
+	Movements   []*Movement `parser:"( Indent @@+ 'DEDENT')?"`
 }
 
 // Posting represents an account posting
 type Movement struct {
-	From   string `parser:"@Ident"`
-	Amount string `parser:"@Number"`
-	Arrow  string `parser:"@Arrow"` // Store arrow type so can tround trip
-	To     string `parser:"@Ident"`
+	From   string          `parser:"@Ident"`
+	Amount decimal.Decimal `parser:"@Number"`
+	Arrow  string          `parser:"@Arrow"` // Store arrow type so can tround trip
+	To     string          `parser:"@Ident"`
 }
 
 // transactionsEqual compares two Transactions for equality
@@ -41,7 +42,7 @@ func (a Movement) Equal(b Movement) bool {
 	if a.From != b.From {
 		return false
 	}
-	if a.Amount != b.Amount {
+	if !a.Amount.Equal(b.Amount) {
 		return false
 	}
 	if a.Arrow != b.Arrow {
@@ -59,21 +60,19 @@ func (t *Transaction) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString(" ")
 	sb.WriteString(t.Directive)
 	sb.WriteString(" ")
-	sb.WriteString(t.Description)
+	sb.WriteString(`"` + t.Description + `"`)
 	sb.WriteString("\n")
 
-	// Add postings if any
-	for _, posting := range t.PostingStrings {
-		sb.WriteString("\t")
-		sb.WriteString(posting)
-		sb.WriteString("\n")
+	// Add movements if any
+	for _, movement := range t.Movements {
+		movement.ToStringBuilder(sb)
 	}
 }
 
 func (m Movement) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString("\t")
 	sb.WriteString(m.From + " ")
-	sb.WriteString(m.Amount + " ")
+	sb.WriteString(m.Amount.String() + " ")
 	sb.WriteString(m.Arrow + " ")
 	sb.WriteString(m.To)
 	sb.WriteString("\n")
@@ -91,7 +90,6 @@ const (
 	transactionDirectiveComment
 	transactionDirectiveIndentOrNew
 	transactionDirectiveExpectIndent
-	transactionDirectiveSubDirectivesStart
 	transactionDirectiveSubDirectiveFrom
 	transactionDirectiveSubDirectiveAmount
 	transactionDirectiveSubDirectiveArrow
@@ -138,7 +136,7 @@ func ParseTransactionDirective(token lexer.Token, nextToken lexer.Token, ps *par
 	case transactionDirectiveIndentOrNew:
 		switch token.Type {
 		case ps.tokenIndent:
-			ps.directiveState = int(transactionDirectiveSubDirectives)
+			ps.directiveState = int(transactionDirectiveSubDirectiveFrom)
 			return matchDirective, nil
 		case ps.tokenNewline:
 			if nextToken.Type == ps.tokenIndent || nextToken.Type == ps.tokenEOF {
@@ -155,16 +153,19 @@ func ParseTransactionDirective(token lexer.Token, nextToken lexer.Token, ps *par
 			ps.directiveState = int(transactionDirectiveSubDirectiveFrom)
 			return matchDirective, nil
 		case ps.tokenDedent:
-			return matchEntryHeader, nil // Finished commodity
+			return matchEntryHeader, nil // Finished movements
 		default:
 			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
 		}
 	case transactionDirectiveSubDirectiveFrom:
 		switch token.Type {
 		case ps.tokenIdent:
-			transaction.Movements = append(transaction.Movements, Movement{From: DeQuote(token.Value)})
+			m := Movement{From: token.Value}
+			transaction.Movements = append(transaction.Movements, &m)
 			ps.directiveState = int(transactionDirectiveSubDirectiveAmount)
 			return matchDirective, nil
+		case ps.tokenDedent:
+			return matchEntryHeader, nil // Finished movements
 		default:
 			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
 		}
@@ -172,7 +173,11 @@ func ParseTransactionDirective(token lexer.Token, nextToken lexer.Token, ps *par
 		switch token.Type {
 		case ps.tokenNumber:
 			movement := transaction.Movements[len(transaction.Movements)-1]
-			movement.Amount = ParseNumber(token.Value)
+			n, err := ParseNumber(token.Value)
+			if err != nil {
+				return matchEntryHeader, fmt.Errorf("expected number, got %+v", token.Value)
+			}
+			movement.Amount = n
 			ps.directiveState = int(transactionDirectiveSubDirectiveArrow)
 			return matchDirective, nil
 		default:
@@ -192,7 +197,7 @@ func ParseTransactionDirective(token lexer.Token, nextToken lexer.Token, ps *par
 		switch token.Type {
 		case ps.tokenIdent:
 			movement := transaction.Movements[len(transaction.Movements)-1]
-			movement.To = DeQuote(token.Value)
+			movement.To = token.Value
 			ps.directiveState = int(transactionDirectiveSubDirectivesEnd)
 			return matchDirective, nil
 		default:
@@ -201,7 +206,7 @@ func ParseTransactionDirective(token lexer.Token, nextToken lexer.Token, ps *par
 	case transactionDirectiveSubDirectivesEnd:
 		switch token.Type {
 		case ps.tokenNewline:
-			ps.directiveState = int(transactionDirectiveSubDirectivesStart)
+			ps.directiveState = int(transactionDirectiveSubDirectiveFrom)
 			return matchDirective, nil
 		case ps.tokenDedent:
 			return matchEntryHeader, nil

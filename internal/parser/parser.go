@@ -11,6 +11,7 @@ import (
 
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -181,7 +182,7 @@ tokenLoop:
 			if token.Type == tokenEOF {
 				break tokenLoop
 			}
-			fmt.Printf("%+v: |%s|\n", token.Type, token.Value)
+			// fmt.Printf("%+v: |%s|\n", token.Type, token.Value)
 		}
 	}
 
@@ -312,6 +313,7 @@ func ParseAndAddToDocument(input string, filename string, doc *Document) error {
 	}()
 
 	thisEntryHeader = new(EntryHeader)
+	thisEntryHeader.Filename = filename
 
 	getNext := func() (lexer.Token, error) {
 		for {
@@ -356,7 +358,7 @@ tokenLoop:
 				}
 				break tokenLoop
 			}
-			fmt.Printf("From Parser: %+v: |%s|\n", token.Type, token.Value)
+			// fmt.Printf("From Parser: %+v: |%s|\n", token.Type, token.Value)
 			switch ps.state {
 			case matchEntryHeader:
 				nextState, directive, err = parseEntryHeader(token, nextToken, ps, thisEntryHeader)
@@ -451,8 +453,12 @@ func ParseDate(dateStr string) time.Time {
 	return t
 }
 
-func DeQuote(s string) string {
+func ParseNumber(numberStr string) (decimal.Decimal, error) {
+	n, err := decimal.NewFromString(numberStr)
+	return n, err
+}
 
+func DeQuote(s string) string {
 	if len(s) >= 2 {
 		return s[1 : len(s)-1]
 	}

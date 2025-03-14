@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
@@ -16,13 +17,8 @@ type Account struct {
 	// Name is the account name
 	Name string `parser:"@String"`
 
-	Commodity      string        `parser:"@Ident?"`
-	AccountDetails AccountDetail `parser:"('INDENT' @@ 'DEDENT')?"`
-}
-
-// AccountDetail represents additional account details
-type AccountDetail struct {
-	Description string `parser:"( 'description' @String)?"`
+	Commodity   string `parser:"@Ident?"`
+	Description string
 }
 
 // AccountsEqual compares two Accounts for equality
@@ -36,14 +32,7 @@ func (a *Account) Equal(b *Account) bool {
 	if a.Commodity != b.Commodity {
 		return false
 	}
-	return a.AccountDetails.Equal(b.AccountDetails)
-}
-
-func (a AccountDetail) Equal(b AccountDetail) bool {
-	if a.Description != b.Description {
-		return false
-	}
-	return true
+	return a.Description == b.Description
 }
 
 // ToStringBuilder writes the account declaration to a string builder
@@ -54,8 +43,10 @@ func (a *Account) ToStringBuilder(sb *strings.Builder) {
 	// Add directive and name
 	sb.WriteString(" ")
 	sb.WriteString(a.Directive)
-	sb.WriteString(" ")
-	sb.WriteString(a.Name)
+	if a.Name != "" {
+		sb.WriteString(" ")
+		sb.WriteString(a.Name)
+	}
 
 	// Add commodity if present
 	if a.Commodity != "" {
@@ -66,14 +57,8 @@ func (a *Account) ToStringBuilder(sb *strings.Builder) {
 	sb.WriteString("\n")
 
 	// Add detailed fields if any
-	if a.AccountDetails.Description != "" {
-		a.AccountDetails.ToStringBuilder(sb)
-	}
-}
-
-func (ad AccountDetail) ToStringBuilder(sb *strings.Builder) {
-	if ad.Description != "" {
-		sb.WriteString("\tdescription \"" + ad.Description + "\"\n")
+	if a.Description != "" {
+		sb.WriteString("\tdescription \"" + a.Description + "\"\n")
 	}
 }
 
@@ -81,10 +66,137 @@ func (ad AccountDetail) ToStringBuilder(sb *strings.Builder) {
 func (a *Account) GetDirective() string {
 	return a.Directive
 }
-func init() {
-	RegisterDirectiveParser("open", ParseAccountDirective)
+
+type accountDirectiveState int
+
+const (
+	accountDirectiveLookForName accountDirectiveState = iota
+	accountDirectiveLookForCommodity
+	accountDirectiveIndentOrNew
+	accountDirectiveExpectIndent // Know that that it is coming
+	accountDirectiveDetailStart
+	accountDirectiveDetailDescription
+	accountDirectiveDetailEnd
+)
+
+// Account = "open" <ident> <ident> ("INDENT" AccountDetail "DEDENT")? .
+func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserState) (parseState, error) {
+	if ps.entry == nil {
+		return matchEntryHeader, fmt.Errorf("entry must be initialised before parsing starts")
+	}
+	account := ps.entry.(*Account)
+	switch accountDirectiveState(ps.directiveState) {
+	case accountDirectiveLookForName:
+		switch token.Type {
+		case ps.tokenIdent:
+			account.Name = token.Value
+			ps.directiveState = int(accountDirectiveLookForCommodity)
+			return matchDirective, nil
+		case ps.tokenComment:
+			///Ignore wait to add comment to account
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case accountDirectiveLookForCommodity:
+		switch token.Type {
+		case ps.tokenIdent:
+			account.Commodity = token.Value
+			ps.directiveState = int(accountDirectiveIndentOrNew)
+			return matchDirective, nil
+		case ps.tokenComment:
+			///Ignore wait to add comment to account
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case accountDirectiveIndentOrNew:
+		switch token.Type {
+		case ps.tokenNewline, ps.tokenEOF:
+			if nextToken.Type == ps.tokenIndent {
+				ps.directiveState = int(accountDirectiveExpectIndent)
+				return matchDirective, nil
+			}
+			return matchEntryHeader, nil // Finished account
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case accountDirectiveExpectIndent:
+		switch token.Type {
+		case ps.tokenIndent:
+			ps.directiveState = int(accountDirectiveDetailStart)
+			return matchDirective, nil
+		case ps.tokenDedent:
+			return matchEntryHeader, nil // Finished account
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		}
+	case accountDirectiveDetailStart:
+		switch token.Type {
+		case ps.tokenIdent:
+			value := strings.ToLower(token.Value)
+			if value == "description" {
+				ps.directiveState = int(accountDirectiveDetailDescription)
+				return matchDirective, nil
+			}
+			return matchEntryHeader, fmt.Errorf("unexpected account detail identifier, got %s", token.Value)
+		case ps.tokenDedent:
+			return matchEntryHeader, nil // Finished account
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case accountDirectiveDetailDescription:
+		switch token.Type {
+		case ps.tokenString:
+			account.Description = DeQuote(token.Value)
+			ps.directiveState = int(accountDirectiveDetailEnd)
+			return matchDirective, nil
+		case ps.tokenNewline:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case accountDirectiveDetailEnd:
+		switch token.Type {
+		case ps.tokenNewline:
+			ps.directiveState = int(accountDirectiveDetailStart)
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	}
+	return matchEntryHeader, nil
 }
 
-func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserState) (parseState, error) {
-	return matchDirective, nil
+func init() {
+	RegisterDirectiveNew("open", NewAccountDirective)
+	RegisterDirectiveParser("open", ParseAccountDirective)
+	RegisterDirectiveAdder("open", AddAccountDirective)
+}
+
+func NewAccountDirective(entryHeader *EntryHeader, directive string, ps *parserState) {
+	account := Account{
+		EntryHeader: *entryHeader,
+		Directive:   directive,
+	}
+	ps.entry = &account
+}
+
+func AddAccountDirective(doc *Document, entry JournalEntry) error {
+	// TODO: Add lookup on accounts
+	account := entry.(*Account)
+	doc.Accounts = append(doc.Accounts, account)
+	return nil
+}
+
+func (a *Account) GetEntryHeader() *EntryHeader {
+	return &a.EntryHeader
+}
+
+func (a *Account) GetFilename() string {
+	return a.EntryHeader.Filename
+}
+
+func (a *Account) SetFilename(filename string) {
+	a.EntryHeader.Filename = filename
 }
