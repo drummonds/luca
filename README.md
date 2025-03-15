@@ -144,7 +144,7 @@ gantt
     dateFormat  YYYY-MM-DD
 
     section Timelines
-    Phase 0 Live         :done, t1,  2025-03-04, 6m
+    Phase 0 Live         :done, t1,  2025-02-06, 6m
     Phase 1 Enhance reporting     :t2,  after t1, 6m
 
     section Phase 0 Live
