@@ -145,7 +145,7 @@ gantt
 
     section Timelines
     Phase 0 Live         :done, t1,  2025-03-04, 6m
-    Phase 1 Enhance reporting     :t2,  2025-03-05, 1d
+    Phase 1 Enhance reporting     :t2,  after t1, 6m
 
     section Phase 0 Live
     Text serialisation    : done, a1, 2025-02-06, 6w
