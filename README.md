@@ -144,11 +144,11 @@ gantt
     dateFormat  YYYY-MM-DD
 
     section Timelines
-    Phase 0 Live         :done, t1,  2022-03-04, 1d
-    Phase 1 Enhance reporting     :t2,  2022-03-05, 1d
+    Phase 0 Live         :done, t1,  2025-03-04, 6m
+    Phase 1 Enhance reporting     :t2,  2025-03-05, 1d
 
     section Phase 0 Live
-    Text serialisation    : done, a1, 2025-02-06, 1m
+    Text serialisation    : done, a1, 2025-02-06, 6w
     Ofx Ingestion         :active, a2, after a1, 1m
     Plain reporting       :a3, after a2, 1m
     Web reporting         :a4, after a3, 1m
