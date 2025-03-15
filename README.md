@@ -10,6 +10,7 @@ inherits ideas from [Luca Pacioli translated by Geijsbeek][pacioli], [Martin Bla
 ## Digital representations
 
 There will be three representations of the data which will be supported:
+
 - A plain text account format (storage only)
 - An in memory version for fast transformation
 - A database format for larger scale
@@ -33,7 +34,6 @@ Operations will be defined on this:
 - creating balances at time X knowledge date y
 - reporting data eg P&L for a period
 
-
 ## Differences from Coin
 
 - Different dateformats
@@ -44,22 +44,21 @@ Operations will be defined on this:
 
 ## Knowledge date
 
-This is used as the date the book keeper is aware of the information.  you might also refer date as
-"value date" and Knowledge date as "insertion date".  For accountants preparing books of accounts it 
+This is used as the date the book keeper is aware of the information. you might also refer date as
+"value date" and Knowledge date as "insertion date". For accountants preparing books of accounts it
 allows them to say that as of date X we were told the accounts were Y but with new information on date P
 the accounts are now Q.
 
 ## Documents and Ledger
 
-crypto usage which is more closely related to journal entries.  So quaderno it is.
-I am going to use ledger for the complete set of accounts.  There are other meanings but this seems to be closest
+crypto usage which is more closely related to journal entries. So quaderno it is.
+I am going to use ledger for the complete set of accounts. There are other meanings but this seems to be closest
 to historical meaning.
 
 Quaderno can also be calculated on different basis eg models which can be much more compact.
 
-The documents are defined as the collection of text files and we can parse into them and out.  The books
-is an internal representation of the accunts which is built from the journals. 
-
+The documents are defined as the collection of text files and we can parse into them and out. The books
+is an internal representation of the accunts which is built from the journals.
 
 # EBNF definition of text format
 
@@ -91,7 +90,7 @@ Notes:
 For directives apart from transactions full_date is assumed at the start of the day, and for transactions one microsecond before the end of the day.
 Directives names are lower case.
 
-The resolution of datetime is assumed to be 1 microsecond.  Note that different versions might
+The resolution of datetime is assumed to be 1 microsecond. Note that different versions might
 implement it with different resolutions to squeeze the amount of storage. Eg the default
 datetime uses Unix Epoch timestamps
 
@@ -101,10 +100,10 @@ Pacioli has 4 types of records which are used to hold the accounting data:
 
 - Inventory of goods and money
 - Day notebooks, voluminous contemporaneous diaries
-- Journal entries.  In chonological order with notes (cross referenced to the ledger)
+- Journal entries. In chonological order with notes (cross referenced to the ledger)
 - Ledgers Summary of activity by account
 
-With a computer we are going to focus on the journal.  The cross referencing and ledger balances can
+With a computer we are going to focus on the journal. The cross referencing and ledger balances can
 be produced by computation.
 
 - Commodity
@@ -112,20 +111,19 @@ be produced by computation.
 - Transaction
 - Balance
 
-The core concept is to take Pacioli's books and conentate on the journal entries.  In order for this
+The core concept is to take Pacioli's books and conentate on the journal entries. In order for this
 to be complete you need to be able to extne
 
 There are a number of domains:
 
 - parsing
-    - Serialisation to and from text
+  - Serialisation to and from text
 - Core manipulation
 - Balance query functions
 
-
 #### Serialisation
 
-- internal/datetime:  Support LucaDateTimeString
+- internal/datetime: Support LucaDateTimeString
 - directiveHeader: Generic directive header
 
 #### Core
@@ -133,19 +131,35 @@ There are a number of domains:
 - directive: interface
 - journal: list of entries
 - directives
-    - commodity
-    - account
-    - transaction
-    - balance
+  - commodity
+  - account
+  - transaction
+  - balance
 
 ### Road map
 
 ```mermaid
-  info
+gantt
+    title Luca Roadmap
+    dateFormat  YYYY-MM-DD
+
+    section Timelines
+    Phase 0 Live         :done, t1,  2022-03-04, 1d
+    Phase 1 Enhance reporting     :t2,  2022-03-05, 1d
+
+    section Phase 0 Live
+    Text serialisation    : done, a1, 2025-02-06, 1m
+    Ofx Ingestion         :active, a2, after a1, 1m
+    Plain reporting       :a3, after a2, 1m
+    Web reporting         :a4, after a3, 1m
+    Useful                :milestone, a5, after a4, 1d
+    Sql query language    :a6, after a5, 1m
+
 ```
 
 # Ideas
-Segmenting by time period.  This allows you to deal with all the data for a period in memory 
+
+Segmenting by time period. This allows you to deal with all the data for a period in memory
 as well as handling longer time periods.
 
 ## References
@@ -154,17 +168,18 @@ date time format comes from https://www.rfc-editor.org/rfc/rfc3339
 
 ### String concatenation
 
-You could use either + or stringbuilder.  This article https://dev.to/jonathanlawhh/golang-string-concatenation-what-how-why-3fcd 
-shows that for adding 2 strings both methods are fast but 
-+ is twice as fast.  However by the time you get to 10 strings stringbuilder is twice as fast.
+You could use either + or stringbuilder. This article https://dev.to/jonathanlawhh/golang-string-concatenation-what-how-why-3fcd
+shows that for adding 2 strings both methods are fast but
 
-So using `"\t" + test.data + "/n"` is clear and good practice but not much longer. 
+- is twice as fast. However by the time you get to 10 strings stringbuilder is twice as fast.
+
+So using `"\t" + test.data + "/n"` is clear and good practice but not much longer.
 
 ## colophon
 
-This is third version of luca.  The first was a python sqlite implementation, the second a
+This is third version of luca. The first was a python sqlite implementation, the second a
 more generic Python version and this a go implmention of a plain text accounting format,
 
-I have read Luca Paciolo's book in translation and think it is admirably clear. I used to 
+I have read Luca Paciolo's book in translation and think it is admirably clear. I used to
 worry that he was taking credit from Benedeto Cotrugli who wrote earlier and was ppublished
-later.  However Paciolo's book is so clear that I am happy to call this luca.
+later. However Paciolo's book is so clear that I am happy to call this luca.

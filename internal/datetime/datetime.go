@@ -50,6 +50,9 @@ func ParseLucaDateTime(s string) (time.Time, error) {
 		if err != nil {
 			return time.Time{}, fmt.Errorf("invalid year %s, %+v", s, err)
 		}
+		if i < -9999 || i > 9999 {
+			return time.Time{}, fmt.Errorf("invalid year %s, must be between -9999 and 9999", s)
+		}
 		return time.Date(int(i), 1, 1, 0, 0, 0, 0, time.UTC), nil
 	case l == 10:
 		return time.Parse(time.DateOnly, s)
