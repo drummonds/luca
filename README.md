@@ -95,7 +95,7 @@ The resolution of datetime is assumed to be 1 microsecond.  Note that different 
 implement it with different resolutions to squeeze the amount of storage. Eg the default
 datetime uses Unix Epoch timestamps
 
-## Implmentation details
+## Implementation details
 
 Pacioli has 4 types of records which are used to hold the accounting data:
 
@@ -104,7 +104,7 @@ Pacioli has 4 types of records which are used to hold the accounting data:
 - Journal entries.  In chonological order with notes (cross referenced to the ledger)
 - Ledgers Summary of activity by account
 
-With a computerf we are going to focus on the journal.  The cross referencing and ledger balances can
+With a computer we are going to focus on the journal.  The cross referencing and ledger balances can
 be produced by computation.
 
 - Commodity
@@ -123,10 +123,6 @@ There are a number of domains:
 - Balance query functions
 
 
-### Hierarchy of implementation
-
-At the base level you have some helper functions:
-
 #### Serialisation
 
 - internal/datetime:  Support LucaDateTimeString
@@ -141,6 +137,12 @@ At the base level you have some helper functions:
     - account
     - transaction
     - balance
+
+### Road map
+
+```mermaid
+  info
+```
 
 # Ideas
 Segmenting by time period.  This allows you to deal with all the data for a period in memory 
