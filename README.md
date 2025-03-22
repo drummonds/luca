@@ -49,13 +49,12 @@ This is used as the date the book keeper is aware of the information. you might 
 allows them to say that as of date X we were told the accounts were Y but with new information on date P
 the accounts are now Q.
 
-## Documents and Ledger
+## Journal Documents and Ledger
 
-crypto usage which is more closely related to journal entries. So quaderno it is.
 I am going to use ledger for the complete set of accounts. There are other meanings but this seems to be closest
 to historical meaning.
 
-Quaderno can also be calculated on different basis eg models which can be much more compact.
+Journals can also be calculated on different basis eg models which can be much more compact, eg recurring entries.
 
 The documents are defined as the collection of text files and we can parse into them and out. The books
 is an internal representation of the accunts which is built from the journals.
@@ -64,12 +63,15 @@ is an internal representation of the accunts which is built from the journals.
 
 Using the language of Martin Blais Beancount https://beancount.github.io/docs/beancount_language_syntax.html#syntax-overview
 
-Current it is a lot simplified:
+Currently it is a lot simplified:
 
 - no option entries
 - no balance postings
 
-Luca document its own usage, and the following is the output:
+Luca document its own usage.  Note it has a more relaxed input format and a more
+precise output format.  So for instance files can be input any order but will be saved in sorted order.  
+Open directives allow a default commodity but when saved it will be specified.
+The following is the output of the luca ebnf output:
 
 ```ebnf
 
@@ -136,6 +138,7 @@ There are a number of domains:
   - transaction
   - balance
 
+
 ### Road map
 
 ```mermaid
@@ -144,18 +147,41 @@ gantt
     dateFormat  YYYY-MM-DD
 
     section Timelines
-    Phase 0 Live         :done, t1,  2025-02-06, 6M
+    Phase 0 Live         :t1,  2025-02-06, 6M
     Phase 1 Enhance reporting     :t2,  after t1, 6M
 
     section Phase 0 Live
     Text serialisation    : done, a1, 2025-02-06, 6w
-    Ofx Ingestion         :active, a2, after a1, 1M
+    Single file ingestion and saving : a11, after a1, 1w
+    Multiple file ingestion and saving : a12, after a11, 1w
+    Balance reporting : a13, after a12, 1w
+    AFP sample : a14, after a13, 1w
+    Ofx Ingestion         :active, a2, after a14, 1M
     Plain reporting       :a3, after a2, 1M
     Web reporting         :a4, after a3, 1M
     Useful                :milestone, a5, after a4, 1d
     Sql query language    :a6, after a5, 1M
 
 ```
+
+
+
+## Features
+
+List of features that will get implmented
+
+### Directive Account
+
+#### Commodity
+
+- Make sure default commodity is defined either explicitly or implicitly
+- Save file format use explicit commodity although input format
+
+Allow list rather than single commodity/currency.  This will generate multiple account for each commodity.  
+Worked example with Swedish Ore and Canadian dollar.
+
+#### Sub unit clean up 
+Spring decimal uses nice rounding system and we should use this rather than subunit.
 
 # Ideas
 

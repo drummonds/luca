@@ -8,15 +8,15 @@ import (
 	"github.com/drummonds/luca/internal/parser"
 )
 
-// testCommand implements the "test" subcommand
-func testCommand() *Command {
-	fs := flag.NewFlagSet("test", flag.ExitOnError)
+// demoCommand implements the "demo" subcommand
+func demoCommand() *Command {
+	fs := flag.NewFlagSet("demo", flag.ExitOnError)
 
 	return &Command{
-		Name:    "test",
-		Usage:   "Run parser tests on sample input",
+		Name:    "demo",
+		Usage:   "Input demo and show output",
 		FlagSet: fs,
-		Run: func(args []string) {
+		Run: func(args []string, options *CommandOptions) {
 			fs.Parse(args)
 
 			input := `2024-03-20 generic "Grocery shopping"
@@ -27,7 +27,7 @@ func testCommand() *Command {
 	cash 5.00 -> expenses:coffee
 `
 
-			if _verbose {
+			if options.Verbose {
 				fmt.Println("Parsing test input...")
 			}
 

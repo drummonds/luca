@@ -16,10 +16,10 @@ func ebnfCommand() *Command {
 		Name:    "ebnf",
 		Usage:   "Generate EBNF grammar for the parser",
 		FlagSet: fs,
-		Run: func(args []string) {
+		Run: func(args []string, options *CommandOptions) {
 			fs.Parse(args)
 
-			if _verbose {
+			if options.Verbose {
 				fmt.Println("Generating EBNF grammar...")
 			}
 

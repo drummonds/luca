@@ -79,12 +79,19 @@ const (
 	accountDirectiveDetailEnd
 )
 
-// Account = "open" <ident> <ident> ("INDENT" AccountDetail "DEDENT")? .
+// Account = "open" <ident> <ident>? ("INDENT" AccountDetail "DEDENT")? .
 func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserState) (parseState, error) {
 	if ps.entry == nil {
 		return matchEntryHeader, fmt.Errorf("entry must be initialised before parsing starts")
 	}
 	account := ps.entry.(*Account)
+	endFirstLine := func() (parseState, error) {
+		if nextToken.Type == ps.tokenIndent {
+			ps.directiveState = int(accountDirectiveExpectIndent)
+			return matchDirective, nil
+		}
+		return matchEntryHeader, nil // Finished account
+	}
 	switch accountDirectiveState(ps.directiveState) {
 	case accountDirectiveLookForName:
 		switch token.Type {
@@ -104,6 +111,8 @@ func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserS
 			account.Commodity = token.Value
 			ps.directiveState = int(accountDirectiveIndentOrNew)
 			return matchDirective, nil
+		case ps.tokenNewline:
+			return endFirstLine()
 		case ps.tokenComment:
 			///Ignore wait to add comment to account
 			return matchDirective, nil
@@ -113,11 +122,7 @@ func ParseAccountDirective(token lexer.Token, nextToken lexer.Token, ps *parserS
 	case accountDirectiveIndentOrNew:
 		switch token.Type {
 		case ps.tokenNewline, ps.tokenEOF:
-			if nextToken.Type == ps.tokenIndent {
-				ps.directiveState = int(accountDirectiveExpectIndent)
-				return matchDirective, nil
-			}
-			return matchEntryHeader, nil // Finished account
+			return endFirstLine()
 		default:
 			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token.Type)
 		}

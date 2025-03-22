@@ -13,22 +13,23 @@ type Commodity struct {
 	EntryHeader
 
 	// Directive is "commodity" for commodity declarations
-	Directive string `parser:"@('commodity')"`
+	Directive string
 
 	// Symbol is the commodity symbol/identifier
 
-	Symbol string `parser:"@String"`
+	Symbol string
 	Sign   string // eg £,$,Ore
 
 	// Name is the commodity name
-	Name string `parser:"@String"`
+	Name string
 
-	Description string `parser:"( 'description' @String)?"`
+	Description string
 	// DescriptionComment string
 	// How many of smallest unit makes up the unit
 	// so for pre 1961 sterling it is 960 farthings or groats
-	SubUnit int64 `parser:"( 'subunit' @Number)?"`
+	SubUnit int64
 	// SubUnitComment string
+	Default bool
 }
 
 func (a Commodity) Equal(b Commodity) bool {
@@ -38,10 +39,16 @@ func (a Commodity) Equal(b Commodity) bool {
 	if a.Name != b.Name {
 		return false
 	}
+	if a.Sign != b.Sign {
+		return false
+	}
 	if a.Description != b.Description {
 		return false
 	}
 	if a.SubUnit != b.SubUnit {
+		return false
+	}
+	if a.Default != b.Default {
 		return false
 	}
 	return true
@@ -64,6 +71,9 @@ func (c *Commodity) ToStringBuilder(sb *strings.Builder) {
 	}
 	if c.SubUnit != 0 {
 		sb.WriteString("\tsubunit " + strconv.FormatInt(c.SubUnit, 10) + "\n")
+	}
+	if c.Default {
+		sb.WriteString("\tdefault true\n")
 	}
 }
 
@@ -91,10 +101,11 @@ type commodityDirectiveState int
 const (
 	commodityDirectiveLookForSymbol commodityDirectiveState = iota
 	commodityDirectiveIndentOrNew
-	commodityDirectiveExpectIndent // Know that that it is coming
+	commodityDirectiveExpectIndent
 	commodityDirectiveDetailStart
 	commodityDirectiveDetailDescription
 	commodityDirectiveDetailSubUnit
+	commodityDirectiveDetailDefault
 	commodityDirectiveDetailEnd
 )
 
@@ -152,6 +163,10 @@ func ParseCommodityDirective(token lexer.Token, nextToken lexer.Token, ps *parse
 				ps.directiveState = int(commodityDirectiveDetailSubUnit)
 				return matchDirective, nil
 			}
+			if value == "default" {
+				ps.directiveState = int(commodityDirectiveDetailDefault)
+				return matchDirective, nil
+			}
 			return matchEntryHeader, fmt.Errorf("unexpected commodity detail identifier, got %s", token.Value)
 		case ps.tokenDedent:
 			return matchEntryHeader, nil // Finished commodity
@@ -181,6 +196,22 @@ func ParseCommodityDirective(token lexer.Token, nextToken lexer.Token, ps *parse
 			return matchDirective, nil
 		default:
 			return matchEntryHeader, fmt.Errorf("expected identifier, got %+v", token)
+		}
+	case commodityDirectiveDetailDefault:
+		switch token.Type {
+		case ps.tokenIdent:
+			value := strings.ToLower(token.Value)
+			if value == "true" {
+				commodity.Default = true
+			} else if value == "false" {
+				commodity.Default = false
+			} else {
+				return matchEntryHeader, fmt.Errorf("expected true or false, got %s", token.Value)
+			}
+			ps.directiveState = int(commodityDirectiveDetailEnd)
+			return matchDirective, nil
+		default:
+			return matchEntryHeader, fmt.Errorf("expected boolean value, got %+v", token)
 		}
 	case commodityDirectiveDetailEnd:
 		switch token.Type {

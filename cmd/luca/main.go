@@ -6,9 +6,12 @@ import (
 	"os"
 )
 
-var (
-	_verbose bool
-)
+type CommandOptions struct {
+	Verbose bool
+	Path    string
+}
+
+var _options *CommandOptions
 
 // Command represents a subcommand to be run
 type Command struct {
@@ -19,11 +22,14 @@ type Command struct {
 	// FlagSet for command-specific flags
 	FlagSet *flag.FlagSet
 	// Run executes the command with the given arguments
-	Run func(args []string)
+	Run func(args []string, options *CommandOptions)
 }
 
 func init() {
-	flag.BoolVar(&_verbose, "verbose", false, "enable verbose output")
+	_options = new(CommandOptions)
+	flag.BoolVar(&_options.Verbose, "verbose", false, "enable verbose output")
+	flag.StringVar(&_options.Path, "path", "", "path of source directory or filename")
+	flag.StringVar(&_options.Path, "p", "", "short form of path")
 }
 
 func usage(commands []*Command) {
@@ -41,9 +47,10 @@ func usage(commands []*Command) {
 func main() {
 	// Register all available commands
 	commands := []*Command{
-		testCommand(),
+		demoCommand(),
 		ebnfCommand(),
 		ofxCommand(),
+		afpCommand(),
 	}
 
 	// Create a map for quick command lookup
@@ -77,5 +84,5 @@ func main() {
 	}
 
 	// Run the command with remaining args
-	cmd.Run(args[1:])
+	cmd.Run(args[1:], _options)
 }

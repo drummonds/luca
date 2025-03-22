@@ -2,11 +2,11 @@ package luca
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/drummonds/luca/internal/parser"
+	"github.com/spf13/afero"
 )
 
 // A Ledger is a working list of all entries.
@@ -17,8 +17,9 @@ type Ledger struct {
 	Accounts     []*parser.Account
 	Transactions []*parser.Transaction
 	// Helper data  Names are case insensitive
-	CommoditiesMap map[string]*parser.Commodity
-	AccountsMap    map[string]*parser.Account
+	CommoditiesMap   map[string]*parser.Commodity
+	AccountsMap      map[string]*parser.Account
+	DefaultCommodity *parser.Commodity
 }
 
 func (l *Ledger) AddCommodity(c *parser.Commodity) error {
@@ -133,7 +134,11 @@ func (l *Ledger) AddDocument(doc *parser.Document, filename string, autoCreate b
 			return err
 		}
 	}
+	l.SetDefaultCommodity()
 	for _, a := range doc.Accounts {
+		if a.Commodity == "" {
+			a.Commodity = l.DefaultCommodity.Symbol
+		}
 		err = l.AddAccount(a, autoCreate)
 		if err != nil {
 			return err
@@ -148,16 +153,37 @@ func (l *Ledger) AddDocument(doc *parser.Document, filename string, autoCreate b
 	return nil
 }
 
-// Given a diretory read all the .luca files and return a Ledger
-func NewLedger(dir string, autoCreate bool) (*Ledger, error) {
-	files, err := filepath.Glob(filepath.Join(dir, "*.luca"))
+// Given a directory read all the .luca files and return a Ledger
+func NewLedger() (*Ledger, error) {
+	ledger := &Ledger{}
+	ledger.CommoditiesMap = make(map[string]*parser.Commodity)
+	ledger.AccountsMap = make(map[string]*parser.Account)
+	ledger.Commodities = make([]*parser.Commodity, 0)
+	ledger.Accounts = make([]*parser.Account, 0)
+	ledger.Transactions = make([]*parser.Transaction, 0)
+	return ledger, nil
+}
+
+// Given a directory read all the .luca files and return a Ledger
+func NewLedgerFrom(dir string, autoCreate bool) (*Ledger, error) {
+	return NewLedgerFromFs(afero.NewOsFs(), dir, autoCreate)
+}
+
+// NewLedgerFromFs creates a new ledger from files in the given directory using the provided filesystem
+func NewLedgerFromFs(fs afero.Fs, dir string, autoCreate bool) (*Ledger, error) {
+	ledger, err := NewLedger()
 	if err != nil {
 		return nil, err
 	}
-	// Todo merge all docs into one and then add
-	ledger := &Ledger{}
+
+	pattern := filepath.Join(dir, "*.luca")
+	files, err := afero.Glob(fs, pattern)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, file := range files {
-		content, err := os.ReadFile(file)
+		content, err := afero.ReadFile(fs, file)
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +191,54 @@ func NewLedger(dir string, autoCreate bool) (*Ledger, error) {
 		if err != nil {
 			return nil, err
 		}
-		ledger.AddDocument(doc, file, autoCreate) //Add the file so that can reverse the aggregation
+		ledger.AddDocument(doc, file, autoCreate)
 	}
 	return ledger, nil
+}
+
+// SetDefaultCommodity checks for a single default commodity and sets it
+func (l *Ledger) SetDefaultCommodity() error {
+	switch len(l.Commodities) {
+	case 0:
+		// If no commodities, create GBP as default
+		gbp := &parser.Commodity{
+			Symbol:  "GBP",
+			Name:    "British Pound",
+			Sign:    "£",
+			SubUnit: 100,
+			Default: true,
+		}
+		if err := l.AddCommodity(gbp); err != nil {
+			return err
+		}
+		l.DefaultCommodity = gbp
+		return nil
+	case 1:
+		// If only one commodity, make it default
+		l.Commodities[0].Default = true
+		l.DefaultCommodity = l.Commodities[0]
+		return nil
+	default:
+		// Original logic for multiple commodities
+		var defaultCommodity *parser.Commodity
+		for _, c := range l.Commodities {
+			if c.Default {
+				if defaultCommodity != nil {
+					return fmt.Errorf("multiple default commodities found: %s and %s",
+						defaultCommodity.Symbol, c.Symbol)
+				}
+				defaultCommodity = c
+			}
+		}
+
+		if defaultCommodity != nil {
+			if l.DefaultCommodity != nil && l.DefaultCommodity != defaultCommodity {
+				return fmt.Errorf("conflicting default commodity: existing %s vs new %s",
+					l.DefaultCommodity.Symbol, defaultCommodity.Symbol)
+			}
+			l.DefaultCommodity = defaultCommodity
+		}
+	}
+
+	return nil
 }

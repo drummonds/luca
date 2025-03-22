@@ -79,6 +79,41 @@ func TestCommodityEqual(t *testing.T) {
 			want: false,
 		},
 		{
+			name: "different default",
+			a: Commodity{
+				Directive:   "commodity",
+				Symbol:      "USD",
+				Description: "US Dollar",
+				SubUnit:     100,
+				Default:     true,
+			},
+			b: Commodity{
+				Directive:   "commodity",
+				Symbol:      "USD",
+				Description: "US Dollar",
+				SubUnit:     1000,
+			},
+			want: false,
+		},
+		{
+			name: "same default",
+			a: Commodity{
+				Directive:   "commodity",
+				Symbol:      "USD",
+				Description: "US Dollar",
+				SubUnit:     100,
+				Default:     true,
+			},
+			b: Commodity{
+				Directive:   "commodity",
+				Symbol:      "USD",
+				Description: "US Dollar",
+				SubUnit:     100,
+				Default:     true,
+			},
+			want: true,
+		},
+		{
 			name: "empty details",
 			a: Commodity{
 				Directive: "commodity",
@@ -235,4 +270,92 @@ func TestParseCommodity(t *testing.T) {
 		},
 	}
 	AbstractTestParse(t, tests)
+}
+
+func TestCommodityDefault(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected *Commodity
+		wantErr  bool
+	}{
+		{
+			name: "default true",
+			input: `commodity USD
+	default true`,
+			expected: &Commodity{
+				Directive: "commodity",
+				Symbol:    "USD",
+				Default:   true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "default false",
+			input: `commodity EUR
+	default false`,
+			expected: &Commodity{
+				Directive: "commodity",
+				Symbol:    "EUR",
+				Default:   false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "default with invalid value",
+			input: `commodity GBP
+	default yes`,
+			wantErr: true,
+		},
+		{
+			name: "default with all fields",
+			input: `commodity BTC
+	description "Bitcoin"
+	subunit 100000000
+	default true`,
+			expected: &Commodity{
+				Directive:   "commodity",
+				Symbol:      "BTC",
+				Description: "Bitcoin",
+				SubUnit:     100000000,
+				Default:     true,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc, err := Parse(tt.input, "test.luca")
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("expected error but got none")
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+				return
+			}
+
+			if len(doc.Commodities) != 1 {
+				t.Errorf("expected 1 commodity, got %d", len(doc.Commodities))
+				return
+			}
+
+			got := doc.Commodities[0]
+			if got.Symbol != tt.expected.Symbol {
+				t.Errorf("Symbol = %v, want %v", got.Symbol, tt.expected.Symbol)
+			}
+			if got.Description != tt.expected.Description {
+				t.Errorf("Description = %v, want %v", got.Description, tt.expected.Description)
+			}
+			if got.SubUnit != tt.expected.SubUnit {
+				t.Errorf("SubUnit = %v, want %v", got.SubUnit, tt.expected.SubUnit)
+			}
+			if got.Default != tt.expected.Default {
+				t.Errorf("Default = %v, want %v", got.Default, tt.expected.Default)
+			}
+		})
+	}
 }

@@ -135,3 +135,20 @@ func TestDirectParsingToConcreteTypes(t *testing.T) {
 	assert.Equal(t, "txn", transactions[0].GetDirective())
 	assert.Equal(t, 1, len(transactions[0].Movements))
 }
+
+func TestParsingErrorTypes(t *testing.T) {
+	input := `2024-01-02 commodty RUB
+2024-01-02 commodity USD`
+	doc, err := Parse(input, "test.luca")
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(doc.Accounts))
+	assert.Equal(t, 0, len(doc.Transactions))
+	assert.Equal(t, 1, len(doc.Commodities))
+
+	// Test Commodity
+	commodities := doc.Commodities
+	assert.Equal(t, 1, len(commodities))
+	assert.Equal(t, "commodity", commodities[0].GetDirective())
+	assert.Equal(t, "USD", commodities[0].Symbol)
+
+}

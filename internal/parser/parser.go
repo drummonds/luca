@@ -226,6 +226,7 @@ type parseState int
 const (
 	matchEntryHeader parseState = iota
 	matchDirective
+	skipToEOL
 	matchEOF
 )
 
@@ -284,6 +285,7 @@ func ParseAndAddToDocument(input string, filename string, doc *Document) error {
 		directive       string
 		thisEntryHeader *EntryHeader
 	)
+
 	tokenLexer := TokenLexer()
 	ps := NewParserState(tokenLexer)
 	// First pass: preprocess indentation and show tokens
@@ -336,6 +338,7 @@ func ParseAndAddToDocument(input string, filename string, doc *Document) error {
 	}
 
 	// Modified loop with context check
+	lineCount := 1 // for error messages
 tokenLoop:
 	for {
 		select {
@@ -369,9 +372,26 @@ tokenLoop:
 					ps.directiveNewer = GetDirectiveNewer(directive)
 					ps.directiveParser = GetDirectiveParser(directive)
 					ps.directiveAdder = GetDirectiveAdder(directive)
-					ps.directiveState = 0
-					ps.directiveNewer(thisEntryHeader, directive, ps)
-					thisEntryHeader = new(EntryHeader)
+					// Check if the directive is valid and code is correct
+					// for all three functions
+					switch {
+					case ps.directiveNewer == nil && ps.directiveParser == nil && ps.directiveAdder == nil:
+						// Survivable error probably due to a misspelt directive
+						fmt.Printf("Warning: directive %s at line %d in file %s is not valid, skipping to EOL\n", directive, lineCount, filename)
+						ps.directiveState = 0
+						nextState = skipToEOL
+					case ps.directiveNewer == nil:
+						return fmt.Errorf("directive %s has no new function, probable coding error", directive)
+					case ps.directiveParser == nil:
+						return fmt.Errorf("directive %s has no parser function, probable coding error", directive)
+					case ps.directiveAdder == nil:
+						return fmt.Errorf("directive %s has no adder function, probable coding error", directive)
+					default: // Actuallly happy path
+						ps.directiveState = 0
+						ps.directiveNewer(thisEntryHeader, directive, ps)
+						thisEntryHeader = new(EntryHeader)
+						thisEntryHeader.Filename = filename
+					}
 				}
 			case matchDirective:
 				nextState, err = ps.directiveParser(token, nextToken, ps)
@@ -385,6 +405,14 @@ tokenLoop:
 					}
 					ps.entry = nil
 				}
+			case skipToEOL:
+				if token.Type == ps.tokenNewline {
+					nextState = matchEntryHeader
+					ps.directiveState = 0
+				}
+			}
+			if token.Type == ps.tokenNewline {
+				lineCount++
 			}
 			ps.state = nextState
 		}
@@ -424,6 +452,15 @@ func GetDirectiveAdder(directive string) DirectiveAdderFunc {
 
 // ParseFile parses a file and returns a Document
 func ParseFile(filename string) (*Document, error) {
+	if filename == "" {
+		return nil, fmt.Errorf("filename cannot be empty")
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		return nil, fmt.Errorf("file does not exist: %s", filename)
+	}
+
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
