@@ -26,14 +26,14 @@ const AFP2 = `
 2025-01-01 open equity:input
 2025-01-01 open assets:cash
 2025-01-01 open expenses:purchases
-2025-01-01 open revenue:sales
+2025-01-01 open income:sales
 
 2024-03-21 txn "Investment"
 	equity:input 25.00 -> assets:cash
 2024-03-22 txn "Stock purchase"
 	assets:cash 25.00 -> expenses:purchases 
 2024-03-23 txn "Sales"
-	revenue:sales 37.50 -> assets:cash
+	income:sales 37.50 -> assets:cash
 `
 
 // afpCommand implements the "afp" subcommand demoing account for programmers examples
@@ -94,7 +94,10 @@ func afpCommand() *Command {
 			if err != nil {
 				log.Fatalf("Failed to create ledger: %v", err)
 			}
-			ledger.AddDocument(doc, name, true)
+			err = ledger.AddDocument(doc, name, true)
+			if err != nil {
+				log.Fatalf("Failed to add document: %v", err)
+			}
 			mermaid := ledger.MermaidSummary()
 
 			// Parse the embedded template
