@@ -1,11 +1,13 @@
 package luca
 
 import (
+	"fmt"
 	"log"
 	"testing"
 	"time"
 
 	"github.com/drummonds/luca/internal/parser"
+	"github.com/shopspring/decimal"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -83,4 +85,13 @@ func TestCanReadAFP1FromFile(t *testing.T) {
 	assert.Equal(t, name, accounts[0].GetFilename())
 	date, _ := time.Parse("2006-01-02", "2025-01-01")
 	assert.Equal(t, date, accounts[0].GetDate())
+
+	balanceCheck := func(account *Account, expected decimal.Decimal) {
+		assert.True(t, expected.Equal(account.BalanceLatest()),
+			fmt.Sprintf("Balance of %s should be %s, but is %s",
+				account.Name, expected.String(), account.BalanceLatest().String()))
+	}
+	// test account balances
+	balanceCheck(accounts[0], decimal.NewFromInt(-25))
+	balanceCheck(accounts[1], decimal.NewFromInt(25))
 }

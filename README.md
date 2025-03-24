@@ -168,6 +168,57 @@ gantt
 
 ## Features
 
+The software architecture of Luca looks like this:
+
+``` mermaid
+graph TB
+    subgraph CLI["cmd/luca"]
+        CLI_MAIN["main.go"]
+        AFP["afp.go"]
+        TEMPLATES["templates/"]
+    end
+
+    subgraph Core["github.com/drummonds/luca"]
+        LEDGER["Ledger"]
+        SUMMARY["summary.go"]
+        ACCOUNT["Account"]
+        TRANSACTION["Transaction"]
+        MOVEMENT["Movement"]
+    end
+
+    subgraph Internal["internal/"]
+        PARSER["parser/"]
+        MERMAID["mermaid/"]
+        DATETIME["datetime/"]
+    end
+
+    %% Relationships
+    CLI_MAIN --> AFP
+    AFP --> TEMPLATES
+    AFP --> LEDGER
+    AFP --> PARSER
+    
+    LEDGER --> SUMMARY
+    SUMMARY --> MERMAID
+    LEDGER --> ACCOUNT
+    LEDGER --> TRANSACTION
+    TRANSACTION --> MOVEMENT
+    
+    PARSER --> LEDGER
+    PARSER --> DATETIME
+
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef core fill:#BCE,stroke:#333,stroke-width:2px;
+    classDef cli fill:#CDA,stroke:#333,stroke-width:2px;
+    classDef internal fill:#EEB,stroke:#333,stroke-width:2px;
+    
+    class CLI_MAIN,AFP,TEMPLATES cli;
+    class LEDGER,SUMMARY,ACCOUNT,TRANSACTION,MOVEMENT core;
+    class PARSER,MERMAID,DATETIME internal;
+```
+
+
 List of features that will get implmented
 
 ### Directive Account
@@ -185,14 +236,24 @@ Spring decimal uses nice rounding system and we should use this rather than subu
 
 # Ideas
 
+## Segmenting time
 Segmenting by time period. This allows you to deal with all the data for a period in memory
 as well as handling longer time periods.
+
+## indexing account movements
+
+It might be worth testing keeping all movements just as a slice and iterating
+through them for balances of different types.
+
+There may be an interactiong with periods and having old immutable periods.
+
+# Appendix
 
 ## References
 
 date time format comes from https://www.rfc-editor.org/rfc/rfc3339
 
-### String concatenation
+## String concatenation
 
 You could use either + or stringbuilder. This article https://dev.to/jonathanlawhh/golang-string-concatenation-what-how-why-3fcd
 shows that for adding 2 strings both methods are fast but

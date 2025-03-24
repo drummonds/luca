@@ -14,11 +14,11 @@ import (
 type Ledger struct {
 	// Raw data
 	Commodities  []*parser.Commodity
-	Accounts     []*parser.Account
+	Accounts     []*Account
 	Transactions []*parser.Transaction
 	// Helper data  Names are case insensitive
 	CommoditiesMap   map[string]*parser.Commodity
-	AccountsMap      map[string]*parser.Account
+	AccountsMap      map[string]*Account
 	DefaultCommodity *parser.Commodity
 }
 
@@ -65,20 +65,24 @@ func (l *Ledger) CheckCommoditySymbol(symbol string, autoCreate bool) (bool, err
 	return true, nil
 }
 
-func (l *Ledger) AddAccount(a *parser.Account, autoCreate bool) error {
-	if a == nil {
+func (l *Ledger) AddAccount(pa *parser.Account, autoCreate bool) error {
+	if pa == nil {
 		return fmt.Errorf("can't add account with empty id")
 	}
-	_, err := l.CheckCommoditySymbol(a.Commodity, autoCreate)
+	_, err := l.CheckCommoditySymbol(pa.Commodity, autoCreate)
 	if err != nil {
 		return err
 	}
 	// Now the commoddity is in place so can check and add the account
-	if _, ok := l.AccountsMap[strings.ToLower(a.Name)]; ok {
-		return fmt.Errorf("duplicate account %s already exists in file %s", a.Name, a.Filename)
+	if _, ok := l.AccountsMap[strings.ToLower(pa.Name)]; ok {
+		return fmt.Errorf("duplicate account %s already exists in file %s", pa.Name, pa.Filename)
+	}
+	a, err := NewAccount(pa, l)
+	if err != nil {
+		return err
 	}
 	l.Accounts = append(l.Accounts, a)
-	l.AccountsMap[strings.ToLower(a.Name)] = a
+	l.AccountsMap[strings.ToLower(pa.Name)] = a
 	return nil
 }
 
@@ -135,11 +139,11 @@ func (l *Ledger) AddDocument(doc *parser.Document, filename string, autoCreate b
 		}
 	}
 	l.SetDefaultCommodity()
-	for _, a := range doc.Accounts {
-		if a.Commodity == "" {
-			a.Commodity = l.DefaultCommodity.Symbol
+	for _, pa := range doc.Accounts {
+		if pa.Commodity == "" {
+			pa.Commodity = l.DefaultCommodity.Symbol
 		}
-		err = l.AddAccount(a, autoCreate)
+		err = l.AddAccount(pa, autoCreate)
 		if err != nil {
 			return err
 		}
@@ -150,6 +154,7 @@ func (l *Ledger) AddDocument(doc *parser.Document, filename string, autoCreate b
 			return err
 		}
 	}
+	l.LinkAccountsTransactions()
 	return nil
 }
 
@@ -157,9 +162,9 @@ func (l *Ledger) AddDocument(doc *parser.Document, filename string, autoCreate b
 func NewLedger() (*Ledger, error) {
 	ledger := &Ledger{}
 	ledger.CommoditiesMap = make(map[string]*parser.Commodity)
-	ledger.AccountsMap = make(map[string]*parser.Account)
+	ledger.AccountsMap = make(map[string]*Account)
 	ledger.Commodities = make([]*parser.Commodity, 0)
-	ledger.Accounts = make([]*parser.Account, 0)
+	ledger.Accounts = make([]*Account, 0)
 	ledger.Transactions = make([]*parser.Transaction, 0)
 	return ledger, nil
 }
@@ -241,4 +246,21 @@ func (l *Ledger) SetDefaultCommodity() error {
 	}
 
 	return nil
+}
+
+// linkAccountsTransactions links the accounts to the transactions
+// and sorts the movements so that you can get easy
+
+func (l *Ledger) LinkAccountsTransactions() {
+	for _, t := range l.Transactions {
+		for _, m := range t.Movements {
+			fromAccount := l.AccountsMap[strings.ToLower(m.From)]
+			toAccount := l.AccountsMap[strings.ToLower(m.To)]
+			fromAccount.LinkMovement(m, t)
+			toAccount.LinkMovement(m, t)
+		}
+	}
+	for _, a := range l.Accounts {
+		a.SortMovements()
+	}
 }
